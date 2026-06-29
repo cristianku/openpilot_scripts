@@ -173,7 +173,7 @@ recreate_clone_from_release_source() {
   mkdir -p "${dest}"
   git -C "${dest}" init
   git -C "${dest}" remote add source "${source_repo_url}"
-  GIT_LFS_SKIP_SMUDGE=1 git -C "${dest}" fetch --depth 1 source "${source_commit}"
+  GIT_LFS_SKIP_SMUDGE=1 git -C "${dest}" fetch --no-tags source "${source_commit}"
   GIT_LFS_SKIP_SMUDGE=1 git -C "${dest}" checkout -B "${branch}" FETCH_HEAD
   git -C "${dest}" remote remove source
   git -C "${dest}" remote add origin "${target_repo_url}"
