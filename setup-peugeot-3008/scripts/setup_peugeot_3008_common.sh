@@ -23,7 +23,13 @@ OPENPILOT_SOURCE_BRANCH="${OPENPILOT_SOURCE_BRANCH:-master}"
 OPENDBC_REPO="${OPENDBC_REPO:-https://github.com/${GITHUB_USER}/opendbc.git}"
 OPENDBC_SOURCE_REPO="${OPENDBC_SOURCE_REPO:-${OPENDBC_REPO}}"
 OPENDBC_SOURCE_BRANCH="${OPENDBC_SOURCE_BRANCH:-}"
-COMMIT_MESSAGE="${COMMIT_MESSAGE:-Update Peugeot 3008${title_suffix} opendbc pointer}"
+STEERING_NN_REPO="${STEERING_NN_REPO:-https://github.com/${GITHUB_USER}/sunny_steering_nn.git}"
+STEERING_NN_BRANCH="${STEERING_NN_BRANCH:-main}"
+STEERING_NN_MODELS_DIR="${STEERING_NN_MODELS_DIR:-models}"
+COMMIT_MESSAGE="${COMMIT_MESSAGE:-Update Peugeot 3008${title_suffix} opendbc pointer and steering models}"
+
+STEERING_NN_SOURCE_SHA=""
+STEERING_NN_MODEL_COUNT=0
 
 ensure_remote_branch() {
   local repo_url="$1"
@@ -117,13 +123,75 @@ set_opendbc_pointer() {
   echo "Pointing opendbc_repo to ${repo_url} ${branch} (${opendbc_sha})"
 }
 
+sync_steering_nn_models() {
+  local dest="$1"
+  local tmp_dir
+  tmp_dir="$(mktemp -d)"
+
+  echo "Checking ${STEERING_NN_REPO} ${STEERING_NN_BRANCH} for ${STEERING_NN_MODELS_DIR}/"
+  if ! git clone --quiet --no-checkout --filter=blob:none --depth=1 --branch "${STEERING_NN_BRANCH}" \
+    "${STEERING_NN_REPO}" "${tmp_dir}/repo"; then
+    rm -rf "${tmp_dir}"
+    echo "ERROR: failed to clone ${STEERING_NN_REPO} ${STEERING_NN_BRANCH}" >&2
+    exit 1
+  fi
+
+  STEERING_NN_SOURCE_SHA="$(git -C "${tmp_dir}/repo" rev-parse HEAD)"
+  if ! git -C "${tmp_dir}/repo" cat-file -e "HEAD:${STEERING_NN_MODELS_DIR}" 2>/dev/null; then
+    echo "No ${STEERING_NN_MODELS_DIR}/ folder at ${STEERING_NN_SOURCE_SHA}; skipping steering models"
+    rm -rf "${tmp_dir}"
+    return
+  fi
+
+  if [[ "$(git -C "${tmp_dir}/repo" cat-file -t "HEAD:${STEERING_NN_MODELS_DIR}")" != "tree" ]]; then
+    rm -rf "${tmp_dir}"
+    echo "ERROR: ${STEERING_NN_MODELS_DIR} exists but is not a folder in ${STEERING_NN_REPO}" >&2
+    exit 1
+  fi
+
+  git -C "${tmp_dir}/repo" sparse-checkout init --cone
+  git -C "${tmp_dir}/repo" sparse-checkout set "${STEERING_NN_MODELS_DIR}"
+  git -C "${tmp_dir}/repo" checkout --quiet
+
+  local source_models="${tmp_dir}/repo/${STEERING_NN_MODELS_DIR}"
+  STEERING_NN_MODEL_COUNT="$(find "${source_models}" -type f | wc -l | tr -d ' ')"
+  if [[ "${STEERING_NN_MODEL_COUNT}" -eq 0 ]]; then
+    echo "The ${STEERING_NN_MODELS_DIR}/ folder is empty; skipping steering models"
+    rm -rf "${tmp_dir}"
+    return
+  fi
+
+  mkdir -p "${dest}/models"
+  cp -R "${source_models}/." "${dest}/models/"
+  git -C "${dest}" add -- models
+
+  local nnlc_helper="${dest}/sunnypilot/selfdrive/controls/lib/nnlc/helpers.py"
+  if [[ -f "${nnlc_helper}" ]]; then
+    perl -0pi -e 's#^TORQUE_NN_MODEL_PATH = .*#TORQUE_NN_MODEL_PATH = os.path.join(BASEDIR, "models")#m' "${nnlc_helper}"
+    if ! grep -Fqx 'TORQUE_NN_MODEL_PATH = os.path.join(BASEDIR, "models")' "${nnlc_helper}"; then
+      rm -rf "${tmp_dir}"
+      echo "ERROR: failed to point sunnypilot NNLC to the copied models folder" >&2
+      exit 1
+    fi
+    git -C "${dest}" add -- sunnypilot/selfdrive/controls/lib/nnlc/helpers.py
+    echo "Pointing sunnypilot NNLC to ${dest}/models"
+  fi
+
+  if ! find "${dest}/models" -type f -name 'PSA_PEUGEOT_3008*.json' -print -quit | grep -q .; then
+    echo "WARNING: copied models do not include PSA_PEUGEOT_3008*.json" >&2
+  fi
+
+  echo "Copied ${STEERING_NN_MODEL_COUNT} steering model file(s) from ${STEERING_NN_SOURCE_SHA}"
+  rm -rf "${tmp_dir}"
+}
+
 commit_and_push() {
   local dest="$1"
   local branch="$2"
   local message="$3"
   local expected_remote_sha="$4"
 
-  if git -C "${dest}" diff --cached --quiet -- .gitmodules opendbc_repo; then
+  if git -C "${dest}" diff --cached --quiet; then
     if [[ "$(git -C "${dest}" rev-parse HEAD)" != "${expected_remote_sha}" ]]; then
       echo "Updating ${branch} from the current upstream master"
       GIT_LFS_SKIP_PUSH=1 git -C "${dest}" push \
@@ -152,12 +220,18 @@ main() {
   cd "${OPENPILOT_DIR}"
 
   set_opendbc_pointer "." "${OPENDBC_REPO}" "${BRANCH}" "${OPENDBC_SOURCE_REPO}" "${OPENDBC_SOURCE_BRANCH}"
+  sync_steering_nn_models "."
   commit_and_push "." "${BRANCH}" "${COMMIT_MESSAGE}" "${expected_remote_sha}"
 
   echo
   echo "Ready:"
   echo "  ${WORKSPACE_ROOT}/${OPENPILOT_DIR}"
   echo "  ${WORKSPACE_ROOT}/${OPENPILOT_DIR}/opendbc_repo"
+  if [[ "${STEERING_NN_MODEL_COUNT}" -gt 0 ]]; then
+    echo "  ${WORKSPACE_ROOT}/${OPENPILOT_DIR}/models (${STEERING_NN_MODEL_COUNT} files from ${STEERING_NN_SOURCE_SHA})"
+  fi
 }
 
-main "$@"
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  main "$@"
+fi
