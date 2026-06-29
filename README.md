@@ -89,7 +89,7 @@ Testing variants:
 ./setup-peugeot-3008-testing/scripts/setup_peugeot_3008.sh sunny
 ```
 
-Promote tested opendbc changes to stable and then refresh the matching openpilot pointer:
+Promote tested opendbc changes to stable and then refresh the matching vendored openpilot integration:
 
 ```bash
 ./merge-peugeot-3008-testing/scripts/merge_peugeot_3008.sh
@@ -109,15 +109,13 @@ The merge skills operate only on `cristianku/opendbc`. They validate the Peugeot
 
 ## release-mici source handling
 
-`release-mici` is a stripped prebuilt branch in both upstream repositories, so the workflows do not use it directly as a development tree. Instead, the script:
+Every workflow clones the current `release-mici` branch directly from the official upstream repository. It never uses `cristianku/openpilot:release-mici` as a source:
 
-1. Resolves the release's complete source commit: from `git_src_commit` when available, or from sunnypilot's matching `v<version>` source tag.
-2. Fetches that complete source commit.
-3. Creates the requested Peugeot branch from the source commit.
-4. Points `opendbc_repo` to Cristian's matching opendbc branch.
-5. Pushes with `--force-with-lease` using the remote SHA observed before rebuilding.
-
-This keeps both custom comma 4 variants aligned with the source used for their stable release while preserving the Peugeot opendbc changes.
+1. Clone `commaai/openpilot:release-mici` for `comma`, or `sunnypilot/sunnypilot:release-mici` for `sunny`.
+2. Create the requested Peugeot branch from that exact upstream HEAD.
+3. Replace `opendbc_repo` with the complete contents of Cristian's matching opendbc branch.
+4. Remove the nested opendbc `.git` directory so `opendbc_repo` remains a regular tracked tree, not a submodule pointer.
+5. Push with `--force-with-lease` using the custom remote SHA observed before rebuilding.
 
 ## Defaults and overrides
 
@@ -153,8 +151,8 @@ WORKSPACE_ROOT="$HOME/GitHub" ./setup-peugeot-3008/scripts/setup_peugeot_3008.sh
 
 - The mapped local openpilot directory is deleted and recreated on every run.
 - All workflows may rewrite their remote openpilot branch with `--force-with-lease`.
-- Only `.gitmodules` and the `opendbc_repo` pointer are staged in openpilot.
+- Only the complete vendored `opendbc_repo` tree is staged in openpilot.
 - The scripts do not clone, update, stage, or commit `panda`.
-- Git LFS upload is skipped when pushing the pointer commit.
+- Git LFS upload is skipped when pushing the integration commit.
 
 Review the configured repository URLs and branch names before running the scripts against another account.

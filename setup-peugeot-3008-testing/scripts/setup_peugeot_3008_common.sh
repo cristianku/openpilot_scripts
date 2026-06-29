@@ -25,7 +25,7 @@ RECREATE_OPENPILOT_FROM_RELEASE="${RECREATE_OPENPILOT_FROM_RELEASE:-false}"
 OPENDBC_REPO="${OPENDBC_REPO:-https://github.com/${GITHUB_USER}/opendbc.git}"
 OPENDBC_SOURCE_REPO="${OPENDBC_SOURCE_REPO:-${OPENDBC_REPO}}"
 OPENDBC_SOURCE_BRANCH="${OPENDBC_SOURCE_BRANCH:-}"
-COMMIT_MESSAGE="${COMMIT_MESSAGE:-Update Peugeot 3008${title_suffix} opendbc pointer}"
+COMMIT_MESSAGE="${COMMIT_MESSAGE:-Update Peugeot 3008${title_suffix} opendbc integration}"
 
 ensure_remote_branch() {
   local repo_url="$1"
@@ -71,7 +71,7 @@ ensure_remote_branch() {
   rm -rf "${tmp_dir}"
 }
 
-clone_or_update() {
+materialize_branch_tree() {
   local repo_url="$1"
   local dest="$2"
   local branch="$3"
@@ -80,19 +80,10 @@ clone_or_update() {
 
   ensure_remote_branch "${repo_url}" "${branch}" "${source_repo_url}" "${source_branch}"
 
-  if [[ -d "${dest}/.git" ]]; then
-    echo "Updating ${dest}"
-    git -C "${dest}" fetch origin "${branch}"
-    git -C "${dest}" checkout "${branch}"
-    git -C "${dest}" pull --ff-only origin "${branch}"
-  elif [[ -e "${dest}" ]] && [[ -n "$(find "${dest}" -mindepth 1 -maxdepth 1 2>/dev/null)" ]]; then
-    echo "ERROR: ${dest} exists but is not a git checkout and is not empty." >&2
-    exit 1
-  else
-    echo "Cloning ${repo_url} -> ${dest}"
-    rm -rf "${dest}"
-    git clone --branch "${branch}" --single-branch "${repo_url}" "${dest}"
-  fi
+  echo "Materializing ${repo_url} ${branch} -> ${dest}"
+  rm -rf "${dest}"
+  git clone --no-tags --branch "${branch}" --single-branch "${repo_url}" "${dest}"
+  rm -rf "${dest}/.git"
 }
 
 recreate_clone() {
@@ -135,47 +126,17 @@ recreate_clone_from_release_source() {
     exit 1
   fi
 
-  local metadata_dir
-  metadata_dir="$(mktemp -d)"
-
-  echo "Resolving source commit from ${source_repo_url} ${release_branch}"
-  GIT_LFS_SKIP_SMUDGE=1 git clone --filter=blob:none --no-checkout --depth 1 \
-    --branch "${release_branch}" "${source_repo_url}" "${metadata_dir}/release"
-
-  local source_commit
-  source_commit="$(git -C "${metadata_dir}/release" show HEAD:git_src_commit 2>/dev/null || true)"
-
-  if [[ ! "${source_commit}" =~ ^[0-9a-fA-F]{40}$ ]]; then
-    local release_version
-    release_version="$(git -C "${metadata_dir}/release" show HEAD:sunnypilot/common/version.h 2>/dev/null \
-      | awk -F'"' '/SUNNYPILOT_VERSION/ { print $2; exit }' || true)"
-
-    if [[ -n "${release_version}" ]]; then
-      echo "Resolving source commit from tag v${release_version}"
-      git -C "${metadata_dir}/release" fetch --depth 1 origin \
-        "refs/tags/v${release_version}:refs/tags/v${release_version}"
-      source_commit="$(git -C "${metadata_dir}/release" rev-parse "v${release_version}^{commit}" 2>/dev/null || true)"
-    fi
-  fi
-
-  rm -rf "${metadata_dir}"
-
-  if [[ ! "${source_commit}" =~ ^[0-9a-fA-F]{40}$ ]]; then
-    echo "ERROR: ${source_repo_url} ${release_branch} does not contain a valid git_src_commit" >&2
-    exit 1
-  fi
-
   if [[ -e "${dest}" ]]; then
-    echo "Recreating ${dest} from release source commit ${source_commit}"
+    echo "Recreating ${dest} directly from ${source_repo_url} ${release_branch}"
     rm -rf "${dest}"
   fi
 
-  mkdir -p "${dest}"
-  git -C "${dest}" init
-  git -C "${dest}" remote add source "${source_repo_url}"
-  GIT_LFS_SKIP_SMUDGE=1 git -C "${dest}" fetch --no-tags source "${source_commit}"
-  GIT_LFS_SKIP_SMUDGE=1 git -C "${dest}" checkout -B "${branch}" FETCH_HEAD
-  git -C "${dest}" remote remove source
+  git clone --no-tags --single-branch --branch "${release_branch}" "${source_repo_url}" "${dest}"
+  local source_commit
+  source_commit="$(git -C "${dest}" rev-parse HEAD)"
+  echo "Using upstream release commit ${source_commit}"
+  git -C "${dest}" checkout -B "${branch}"
+  git -C "${dest}" remote rename origin source
   git -C "${dest}" remote add origin "${target_repo_url}"
 }
 
@@ -191,12 +152,12 @@ commit_and_push() {
   if [[ -z "$(git -C "${dest}" status --porcelain -- "${paths[@]}")" ]]; then
     if [[ "${force_with_lease}" == "true" ]] && \
        [[ "$(git -C "${dest}" rev-parse HEAD)" != "${expected_remote_sha}" ]]; then
-      echo "Updating ${branch} release source without opendbc pointer changes"
+      echo "Updating ${branch} from the current upstream release"
       GIT_LFS_SKIP_PUSH=1 git -C "${dest}" push \
         --force-with-lease="refs/heads/${branch}:${expected_remote_sha}" origin "${branch}"
       return
     fi
-    echo "No opendbc pointer changes to commit in ${dest}"
+    echo "No opendbc integration changes to commit in ${dest}"
     return
   fi
 
@@ -226,13 +187,10 @@ main() {
 
   cd "${OPENPILOT_DIR}"
 
-  git config --file .gitmodules submodule.opendbc.url "${OPENDBC_REPO}"
-  git submodule sync opendbc_repo
-
-  clone_or_update "${OPENDBC_REPO}" "opendbc_repo" "${BRANCH}" "${OPENDBC_SOURCE_REPO}" "${OPENDBC_SOURCE_BRANCH}"
+  materialize_branch_tree "${OPENDBC_REPO}" "opendbc_repo" "${BRANCH}" "${OPENDBC_SOURCE_REPO}" "${OPENDBC_SOURCE_BRANCH}"
 
   commit_and_push "." "${BRANCH}" "${COMMIT_MESSAGE}" "${RECREATE_OPENPILOT_FROM_RELEASE}" "${expected_remote_sha}" \
-    ".gitmodules" "opendbc_repo"
+    "opendbc_repo"
 
   echo
   echo "Ready:"
