@@ -28,20 +28,14 @@ fi
 
 openpilot_source_repo="https://github.com/commaai/openpilot.git"
 openpilot_source_branch="master"
-openpilot_release_branch="release-mici"
-recreate_openpilot_from_release="true"
 
 if [[ "${variant}" == "sunny" ]]; then
   openpilot_source_repo="https://github.com/sunnypilot/sunnypilot.git"
   openpilot_source_branch="master"
-  openpilot_release_branch="release-mici"
-  recreate_openpilot_from_release="true"
 fi
 
 BRANCH="${branch}" \
   OPENPILOT_SOURCE_REPO="${OPENPILOT_SOURCE_REPO:-${openpilot_source_repo}}" \
   OPENPILOT_SOURCE_BRANCH="${OPENPILOT_SOURCE_BRANCH:-${openpilot_source_branch}}" \
-  OPENPILOT_RELEASE_BRANCH="${OPENPILOT_RELEASE_BRANCH:-${openpilot_release_branch}}" \
-  RECREATE_OPENPILOT_FROM_RELEASE="${RECREATE_OPENPILOT_FROM_RELEASE:-${recreate_openpilot_from_release}}" \
   OPENDBC_SOURCE_BRANCH="${OPENDBC_SOURCE_BRANCH:-${source_branch}}" \
   bash "${common_script}"
