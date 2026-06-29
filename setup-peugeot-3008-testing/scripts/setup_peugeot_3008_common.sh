@@ -23,13 +23,12 @@ OPENPILOT_SOURCE_BRANCH="${OPENPILOT_SOURCE_BRANCH:-master}"
 OPENDBC_REPO="${OPENDBC_REPO:-https://github.com/${GITHUB_USER}/opendbc.git}"
 OPENDBC_SOURCE_REPO="${OPENDBC_SOURCE_REPO:-${OPENDBC_REPO}}"
 OPENDBC_SOURCE_BRANCH="${OPENDBC_SOURCE_BRANCH:-}"
-STEERING_NN_REPO="${STEERING_NN_REPO:-https://github.com/${GITHUB_USER}/sunny_steering_nn.git}"
-STEERING_NN_BRANCH="${STEERING_NN_BRANCH:-main}"
-STEERING_NN_MODELS_DIR="${STEERING_NN_MODELS_DIR:-models}"
-COMMIT_MESSAGE="${COMMIT_MESSAGE:-Update Peugeot 3008${title_suffix} opendbc pointer and steering models}"
+USE_CUSTOM_NEURAL_NETWORK_DATA="${USE_CUSTOM_NEURAL_NETWORK_DATA:-false}"
+NEURAL_NETWORK_DATA_REPO="${NEURAL_NETWORK_DATA_REPO:-https://github.com/${GITHUB_USER}/neural-network-data.git}"
+NEURAL_NETWORK_DATA_BRANCH="${NEURAL_NETWORK_DATA_BRANCH:-peugeot-3008}"
+COMMIT_MESSAGE="${COMMIT_MESSAGE:-Update Peugeot 3008${title_suffix} repository pointers}"
 
-STEERING_NN_SOURCE_SHA=""
-STEERING_NN_MODEL_COUNT=0
+NEURAL_NETWORK_DATA_SHA=""
 
 ensure_remote_branch() {
   local repo_url="$1"
@@ -123,66 +122,28 @@ set_opendbc_pointer() {
   echo "Pointing opendbc_repo to ${repo_url} ${branch} (${opendbc_sha})"
 }
 
-sync_steering_nn_models() {
+set_neural_network_data_pointer() {
   local dest="$1"
-  local tmp_dir
-  tmp_dir="$(mktemp -d)"
-
-  echo "Checking ${STEERING_NN_REPO} ${STEERING_NN_BRANCH} for ${STEERING_NN_MODELS_DIR}/"
-  if ! git clone --quiet --no-checkout --filter=blob:none --depth=1 --branch "${STEERING_NN_BRANCH}" \
-    "${STEERING_NN_REPO}" "${tmp_dir}/repo"; then
-    rm -rf "${tmp_dir}"
-    echo "ERROR: failed to clone ${STEERING_NN_REPO} ${STEERING_NN_BRANCH}" >&2
-    exit 1
-  fi
-
-  STEERING_NN_SOURCE_SHA="$(git -C "${tmp_dir}/repo" rev-parse HEAD)"
-  if ! git -C "${tmp_dir}/repo" cat-file -e "HEAD:${STEERING_NN_MODELS_DIR}" 2>/dev/null; then
-    echo "No ${STEERING_NN_MODELS_DIR}/ folder at ${STEERING_NN_SOURCE_SHA}; skipping steering models"
-    rm -rf "${tmp_dir}"
+  if [[ "${USE_CUSTOM_NEURAL_NETWORK_DATA}" != "true" ]]; then
     return
   fi
 
-  if [[ "$(git -C "${tmp_dir}/repo" cat-file -t "HEAD:${STEERING_NN_MODELS_DIR}")" != "tree" ]]; then
-    rm -rf "${tmp_dir}"
-    echo "ERROR: ${STEERING_NN_MODELS_DIR} exists but is not a folder in ${STEERING_NN_REPO}" >&2
+  local submodule_path="sunnypilot/neural_network_data"
+  if ! git -C "${dest}" ls-files --stage -- "${submodule_path}" | awk '$1 == "160000" { found = 1 } END { exit !found }'; then
+    echo "ERROR: ${submodule_path} is not a submodule in ${dest}" >&2
     exit 1
   fi
 
-  git -C "${tmp_dir}/repo" sparse-checkout init --cone
-  git -C "${tmp_dir}/repo" sparse-checkout set "${STEERING_NN_MODELS_DIR}"
-  git -C "${tmp_dir}/repo" checkout --quiet
-
-  local source_models="${tmp_dir}/repo/${STEERING_NN_MODELS_DIR}"
-  STEERING_NN_MODEL_COUNT="$(find "${source_models}" -type f | wc -l | tr -d ' ')"
-  if [[ "${STEERING_NN_MODEL_COUNT}" -eq 0 ]]; then
-    echo "The ${STEERING_NN_MODELS_DIR}/ folder is empty; skipping steering models"
-    rm -rf "${tmp_dir}"
-    return
+  NEURAL_NETWORK_DATA_SHA="$(git ls-remote --heads "${NEURAL_NETWORK_DATA_REPO}" "refs/heads/${NEURAL_NETWORK_DATA_BRANCH}" | awk 'NR == 1 { print $1 }')"
+  if [[ ! "${NEURAL_NETWORK_DATA_SHA}" =~ ^[0-9a-fA-F]{40}$ ]]; then
+    echo "ERROR: could not resolve ${NEURAL_NETWORK_DATA_REPO} ${NEURAL_NETWORK_DATA_BRANCH}" >&2
+    exit 1
   fi
 
-  mkdir -p "${dest}/models"
-  cp -R "${source_models}/." "${dest}/models/"
-  git -C "${dest}" add -- models
-
-  local nnlc_helper="${dest}/sunnypilot/selfdrive/controls/lib/nnlc/helpers.py"
-  if [[ -f "${nnlc_helper}" ]]; then
-    perl -0pi -e 's#^TORQUE_NN_MODEL_PATH = .*#TORQUE_NN_MODEL_PATH = os.path.join(BASEDIR, "models")#m' "${nnlc_helper}"
-    if ! grep -Fqx 'TORQUE_NN_MODEL_PATH = os.path.join(BASEDIR, "models")' "${nnlc_helper}"; then
-      rm -rf "${tmp_dir}"
-      echo "ERROR: failed to point sunnypilot NNLC to the copied models folder" >&2
-      exit 1
-    fi
-    git -C "${dest}" add -- sunnypilot/selfdrive/controls/lib/nnlc/helpers.py
-    echo "Pointing sunnypilot NNLC to ${dest}/models"
-  fi
-
-  if ! find "${dest}/models" -type f -name 'PSA_PEUGEOT_3008*.json' -print -quit | grep -q .; then
-    echo "WARNING: copied models do not include PSA_PEUGEOT_3008*.json" >&2
-  fi
-
-  echo "Copied ${STEERING_NN_MODEL_COUNT} steering model file(s) from ${STEERING_NN_SOURCE_SHA}"
-  rm -rf "${tmp_dir}"
+  git -C "${dest}" config --file .gitmodules submodule.sunnypilot/neural_network_data.url "${NEURAL_NETWORK_DATA_REPO}"
+  git -C "${dest}" add -- .gitmodules
+  git -C "${dest}" update-index --add --cacheinfo "160000,${NEURAL_NETWORK_DATA_SHA},${submodule_path}"
+  echo "Pointing ${submodule_path} to ${NEURAL_NETWORK_DATA_REPO} ${NEURAL_NETWORK_DATA_BRANCH} (${NEURAL_NETWORK_DATA_SHA})"
 }
 
 commit_and_push() {
@@ -198,7 +159,7 @@ commit_and_push() {
         --force-with-lease="refs/heads/${branch}:${expected_remote_sha}" origin "${branch}"
       return
     fi
-    echo "No opendbc pointer changes to commit in ${dest}"
+    echo "No repository pointer changes to commit in ${dest}"
     return
   fi
 
@@ -220,15 +181,15 @@ main() {
   cd "${OPENPILOT_DIR}"
 
   set_opendbc_pointer "." "${OPENDBC_REPO}" "${BRANCH}" "${OPENDBC_SOURCE_REPO}" "${OPENDBC_SOURCE_BRANCH}"
-  sync_steering_nn_models "."
+  set_neural_network_data_pointer "."
   commit_and_push "." "${BRANCH}" "${COMMIT_MESSAGE}" "${expected_remote_sha}"
 
   echo
   echo "Ready:"
   echo "  ${WORKSPACE_ROOT}/${OPENPILOT_DIR}"
   echo "  ${WORKSPACE_ROOT}/${OPENPILOT_DIR}/opendbc_repo"
-  if [[ "${STEERING_NN_MODEL_COUNT}" -gt 0 ]]; then
-    echo "  ${WORKSPACE_ROOT}/${OPENPILOT_DIR}/models (${STEERING_NN_MODEL_COUNT} files from ${STEERING_NN_SOURCE_SHA})"
+  if [[ "${USE_CUSTOM_NEURAL_NETWORK_DATA}" == "true" ]]; then
+    echo "  ${WORKSPACE_ROOT}/${OPENPILOT_DIR}/sunnypilot/neural_network_data (${NEURAL_NETWORK_DATA_BRANCH} at ${NEURAL_NETWORK_DATA_SHA})"
   fi
 }
 

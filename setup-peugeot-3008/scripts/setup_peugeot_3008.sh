@@ -28,14 +28,17 @@ fi
 
 openpilot_source_repo="https://github.com/commaai/openpilot.git"
 openpilot_source_branch="master"
+use_custom_neural_network_data="false"
 
 if [[ "${variant}" == "sunny" ]]; then
   openpilot_source_repo="https://github.com/sunnypilot/sunnypilot.git"
   openpilot_source_branch="master"
+  use_custom_neural_network_data="true"
 fi
 
 BRANCH="${branch}" \
   OPENPILOT_SOURCE_REPO="${OPENPILOT_SOURCE_REPO:-${openpilot_source_repo}}" \
   OPENPILOT_SOURCE_BRANCH="${OPENPILOT_SOURCE_BRANCH:-${openpilot_source_branch}}" \
   OPENDBC_SOURCE_BRANCH="${OPENDBC_SOURCE_BRANCH:-${source_branch}}" \
+  USE_CUSTOM_NEURAL_NETWORK_DATA="${use_custom_neural_network_data}" \
   bash "${common_script}"
