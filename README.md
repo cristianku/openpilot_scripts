@@ -92,7 +92,7 @@ Testing variants:
 
 `release-mici` is a stripped prebuilt branch in both upstream repositories, so the workflows do not use it directly as a development tree. Instead, the script:
 
-1. Reads `git_src_commit` from `commaai/openpilot:release-mici` for `comma`, or `sunnypilot/sunnypilot:release-mici` for `sunny`.
+1. Resolves the release's complete source commit: from `git_src_commit` when available, or from sunnypilot's matching `v<version>` source tag.
 2. Fetches that complete source commit.
 3. Creates the requested Peugeot branch from the source commit.
 4. Points `opendbc_repo` to Cristian's matching opendbc branch.

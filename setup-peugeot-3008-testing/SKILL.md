@@ -23,7 +23,7 @@ Default to `comma` only when the user does not specify a variant. Use the separa
 
 The wrapper recreates the mapped local openpilot folder every time. It does not commit inside opendbc and does not clone, update, stage, or commit panda.
 
-For both variants, read `git_src_commit` from the matching upstream `release-mici`, recreate the testing branch from that complete source commit, apply Cristian's matching testing opendbc pointer, and push with `--force-with-lease`. Use `commaai/openpilot` for `comma` and `sunnypilot/sunnypilot` for `sunny`.
+For both variants, resolve the complete source commit associated with the matching upstream `release-mici`, recreate the testing branch from it, apply Cristian's matching testing opendbc pointer, and push with `--force-with-lease`. Use `git_src_commit` when present and fall back to sunnypilot's matching `v<version>` source tag. Use `commaai/openpilot` for `comma` and `sunnypilot/sunnypilot` for `sunny`.
 
 ## Safety
 

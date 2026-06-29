@@ -144,6 +144,20 @@ recreate_clone_from_release_source() {
 
   local source_commit
   source_commit="$(git -C "${metadata_dir}/release" show HEAD:git_src_commit 2>/dev/null || true)"
+
+  if [[ ! "${source_commit}" =~ ^[0-9a-fA-F]{40}$ ]]; then
+    local release_version
+    release_version="$(git -C "${metadata_dir}/release" show HEAD:sunnypilot/common/version.h 2>/dev/null \
+      | awk -F'"' '/SUNNYPILOT_VERSION/ { print $2; exit }' || true)"
+
+    if [[ -n "${release_version}" ]]; then
+      echo "Resolving source commit from tag v${release_version}"
+      git -C "${metadata_dir}/release" fetch --depth 1 origin \
+        "refs/tags/v${release_version}:refs/tags/v${release_version}"
+      source_commit="$(git -C "${metadata_dir}/release" rev-parse "v${release_version}^{commit}" 2>/dev/null || true)"
+    fi
+  fi
+
   rm -rf "${metadata_dir}"
 
   if [[ ! "${source_commit}" =~ ^[0-9a-fA-F]{40}$ ]]; then
