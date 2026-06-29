@@ -26,12 +26,10 @@ if [[ ! -f "${common_script}" ]]; then
   exit 1
 fi
 
-github_user="${GITHUB_USER:-cristianku}"
-
-openpilot_source_repo="https://github.com/${github_user}/openpilot.git"
-openpilot_source_branch="${source_branch}"
-openpilot_release_branch=""
-recreate_openpilot_from_release="false"
+openpilot_source_repo="https://github.com/commaai/openpilot.git"
+openpilot_source_branch="master"
+openpilot_release_branch="release-mici"
+recreate_openpilot_from_release="true"
 
 if [[ "${variant}" == "sunny" ]]; then
   openpilot_source_repo="https://github.com/sunnypilot/sunnypilot.git"

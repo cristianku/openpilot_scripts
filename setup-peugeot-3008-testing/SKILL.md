@@ -1,6 +1,6 @@
 ---
 name: setup-peugeot-3008-testing
-description: Prepare Cristian's Peugeot 3008 testing workspace and refresh the matching custom opendbc integration. Use variant comma for peugeot-3008-testing or sunny for the comma 4 peugeot-3008-sunny-testing release-aligned workflow.
+description: Prepare Cristian's Peugeot 3008 testing workspace from the matching comma 4 release-mici source and refresh the custom opendbc integration. Use variant comma for peugeot-3008-testing or sunny for peugeot-3008-sunny-testing.
 ---
 
 # Setup Peugeot 3008 Testing
@@ -23,11 +23,11 @@ Default to `comma` only when the user does not specify a variant. Use the separa
 
 The wrapper recreates the mapped local openpilot folder every time. It does not commit inside opendbc and does not clone, update, stage, or commit panda.
 
-For `sunny`, the wrapper reads `git_src_commit` from `sunnypilot/sunnypilot:release-mici`, recreates the testing branch from that complete source commit, applies Cristian's testing opendbc pointer, and pushes with `--force-with-lease`.
+For both variants, read `git_src_commit` from the matching upstream `release-mici`, recreate the testing branch from that complete source commit, apply Cristian's matching testing opendbc pointer, and push with `--force-with-lease`. Use `commaai/openpilot` for `comma` and `sunnypilot/sunnypilot` for `sunny`.
 
 ## Safety
 
 - The mapped local openpilot testing directory is deleted and recreated.
-- The sunny workflow can rewrite `peugeot-3008-sunny-testing` with `--force-with-lease`.
+- The workflow can rewrite `peugeot-3008-testing` or `peugeot-3008-sunny-testing` with `--force-with-lease`.
 - Stage only `.gitmodules` and `opendbc_repo` in the openpilot repository.
 - Stop and report the error if release metadata, cloning, validation, or a protected push fails.
