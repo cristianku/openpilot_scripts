@@ -1,101 +1,101 @@
-# ChatGPT Skill: Peugeot 3008 Sunny testing - update neural_network_data submodule pointer
+# ChatGPT Skill: Peugeot 3008 Sunny testing - update submodule pointers
 
 ## Purpose
 
-Update the `sunnypilot/neural_network_data` submodule pointer in:
+Update both submodule pointers in:
 
-```text
-cristianku/openpilot:peugeot-3008-sunny-testing
-```
+- `cristianku/openpilot:peugeot-3008-sunny-testing`
 
-so it points to the latest commit of:
+Target pointers:
 
-```text
-cristianku/neural-network-data:master
-```
+- `sunnypilot/neural_network_data` -> latest commit of `cristianku/neural-network-data:master`
+- `opendbc_repo` -> latest commit of `cristianku/opendbc:peugeot-3008-sunny-testing`
 
-without cloning the whole openpilot repository locally.
+Do this without cloning the whole openpilot repository locally.
 
-This is useful because openpilot/sunnypilot is large and updating one submodule pointer does not require downloading everything.
+This is useful because openpilot/sunnypilot is large and updating submodule pointers does not require downloading the full repository.
 
 ## Exact case
 
 Main repository:
 
-```text
-cristianku/openpilot
-```
+- Repo: `cristianku/openpilot`
+- Branch: `peugeot-3008-sunny-testing`
 
-Main repository branch:
+Submodule pointer 1:
 
-```text
-peugeot-3008-sunny-testing
-```
+- Path: `sunnypilot/neural_network_data`
+- Repo: `cristianku/neural-network-data`
+- Branch: `master`
 
-Submodule path inside the main repository:
+Submodule pointer 2:
 
-```text
-sunnypilot/neural_network_data
-```
-
-Submodule repository:
-
-```text
-cristianku/neural-network-data
-```
-
-Submodule branch:
-
-```text
-master
-```
+- Path: `opendbc_repo`
+- Repo: `cristianku/opendbc`
+- Branch: `peugeot-3008-sunny-testing`
 
 ## Important Git concept
 
-A Git submodule does **not** dynamically point to a branch.
-
-It points to one exact commit SHA.
+A Git submodule does not dynamically point to a branch. It points to one exact commit SHA.
 
 Inside a Git tree, a submodule is stored as:
 
-```text
-mode = 160000
-type = commit
-sha  = commit SHA of the submodule repository
-path = submodule path inside the main repository
-```
+- mode: `160000`
+- type: `commit`
+- sha: commit SHA of the submodule repository
+- path: submodule path inside the main repository
 
-So to update this submodule pointer, create a new commit in `cristianku/openpilot` on branch `peugeot-3008-sunny-testing` where the tree entry `sunnypilot/neural_network_data` points to the new commit SHA from `cristianku/neural-network-data:master`.
+So to update these submodule pointers, create a new commit in `cristianku/openpilot` on branch `peugeot-3008-sunny-testing` where:
+
+- `sunnypilot/neural_network_data` points to HEAD of `cristianku/neural-network-data:master`
+- `opendbc_repo` points to HEAD of `cristianku/opendbc:peugeot-3008-sunny-testing`
 
 ## ChatGPT prompt to reuse
 
 Copy this prompt into ChatGPT when needed:
 
 ```text
-Aggiorna il submodule neural_network_data per Peugeot 3008 Sunny testing senza clonare tutto.
+Aggiorna i submodule pointers per Peugeot 3008 Sunny testing senza clonare tutto.
 
 Repo principale: cristianku/openpilot
 Branch principale: peugeot-3008-sunny-testing
-Submodule path: sunnypilot/neural_network_data
-Repo submodule: cristianku/neural-network-data
-Branch submodule: master
+
+Submodule 1:
+- path: sunnypilot/neural_network_data
+- repo: cristianku/neural-network-data
+- branch: master
+
+Submodule 2:
+- path: opendbc_repo
+- repo: cristianku/opendbc
+- branch: peugeot-3008-sunny-testing
 
 Usa GitHub API/connector.
 
 Procedura:
 1. Trova il commit SHA attuale della branch cristianku/openpilot:peugeot-3008-sunny-testing.
 2. Trova il commit SHA HEAD di cristianku/neural-network-data:master.
-3. Crea un nuovo tree nel repo cristianku/openpilot usando come base il commit attuale della branch peugeot-3008-sunny-testing.
-4. Nel tree aggiorna/aggiungi la entry del submodule con:
+3. Trova il commit SHA HEAD di cristianku/opendbc:peugeot-3008-sunny-testing.
+4. Crea un nuovo tree nel repo cristianku/openpilot usando come base il commit attuale della branch peugeot-3008-sunny-testing.
+5. Nel tree aggiorna/aggiungi entrambe le entry dei submodule:
+
+   Entry 1:
    - path = sunnypilot/neural_network_data
    - mode = 160000
    - type = commit
    - sha = HEAD commit di cristianku/neural-network-data:master
-5. Crea un nuovo commit nel repo cristianku/openpilot con quel tree.
-6. Sposta la branch peugeot-3008-sunny-testing al nuovo commit con update_ref, senza force.
-7. Dammi il commit SHA finale e il comando per verificare.
 
-Nota: il submodule deve puntare a un commit preciso, non alla branch in modo dinamico.
+   Entry 2:
+   - path = opendbc_repo
+   - mode = 160000
+   - type = commit
+   - sha = HEAD commit di cristianku/opendbc:peugeot-3008-sunny-testing
+
+6. Crea un nuovo commit nel repo cristianku/openpilot con quel tree.
+7. Sposta la branch peugeot-3008-sunny-testing al nuovo commit con update_ref, senza force.
+8. Dammi il commit SHA finale e i comandi per verificare.
+
+Nota: i submodule devono puntare a commit precisi, non alle branch in modo dinamico.
 ```
 
 ## Manual verification commands
@@ -106,14 +106,27 @@ After the update, on a local checkout:
 git fetch origin
 git checkout peugeot-3008-sunny-testing
 git pull origin peugeot-3008-sunny-testing
+
 git submodule status sunnypilot/neural_network_data
+git submodule status opendbc_repo
 ```
 
-Expected result: the submodule path should show the exact new commit SHA from `cristianku/neural-network-data:master`.
+Expected result:
+
+- `sunnypilot/neural_network_data` should show the HEAD commit SHA from `cristianku/neural-network-data:master`.
+- `opendbc_repo` should show the HEAD commit SHA from `cristianku/opendbc:peugeot-3008-sunny-testing`.
+
+## Optional precise verification without local checkout
+
+You can also verify through GitHub API by reading the tree entry from the resulting commit/tree:
+
+- `sunnypilot/neural_network_data` -> mode `160000`, type `commit`, sha = neural-network-data HEAD
+- `opendbc_repo` -> mode `160000`, type `commit`, sha = opendbc HEAD
 
 ## Notes
 
 - Do not use `force=true` unless explicitly needed.
 - Do not modify `.gitmodules` unless the submodule repository URL itself must change.
-- Updating the submodule pointer changes the main repository, not the submodule repository.
+- Updating submodule pointers changes the main repository, not the submodule repositories.
 - The new commit belongs to `cristianku/openpilot:peugeot-3008-sunny-testing`.
+- If only one of the two pointers is outdated, still create a single main-repo commit only if at least one tree entry actually changes.
