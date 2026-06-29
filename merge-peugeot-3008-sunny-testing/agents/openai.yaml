@@ -1,0 +1,4 @@
+interface:
+  display_name: "Merge Peugeot 3008 Sunny Testing"
+  short_description: "Promote sunny testing changes safely"
+  default_prompt: "Use $merge-peugeot-3008-sunny-testing to merge the sunny Peugeot testing branch into stable and refresh openpilot."
