@@ -1,6 +1,10 @@
 # AGENTS.md — openpilot / Peugeot 3008 knowledge hub
 
-Single source of truth for how Cristian's openpilot Peugeot 3008 (PSA) port is structured and operated. Any coding agent (Claude Code, Codex, etc.) working in `opendbc`, `neural-network-data`, `openpilot_scripts`, or a generated `openpilot` checkout should read this first. Detailed docs live under [docs/](docs/).
+Single source of truth for how Cristian's openpilot Peugeot 3008 (PSA) port is structured and operated. Any coding agent (Claude Code, Codex, etc.) working in `opendbc`, `neural-network-data`, `openpilot_scripts`, or a generated `openpilot` checkout should read this first.
+
+Two layers of documentation live here:
+- **Operational runbook** — how the fork/branch/submodule/device workflow works: [docs/](docs/).
+- **Knowledge wiki** — how openpilot & opendbc actually work, to understand and develop them over time: [wiki/](wiki/) (start at [wiki/index.md](wiki/index.md)). This section defines how that wiki is maintained.
 
 ## What this is
 
@@ -41,3 +45,33 @@ A PSA / **Peugeot 3008** port of openpilot, maintained across a small set of for
 - Run skill wrappers by absolute path; never invoke `*_common.sh` directly.
 - Never force-push to opendbc via the commit skill; setup skills use `--force-with-lease` only on the mapped openpilot branch.
 - Keep submodule pointers as `160000 commit`. Stage only `.gitmodules`, `opendbc_repo`, and (sunny) `sunnypilot/neural_network_data`.
+
+---
+
+# Knowledge wiki schema
+
+This applies the LLM-wiki pattern in [llm-wiki.md](llm-wiki.md) to understanding/developing openpilot. The **raw sources are the code repos themselves** (`opendbc`, `openpilot_sunny`, later `openpilot`) — read them, never treat them as wiki content. The wiki is `wiki/`; this section is its schema.
+
+## Layout (`wiki/`)
+
+- `index.md` — catalog of every page (read first when answering). `log.md` — append-only chronological record.
+- `overview.md` — architecture entry point.
+- `sources/` — one page per raw source repo (structural map: what each dir does + where the important code is).
+- `concepts/` — cross-cutting ideas (the interface contract, the runtime pipeline, safety, messaging, tuning…).
+- `entities/` — concrete things (a specific car port, daemon, message, tuning experiment).
+
+## Page format
+
+Start every page with YAML frontmatter: `title`, `type` (source|concept|entity|overview|index|log), `repos`, `updated` (absolute date), and `sources` (repo-relative paths the page is grounded on) when applicable. Link between pages with **relative markdown links** so they work in VS Code and GitHub. Cite code as repo-relative paths, optionally `file.py:line`.
+
+## Grounding rule (important)
+
+Every claim about how the code works must be grounded in the actual repos, not memory. Read the files, cite them in `sources`. Mark anything unverified as *draft* / *open question* rather than asserting it. Code drifts — prefer directory/contract-level facts over line numbers, and re-verify before relying on a page.
+
+## Workflows
+
+**Ingest** (a new source, subsystem, or finding): read the relevant code → discuss key takeaways → write/update the page(s) in the right folder → add/refresh cross-references on related pages → update `index.md` → append a `log.md` entry (`## [YYYY-MM-DD] ingest | <title>`). One finding may touch several pages.
+
+**Query** (answering a question): read `index.md` → open the relevant pages → verify against the code if it matters → answer with citations. If the answer is durable knowledge, file it back as a new/updated page (and log it).
+
+**Lint** (periodic health check): find contradictions, stale claims, orphan pages, missing cross-references, concepts mentioned but lacking a page, and drafts to verify against current code. Report + fix, then log it.
