@@ -67,7 +67,19 @@ This is why resetting `LiveTorqueParameters` after changing `STEER_MAX`/tuning f
 
 ## NNLC — neural network lateral control (sunnypilot)
 
-`LatControlTorque` holds a `LatControlTorqueExt` (`sunnypilot/selfdrive/controls/lib/latcontrol_torque_ext.py`) that can **override the torque params and the output torque**. This is the hook where **NNLC** (`sunnypilot/selfdrive/controls/lib/nnlc/`) replaces the linear `torque_from_lateral_accel` with a per-car neural model loaded from the `neural_network_data` submodule (→ [../../docs/branches-and-submodules.md](../../docs/branches-and-submodules.md); data repo `cristianku/neural-network-data:master`). Sunny-only; the comma variant uses the linear conversion.
+`LatControlTorque` holds a `LatControlTorqueExt` (`sunnypilot/selfdrive/controls/lib/latcontrol_torque_ext.py`) that can **override the torque params and the output torque**. This is the hook where **NNLC** (`sunnypilot/selfdrive/controls/lib/nnlc/`) replaces the linear `torque_from_lateral_accel` with a per-car neural model. Sunny-only; the comma variant uses the linear conversion.
+
+### The model is trained OFFLINE, not on-device
+
+An NNLC model is a `.json` in the `neural_network_data` submodule holding the net (`layers`), input normalization (`input_mean`/`input_std`/`input_vars`, `input_size`), `output_size`, plus `model_test_loss` and a training timestamp. Those last two only exist because it was **trained offline** (from collected drive logs, via sunnypilot's training tooling) and committed to the data repo. **The device does not train NNLC.** What the device learns live from driving is the linear torque tuning (`torqued` → `latAccelFactor`/`latAccelOffset`/`friction`) and lag (`lagd` → `liveDelay`) — that's the autoapprendimento feeding whichever base controller runs. Uploaded logs feed the *offline* NNLC dataset; they don't produce the model on the device.
+
+### Model matching (`get_nn_model_path`, `nnlc/helpers.py`)
+
+Resolves a model by fuzzy-matching `car_fingerprint` (optionally `+ eps_fw`) against the `.json` filenames in `neural_network_data/neural_network_lateral_control/` (highest `SequenceMatcher` similarity; `exact_match ≥ 0.99`), falling back to `torque_data/substitute.toml` then `MOCK.json`. The path is resolved and stored in `CP_SP.neuralNetworkLateralControl.model` **always**, but the model is only *used* when the `NeuralNetworkLateralControl` param is on.
+
+### PSA 3008 status
+
+`PSA_PEUGEOT_3008.json` exists **only in `cristianku/neural-network-data`** (not in sunnypilot upstream), so it is present only on the `peugeot-3008-sunny*` branches that wire the submodule to Cristian's data repo ([../../docs/branches-and-submodules.md](../../docs/branches-and-submodules.md)). On a vanilla sunnypilot the 3008 would fall back to MOCK/substitute. When `NeuralNetworkLateralControl` is off, the model matches but is inactive, and the base controller (v0, above) runs with live `torqued`/`lagd` learning.
 
 ## Torque controller v0 vs v1 (sunnypilot)
 
@@ -94,6 +106,10 @@ Selected in `sunnypilot/selfdrive/controls/controlsd_ext.py::initialize_lateral_
 - **Default** (`EnforceTorqueControl` unset/false) → **v0** for torque cars, with a code FIXME: *"revert when upstream fixes tuning issues with v1."* So on a stock sunny build the **PSA 3008 currently runs v0**.
 - `EnforceTorqueControl = 1` **and** `TorqueControlTune != 0` → **v1** (the upstream `lac` built in `controlsd.py`).
 - Comma/upstream openpilot always uses v1.
+
+Both knobs are plain params (`common/params_keys.h`, `PERSISTENT | BACKUP`, `TorqueControlTune` options `v1.0`/`v0.0`), exposed in the **device UI** (Settings → Steering → torque settings) and in **sunnylink** (`sunnypilot/sunnylink/settings_ui*`). The version is therefore chosen at runtime from settings/sunnylink — **nothing per-car is needed in the port's `interface.py`**; the choice is fingerprint-independent. The interface only has to declare the car as torque-steer (`steerControlType = torque` + `configure_torque_tune`), which the PSA port already does ([../entities/psa-peugeot-3008.md](../entities/psa-peugeot-3008.md)).
+
+**Caveat (matters for the 3008 sunny):** `EnforceTorqueControl` and `NeuralNetworkLateralControl` are **mutually exclusive** — `ui_state._enforce_constraints()` turns both off if both are set. NNLC runs as an override on top of the base controller, and when NNLC is on the base controller is **v0**. So selecting **v1** (EnforceTorqueControl + `TorqueControlTune = v1.0`) implies **NNLC off**.
 
 ## Safety bound
 
