@@ -74,6 +74,8 @@ stateDiagram-v2
 
 When `CS.eps_active` is true: `status = 4`, torque = `apply_driver_steer_torque_limits(round(actuators.torque × STEER_MAX), last, driverTorque, params, STEER_MAX)`, and `torque_factor` is scaled linearly `MIN…MAX` by `|torque|/STEER_MAX`. `new_actuators.torque` / `torqueOutputCan` report the applied value back up. EPS only assists **≥ 50 km/h** (`LKAS_LIMITS.DISABLE_SPEED`), hence `minSteerSpeed`.
 
+> ⚠️ **Known issue (2026-07-02)**: the variable torque factor makes the command→torque map quadratic, and `new_actuators.torque` is reported *without* the factor, which corrupts torqued's live friction learning → lane-center weaving at highway speed. Full analysis + recommended fixes: [psa-3008-torque-oscillation-2026-07.md](psa-3008-torque-oscillation-2026-07.md).
+
 ### Steering limits (`CarControllerParams`, `values.py`)
 
 `STEER_MAX = 250`, `STEER_STEP = 5`, `STEER_DELTA_UP = 10`, `STEER_DELTA_DOWN = 38`, `STEER_DRIVER_MULTIPLIER/FACTOR = 1`, `STEER_DRIVER_ALLOWANCE = 50`, `MAX_TORQUE_FACTOR = 100`, `MIN_TORQUE_FACTOR = 25`. Higher `STEER_MAX` + lower factor = finer torque resolution at the same peak. These must agree with the PSA [safety model](../concepts/safety-model.md).
@@ -112,5 +114,6 @@ graph LR
 ## Open threads
 
 - **Longitudinal**: bring the commented ELKOLED ACC path into a testable state; document torque lookup + radar-disable once validated.
-- **Torque tuning**: log `STEER_MAX` / `MAX_TORQUE_FACTOR` / `steerActuatorDelay` experiments and their `latAccelFactor` outcomes here.
+- **Torque tuning**: log `STEER_MAX` / `MAX_TORQUE_FACTOR` / `steerActuatorDelay` experiments and their `latAccelFactor` outcomes here. First field analysis (lane-center oscillation, root cause, fixes): [psa-3008-torque-oscillation-2026-07.md](psa-3008-torque-oscillation-2026-07.md).
 - **EPS re-engage**: the <50 km/h takeover-request alert is stubbed — decide whether to enable.
+- **Speed limit / TSR**: `carstate.py` populates no `CarStateSP.speedLimit`, so SLC's car source is empty and Speed Limit Control is map-only (and warning-only, since OP long is off). **Resolved negatively 2026-07-02**: CAN-log reverse-engineering with two video-confirmed 60 km/h sign events found the recognized limit is **not broadcast on any of the three harness-visible buses** — it likely travels on the IS/infotainment CAN behind the BSI. Capturing it needs a sniffer at another access point (OBD gateway / cluster connector). Details + decoded-message table: [psa-3008-can-reverse-engineering.md](psa-3008-can-reverse-engineering.md).

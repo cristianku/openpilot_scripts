@@ -32,7 +32,19 @@ The MPC picks a **source** (`LongitudinalPlanSource`: cruise vs lead follow). Ou
 
 ## sunnypilot specifics
 
-`LongitudinalPlanner` subclasses `LongitudinalPlannerSP` (`sunnypilot/.../longitudinal_planner.py`) which layers SP features (e.g. speed-limit/map-based control via `liveMapDataSP` from `mapd`/`navd`) onto the base plan.
+`LongitudinalPlanner` subclasses `LongitudinalPlannerSP` (`sunnypilot/.../longitudinal_planner.py`) which layers SP features onto the base plan, most notably **Speed Limit Control (SLC)**.
+
+### Speed Limit Control (SLC)
+
+`sunnypilot/selfdrive/controls/lib/speed_limit/` resolves a target speed limit and (optionally) feeds it to the planner as a `LongitudinalPlanSource.speedLimitAssist`. Settings (`common.py` enums):
+
+- **Mode** (`SpeedLimitMode`): `off` (0) / `information` (1, just show the sign) / `warning` (2) / `assist` (3, actively adjust set speed). **Warning** is rendered in the onroad UI (`ui/sunnypilot/onroad/speed_limit.py::_draw_sign_main`): when `is_overspeed = has_limit and round(speed_limit_final_last) < round(speed)`, the on-screen limit sign turns **red** — a **visual** cue (no chime found in the UI code). It requires `has_limit = speed_limit_valid or speed_limit_last_valid`, so with no valid limit the sign is grey ("---") and there is no warning.
+- **Source / Policy**: `car_state_only`, `map_data_only`, `car_state_priority`, `map_data_priority`, `combined` (4 — both car + map). The **car** source reads `carStateSP.speedLimit` (`resolver._get_from_car_state`) — an SP field the port's `carstate.py` must populate from a CAN TSR signal (base `car.capnp` has no `speedLimit`). The **map** source reads `liveMapDataSP.speedLimit`/`speedLimitAhead` from `mapd`/`navd` (OSM), gated on GPS-fix age.
+  - **PSA 3008: the car source is empty.** `psa/carstate.py` sets no speed-limit field, so `carStateSP.speedLimit = 0` — with `combined`, only the **map** source actually contributes. To enable the car source you'd need the 3008 to broadcast a speed-limit/TSR signal on CAN and parse it into `ret_sp.speedLimit`.
+  - **Reference implementations** (brands that fill `ret_sp.speedLimit`): `opendbc/sunnypilot/car/{hyundai,toyota,tesla}/carstate_ext.py`. Hyundai's `update_speed_limit` reads the camera TSR (`LKAS12.CF_Lkas_TsrSpeed_Display_Clu`) or nav head-unit (`Navi_HU.SpeedLim_Nav_Clu`) on legacy CAN, or `FR_CMR_02_100ms.ISLW_SpdCluMainDis` on CAN-FD, treats 0/255 as "no data", then `ret_sp.speedLimit = value * speed_conv`. It's gated behind SP flags (`SPEED_LIMIT_AVAILABLE`, `HAS_LKAS12`).
+- **Offset**: `OffsetType` `off`/`fixed`/`percentage`; final target = `speed_limit + offset` (percentage → `value% × limit`).
+
+**Availability depends on openpilot longitudinal** (`helpers.set_speed_limit_assist_availability`): if `not CP.openpilotLongitudinalControl and CP_SP.pcmCruiseSpeed`, SLC is **not allowed to actuate** and any `assist` mode is auto-downgraded to `warning`. So on cars where openpilot does not control longitudinal — **including the PSA 3008** (`openpilotLongitudinalControl` off, stock ACC) — SLC can only **inform/warn**, never slow the car. See [../entities/psa-peugeot-3008.md](../entities/psa-peugeot-3008.md).
 
 ## Related
 

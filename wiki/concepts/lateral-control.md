@@ -120,3 +120,4 @@ Whatever torque the controller asks for, the panda [safety model](safety-model.m
 - [runtime-pipeline.md](runtime-pipeline.md) — where controlsd/torqued/lagd sit and their messages.
 - [car-interface-contract.md](car-interface-contract.md) — `steerControlType` and where tuning is set.
 - [../entities/psa-peugeot-3008.md](../entities/psa-peugeot-3008.md) — the torque→CAN side and EPS state machine.
+- [../entities/psa-3008-torque-oscillation-2026-07.md](../entities/psa-3008-torque-oscillation-2026-07.md) — field case study: how a nonlinear actuator gain + mis-reported `actuatorsOutput.torque` corrupts torqued's friction learning and produces a 0.5–0.7 Hz lane-center limit cycle.

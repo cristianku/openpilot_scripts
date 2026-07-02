@@ -34,6 +34,8 @@ Diagrams (Mermaid): dependency + fork-lineage graphs in [sources/openpilot_sunny
 ## Entities (concrete things)
 
 - [entities/psa-peugeot-3008.md](entities/psa-peugeot-3008.md) — Cristian's Peugeot 3008 port.
+- [entities/psa-3008-torque-oscillation-2026-07.md](entities/psa-3008-torque-oscillation-2026-07.md) — lane-center weave analysis from device rlogs: quadratic torque-factor gain + mis-reported actuator torque → corrupted torqued friction → 0.5–0.7 Hz limit cycle; recommended fixes.
+- [entities/psa-3008-can-reverse-engineering.md](entities/psa-3008-can-reverse-engineering.md) — CAN findings beyond the DBC: stock camera LKA (`0x3F2`) behavior, ACC setpoint/HMI mirrors, odometer/speed fields, and the negative TSR result (recognized speed limit not on harness-visible buses).
 
 ## Operational runbook (Cristian's fork/branch/device workflow)
 

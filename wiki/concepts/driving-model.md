@@ -47,7 +47,8 @@ Both are smoothed (`LAT_SMOOTH_SECONDS` / `LONG_SMOOTH_SECONDS`) against the pre
 
 ## sunnypilot specifics
 
-- **Model selection**: `sunnypilot/` adds `models/` + `modeld_v2/` and a **model manager** (`models_manager`) so the driving model file is selectable/downloadable (`modelManagerSP`). Base modeld stays the runner.
+- **Model selection**: `sunnypilot/` adds `models/` + `modeld_v2/` and a **model manager** (`models_manager`, `sunnypilot/models/{manager,fetcher}.py`) so the driving model file is selectable/downloadable from a remote catalog (`modelManagerSP`). Base modeld stays the runner. Selection is fingerprint-independent — it doesn't touch the opendbc car port or the lateral controller/NNLC.
+- **Default model**: `sunnypilot/models/model_name.py` → `DEFAULT_MODEL` (currently **`CD210`**). Concretely it's the on-policy pair bundled with the release: `selfdrive/modeld/models/driving_vision.onnx` (vision) + `driving_on_policy.onnx` (policy), with a combined hash in `models/tests/model_hash`. "CD210" is sunnypilot's codename for that bundle; the repo carries the name + weights + hash but **no lineage/region metadata** (that's community/release-notes territory).
 - **NNLC is separate**: the neural-network *lateral control* ([lateral-control.md](lateral-control.md)) is a torque model, not this driving model — don't conflate them.
 - `driverMonitoringState` comes from a **separate** net, `dmonitoringmodeld`, not this one.
 
