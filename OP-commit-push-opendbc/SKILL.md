@@ -1,5 +1,5 @@
 ---
-name: commit-push-opendbc
+name: OP-commit-push-opendbc
 description: Commit and push the current changes in Cristian's opendbc repo (cristianku/opendbc) on the current feature branch. Use when asked to commit and push opendbc / PSA / Peugeot changes.
 ---
 

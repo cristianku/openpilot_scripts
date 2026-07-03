@@ -1,5 +1,5 @@
 ---
-name: reset-comma-learned-params
+name: OP-reset-comma-learned-params
 description: Reset the learned lateral-tuning params on Cristian's comma device (LiveDelay, LiveTorqueParameters, LiveParametersV2) so lagd/torqued relearn from the offline opendbc values. Use after changing steerActuatorDelay, torque_data/override.toml, or anything that alters the steering plant (e.g. torque factor logic). Keeps user toggles and camera calibration.
 ---
 

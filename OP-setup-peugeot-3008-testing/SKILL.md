@@ -1,5 +1,5 @@
 ---
-name: setup-peugeot-3008-testing
+name: OP-setup-peugeot-3008-testing
 description: Prepare Cristian's Peugeot 3008 testing workspace from current upstream master, point opendbc to the matching custom testing branch, and for Sunny point neural network data to Cristian's neural-network-data master branch. Use variant comma for peugeot-3008-testing or sunny for peugeot-3008-sunny-testing.
 ---
 
@@ -12,7 +12,7 @@ Use the bundled Peugeot 3008 testing setup workflow.
 - `comma`: use openpilot and opendbc branch `peugeot-3008-testing`.
 - `sunny`: use openpilot and opendbc branch `peugeot-3008-sunny-testing`.
 
-Default to `comma` only when the user does not specify a variant. Use the separate `setup-peugeot-3008` skill for stable branches.
+Default to `comma` only when the user does not specify a variant. Use the separate `OP-setup-peugeot-3008` skill for stable branches.
 
 ## Workflow
 
