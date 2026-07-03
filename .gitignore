@@ -1,0 +1,4 @@
+# drive logs pulled from the comma device (download-comma-logs skill) + CSV exports
+# (README.md is the only tracked file in there)
+comma_logs/*
+!comma_logs/README.md
