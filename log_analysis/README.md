@@ -19,7 +19,14 @@ uv run route_report.py --last            # single-route report
 uv run route_report.py --last --json     # same, machine-readable
 uv run route_report.py --list            # locally available routes
 uv run compare_routes.py <routeA> <routeB> [--json]   # A/B after a tuning change
+uv run torque_clamp_check.py             # is torqued clipped by override.toml?
 ```
+
+`torque_clamp_check.py` compares the learned latAccelFactor (device cache +
+route logs) against the offline override.toml — both the local checkout and
+the toml **deployed on the device** (the clamp is ±30% of the deployed value,
+`FACTOR_SANITY` in torqued.py). It prints a verdict with the recommended
+LAT_ACCEL_FACTOR and flags local-vs-deployed mismatches.
 
 Everything reads the CSVs under `comma_logs/csv/<route>/` (env override:
 `COMMA_LOGS_DIR`). If a route isn't converted yet, the scripts print the
