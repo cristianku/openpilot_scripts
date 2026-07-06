@@ -146,6 +146,40 @@ set_neural_network_data_pointer() {
   echo "Pointing ${submodule_path} to ${NEURAL_NETWORK_DATA_REPO} ${NEURAL_NETWORK_DATA_BRANCH} (${NEURAL_NETWORK_DATA_SHA})"
 }
 
+enable_psa_torqued_learning() {
+  # A fresh clone of upstream master ships torqued's ALLOWED_CARS gate without
+  # PSA, so torqued (live latAccelFactor/friction learning) stays disabled for
+  # the Peugeot 3008. Add 'psa' so the learner runs on the port. Idempotent.
+  local dest="$1"
+  local torqued="${dest}/selfdrive/locationd/torqued.py"
+
+  if [[ ! -f "${torqued}" ]]; then
+    echo "ERROR: torqued.py not found at ${torqued}" >&2
+    exit 1
+  fi
+
+  if grep -Eq "^ALLOWED_CARS *=.*['\"]psa['\"]" "${torqued}"; then
+    echo "torqued ALLOWED_CARS already includes psa; nothing to do"
+    return
+  fi
+
+  if ! grep -Eq "^ALLOWED_CARS *= *\[.*\]" "${torqued}"; then
+    echo "ERROR: could not find ALLOWED_CARS list in ${torqued}" >&2
+    exit 1
+  fi
+
+  sed -i.bak -E "s/^(ALLOWED_CARS *= *\[[^]]*)\]/\1, 'psa']/" "${torqued}"
+  rm -f "${torqued}.bak"
+
+  if ! grep -Eq "^ALLOWED_CARS *=.*['\"]psa['\"]" "${torqued}"; then
+    echo "ERROR: failed to add psa to ALLOWED_CARS in ${torqued}" >&2
+    exit 1
+  fi
+
+  git -C "${dest}" add -- selfdrive/locationd/torqued.py
+  echo "Enabled PSA torque-param learning (added 'psa' to torqued ALLOWED_CARS)"
+}
+
 commit_and_push() {
   local dest="$1"
   local branch="$2"
@@ -180,6 +214,7 @@ main() {
 
   cd "${OPENPILOT_DIR}"
 
+  enable_psa_torqued_learning "."
   set_opendbc_pointer "." "${OPENDBC_REPO}" "${BRANCH}" "${OPENDBC_SOURCE_REPO}" "${OPENDBC_SOURCE_BRANCH}"
   set_neural_network_data_pointer "."
   commit_and_push "." "${BRANCH}" "${COMMIT_MESSAGE}" "${expected_remote_sha}"
