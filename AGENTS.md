@@ -42,6 +42,15 @@ A PSA / **Peugeot 3008** port of openpilot, maintained across a small set of for
 
 ## Conventions
 
+- **Every code change must be wrapped in topic-tagged block markers**: a comment at the beginning and end of each changed/added block, with a short tag (one or two lowercase words) saying what it's about — e.g. in Python:
+
+  ```python
+  # [torque] - START
+  ...changed code...
+  # [torque] - END
+  ```
+
+  Use the language's comment syntax (`#`, `//`, `<!-- -->`). If a change spans topics, pick the dominant one. Applies to all repos here (opendbc, openpilot_scripts, openpilot checkouts) — it keeps Cristian's custom modifications visible against upstream across rebases/merges.
 - Run skill wrappers by absolute path; never invoke `*_common.sh` directly.
 - Never force-push to opendbc via the commit skill; setup skills use `--force-with-lease` only on the mapped openpilot branch.
 - Keep submodule pointers as `160000 commit`. Stage only `.gitmodules`, `opendbc_repo`, and (sunny) `sunnypilot/neural_network_data`.
