@@ -25,8 +25,8 @@ The on-device openpilot lives at `/data/openpilot` and is a plain git checkout. 
 pull down an updated testing branch you fetch, move the checkout to the new tip, and
 refresh the submodules.
 
-**Important:** the Peugeot testing branches (`peugeot-3008-sunny-testing`,
-`peugeot-3008-testing`) are **force-pushed** by the setup skills, so their history is
+**Important:** the Peugeot testing branches (`psa-torque-sunny-testing`,
+`psa-torque-testing`) are **force-pushed** by the setup skills, so their history is
 rewritten. A plain `git pull` fails on divergence — you must `git fetch` +
 `git reset --hard`.
 
@@ -36,7 +36,7 @@ Do this **offroad** (`cat /data/params/d/IsOnroad` must be `0`):
 ssh comma
 cd /data/openpilot
 git fetch origin
-git reset --hard origin/peugeot-3008-sunny-testing   # force-pushed → reset, not pull
+git reset --hard origin/psa-torque-sunny-testing   # force-pushed → reset, not pull
 git submodule update --init --recursive               # updates opendbc_repo + neural_network_data
 scons -j$(nproc)                                       # rebuild (or let manager rebuild at boot)
 sudo reboot

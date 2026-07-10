@@ -5,12 +5,12 @@ variant="${1:-comma}"
 
 case "${variant}" in
   comma)
-    branch="peugeot-3008-testing"
-    source_branch="peugeot-3008"
+    branch="psa-torque-testing"
+    source_branch="psa-torque"
     ;;
   sunny)
-    branch="peugeot-3008-sunny-testing"
-    source_branch="peugeot-3008-sunny"
+    branch="psa-torque-sunny-testing"
+    source_branch="psa-torque-sunny"
     ;;
   *)
     echo "Usage: $0 [comma|sunny]" >&2
@@ -19,7 +19,7 @@ case "${variant}" in
 esac
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-common_script="${script_dir}/setup_peugeot_3008_common.sh"
+common_script="${script_dir}/setup_psa_torque_common.sh"
 
 if [[ ! -f "${common_script}" ]]; then
   echo "ERROR: missing ${common_script}" >&2

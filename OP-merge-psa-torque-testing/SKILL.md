@@ -1,6 +1,6 @@
 ---
-name: OP-merge-peugeot-3008-testing
-description: Promote Cristian's Peugeot 3008 opendbc testing branch by merging peugeot-3008-testing into peugeot-3008, validating the PSA port, pushing stable safely, and refreshing the matching openpilot opendbc pointer. Use when the non-sunny Peugeot testing changes are ready for stable.
+name: OP-merge-psa-torque-testing
+description: Promote Cristian's Peugeot 3008 opendbc testing branch by merging psa-torque-testing into psa-torque, validating the PSA port, pushing stable safely, and refreshing the matching openpilot opendbc pointer. Use when the non-sunny Peugeot testing changes are ready for stable.
 ---
 
 # Merge Peugeot 3008 Testing
@@ -9,12 +9,12 @@ Promote the non-sunny Peugeot 3008 opendbc testing branch to stable. Never merge
 
 ## Workflow
 
-1. Run the bundled script by absolute path: `scripts/merge_peugeot_3008.sh`.
+1. Run the bundled script by absolute path: `scripts/merge_psa_torque.sh`.
 2. Let the script recreate its dedicated opendbc merge workspace.
-3. Merge `peugeot-3008-testing` into `peugeot-3008` with a merge commit.
+3. Merge `psa-torque-testing` into `psa-torque` with a merge commit.
 4. Require the Peugeot 3008 interface tests and PSA safety tests to pass before pushing.
-5. Push `peugeot-3008` with a lease protecting the previously observed remote SHA.
-6. Run the `comma` variant of `OP-setup-peugeot-3008` to refresh `peugeot-3008` in openpilot.
+5. Push `psa-torque` with a lease protecting the previously observed remote SHA.
+6. Run the `comma` variant of `OP-setup-psa-torque` to refresh `psa-torque` in openpilot.
 7. Report the opendbc merge commit and resulting openpilot pointer commit.
 
 ## Safety

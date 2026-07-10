@@ -1,4 +1,4 @@
 interface:
   display_name: "Merge Peugeot 3008 Testing"
   short_description: "Promote Peugeot testing changes safely"
-  default_prompt: "Use $merge-peugeot-3008-testing to merge the Peugeot 3008 testing branch into stable and refresh openpilot."
+  default_prompt: "Use $merge-psa-torque-testing to merge the Peugeot 3008 testing branch into stable and refresh openpilot."

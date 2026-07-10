@@ -5,7 +5,7 @@ BRANCH="${BRANCH:?BRANCH must be set}"
 GITHUB_USER="${GITHUB_USER:-cristianku}"
 WORKSPACE_ROOT="${WORKSPACE_ROOT:-/Users/cristianku/GitHub/COMMA.AI/CRISTIANKU}"
 
-branch_suffix="${BRANCH#peugeot-3008}"
+branch_suffix="${BRANCH#psa-torque}"
 branch_suffix="${branch_suffix#-}"
 dir_branch_suffix="${branch_suffix//-/_}"
 dir_suffix="${dir_branch_suffix:+_${dir_branch_suffix}}"
@@ -15,7 +15,7 @@ if [[ -n "${branch_suffix}" ]]; then
 title_suffix=" $(printf '%s' "${title_branch_suffix}" | awk '{ print toupper(substr($0, 1, 1)) substr($0, 2) }')"
 fi
 
-OPENPILOT_DIR="${OPENPILOT_DIR:-new_openpilot_peugeot_3008${dir_suffix}}"
+OPENPILOT_DIR="${OPENPILOT_DIR:-new_openpilot_psa_torque${dir_suffix}}"
 
 OPENPILOT_REPO="${OPENPILOT_REPO:-https://github.com/${GITHUB_USER}/openpilot.git}"
 OPENPILOT_SOURCE_REPO="${OPENPILOT_SOURCE_REPO:-https://github.com/commaai/openpilot.git}"

@@ -4,10 +4,10 @@
 
 | Workflow | Variant | Upstream source | openpilot branch | opendbc branch |
 | --- | --- | --- | --- | --- |
-| Stable | `comma` | `commaai/openpilot:master` | `peugeot-3008` | `peugeot-3008` |
-| Stable | `sunny` | `sunnypilot/sunnypilot:master` | `peugeot-3008-sunny` | `peugeot-3008-sunny` |
-| Testing | `comma` | `commaai/openpilot:master` | `peugeot-3008-testing` | `peugeot-3008-testing` |
-| Testing | `sunny` | `sunnypilot/sunnypilot:master` | `peugeot-3008-sunny-testing` | `peugeot-3008-sunny-testing` |
+| Stable | `comma` | `commaai/openpilot:master` | `psa-torque` | `psa-torque` |
+| Stable | `sunny` | `sunnypilot/sunnypilot:master` | `psa-torque-sunny` | `psa-torque-sunny` |
+| Testing | `comma` | `commaai/openpilot:master` | `psa-torque-testing` | `psa-torque-testing` |
+| Testing | `sunny` | `sunnypilot/sunnypilot:master` | `psa-torque-sunny-testing` | `psa-torque-sunny-testing` |
 
 Testing branches are where changes are validated. Once ready, the merge skills promote testing → stable in opendbc, then refresh the matching openpilot pointer. `master`/`main` are protected — the commit/push skill refuses to act on them.
 

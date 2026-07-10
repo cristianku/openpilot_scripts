@@ -2,29 +2,29 @@
 
 Each skill directory contains a `SKILL.md` manifest and a `scripts/` implementation. Run the wrapper script, never the `_common.sh` directly. See the repo `README.md` for how to install them as Codex skills (symlink into `~/.agents/skills/`).
 
-## setup-peugeot-3008 (stable)
+## setup-psa-torque (stable)
 
-Recreates the mapped local openpilot folder from current upstream `master`, recreates the custom **stable** branch (`peugeot-3008` / `peugeot-3008-sunny`) from that HEAD, points `.gitmodules` to `cristianku/opendbc`, sets the `opendbc_repo` gitlink to the matching opendbc branch commit, and for `sunny` points `sunnypilot/neural_network_data` to `cristianku/neural-network-data:master`. Pushes with `--force-with-lease`. Does not commit inside opendbc or touch panda.
+Recreates the mapped local openpilot folder from current upstream `master`, recreates the custom **stable** branch (`psa-torque` / `psa-torque-sunny`) from that HEAD, points `.gitmodules` to `cristianku/opendbc`, sets the `opendbc_repo` gitlink to the matching opendbc branch commit, and for `sunny` points `sunnypilot/neural_network_data` to `cristianku/neural-network-data:master`. Pushes with `--force-with-lease`. Does not commit inside opendbc or touch panda.
 
 ```bash
-./setup-peugeot-3008/scripts/setup_peugeot_3008.sh comma   # or: sunny
+./setup-psa-torque/scripts/setup_psa_torque.sh comma   # or: sunny
 ```
 
-## setup-peugeot-3008-testing (testing)
+## setup-psa-torque-testing (testing)
 
-Same as above but for the **testing** branches (`peugeot-3008-testing` / `peugeot-3008-sunny-testing`).
+Same as above but for the **testing** branches (`psa-torque-testing` / `psa-torque-sunny-testing`).
 
 ```bash
-./setup-peugeot-3008-testing/scripts/setup_peugeot_3008.sh comma   # or: sunny
+./setup-psa-torque-testing/scripts/setup_psa_torque.sh comma   # or: sunny
 ```
 
-## merge-peugeot-3008-testing / merge-peugeot-3008-sunny-testing (promote)
+## merge-psa-torque-testing / merge-psa-torque-sunny-testing (promote)
 
-Promote opendbc testing → stable: recreate a dedicated opendbc merge workspace, merge `*-testing` into stable with a merge commit, require Peugeot 3008 interface tests + PSA safety tests to pass, push stable with a lease protecting the previously observed remote SHA, then run the matching stable `setup-peugeot-3008` variant to refresh the openpilot pointer. Only operates on `cristianku/opendbc`; never merges openpilot branches into each other.
+Promote opendbc testing → stable: recreate a dedicated opendbc merge workspace, merge `*-testing` into stable with a merge commit, require Peugeot 3008 interface tests + PSA safety tests to pass, push stable with a lease protecting the previously observed remote SHA, then run the matching stable `setup-psa-torque` variant to refresh the openpilot pointer. Only operates on `cristianku/opendbc`; never merges openpilot branches into each other.
 
 ```bash
-./merge-peugeot-3008-testing/scripts/merge_peugeot_3008.sh
-./merge-peugeot-3008-sunny-testing/scripts/merge_peugeot_3008.sh
+./merge-psa-torque-testing/scripts/merge_psa_torque.sh
+./merge-psa-torque-sunny-testing/scripts/merge_psa_torque.sh
 ```
 
 ## commit-push-opendbc

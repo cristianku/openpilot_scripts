@@ -23,14 +23,14 @@ A PSA / **Peugeot 3008** port of openpilot, maintained across a small set of for
 
 | Variant | Upstream | openpilot / opendbc branch (stable) | (testing) |
 | --- | --- | --- | --- |
-| `comma` | `commaai/openpilot:master` | `peugeot-3008` | `peugeot-3008-testing` |
-| `sunny` | `sunnypilot/sunnypilot:master` | `peugeot-3008-sunny` | `peugeot-3008-sunny-testing` |
+| `comma` | `commaai/openpilot:master` | `psa-torque` | `psa-torque-testing` |
+| `sunny` | `sunnypilot/sunnypilot:master` | `psa-torque-sunny` | `psa-torque-sunny-testing` |
 
 ## Typical workflow
 
 1. Edit the port in `opendbc` on a testing branch → `commit-push-opendbc`.
-2. Refresh the openpilot testing checkout/pointer → `setup-peugeot-3008-testing <variant>`.
-3. When validated, promote testing → stable → `merge-peugeot-3008-testing` / `merge-peugeot-3008-sunny-testing` (runs PSA safety + interface tests, pushes stable with a lease, refreshes the openpilot stable pointer).
+2. Refresh the openpilot testing checkout/pointer → `setup-psa-torque-testing <variant>`.
+3. When validated, promote testing → stable → `merge-psa-torque-testing` / `merge-psa-torque-sunny-testing` (runs PSA safety + interface tests, pushes stable with a lease, refreshes the openpilot stable pointer).
 
 ## Docs index
 

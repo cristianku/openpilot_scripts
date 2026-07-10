@@ -11,7 +11,7 @@ Workspace root: `/Users/cristianku/GitHub/COMMA.AI/CRISTIANKU`
 
 ## Ephemeral setup-scratch folders (do NOT edit or treat as durable)
 
-The `new_openpilot_peugeot_3008`, `new_openpilot_peugeot_3008_sunny`, `new_openpilot_peugeot_3008_testing`, and `new_openpilot_peugeot_3008_sunny_testing` folders under the workspace root are **throwaway scratch checkouts**. The setup skills delete and recreate the mapped one on every run, purely to rebuild openpilot from upstream `master` and bump the `opendbc_repo` (and, sunny, `neural_network_data`) submodule pointer. Their branch/HEAD state is not meaningful and never needs restoring.
+The `new_openpilot_psa_torque`, `new_openpilot_psa_torque_sunny`, `new_openpilot_psa_torque_testing`, and `new_openpilot_psa_torque_sunny_testing` folders under the workspace root are **throwaway scratch checkouts**. The setup skills delete and recreate the mapped one on every run, purely to rebuild openpilot from upstream `master` and bump the `opendbc_repo` (and, sunny, `neural_network_data`) submodule pointer. Their branch/HEAD state is not meaningful and never needs restoring.
 
 The **durable** full openpilot checkout is `SUNNYPILOT/openpilot_sunny` (the 4th folder in `opendbc.code-workspace`) — that is the one to read/develop against. See [../wiki/sources/openpilot_sunny.md](../wiki/sources/openpilot_sunny.md).
 

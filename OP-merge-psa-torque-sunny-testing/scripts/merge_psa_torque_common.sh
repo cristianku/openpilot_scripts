@@ -15,7 +15,7 @@ SKIP_TESTS="${SKIP_TESTS:-false}"
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 skill_dir="$(cd "${script_dir}/.." && pwd)"
-SETUP_SCRIPT="${SETUP_SCRIPT:-${skill_dir}/../setup-peugeot-3008/scripts/setup_peugeot_3008.sh}"
+SETUP_SCRIPT="${SETUP_SCRIPT:-${skill_dir}/../setup-psa-torque/scripts/setup_psa_torque.sh}"
 
 remote_branch_sha() {
   local branch="$1"

@@ -1,6 +1,6 @@
 ---
-name: OP-merge-peugeot-3008-sunny-testing
-description: Promote Cristian's sunny Peugeot 3008 opendbc testing branch by merging peugeot-3008-sunny-testing into peugeot-3008-sunny, validating the PSA port, pushing stable safely, and refreshing the matching sunny openpilot opendbc pointer. Use when the sunny Peugeot testing changes are ready for stable.
+name: OP-merge-psa-torque-sunny-testing
+description: Promote Cristian's sunny Peugeot 3008 opendbc testing branch by merging psa-torque-sunny-testing into psa-torque-sunny, validating the PSA port, pushing stable safely, and refreshing the matching sunny openpilot opendbc pointer. Use when the sunny Peugeot testing changes are ready for stable.
 ---
 
 # Merge Peugeot 3008 Sunny Testing
@@ -9,12 +9,12 @@ Promote the sunny Peugeot 3008 opendbc testing branch to stable. Never merge the
 
 ## Workflow
 
-1. Run the bundled script by absolute path: `scripts/merge_peugeot_3008.sh`.
+1. Run the bundled script by absolute path: `scripts/merge_psa_torque.sh`.
 2. Let the script recreate its dedicated opendbc merge workspace.
-3. Merge `peugeot-3008-sunny-testing` into `peugeot-3008-sunny` with a merge commit.
+3. Merge `psa-torque-sunny-testing` into `psa-torque-sunny` with a merge commit.
 4. Require the Peugeot 3008 interface tests and PSA safety tests to pass before pushing.
-5. Push `peugeot-3008-sunny` with a lease protecting the previously observed remote SHA.
-6. Run the `sunny` variant of `OP-setup-peugeot-3008` to refresh `peugeot-3008-sunny` in openpilot.
+5. Push `psa-torque-sunny` with a lease protecting the previously observed remote SHA.
+6. Run the `sunny` variant of `OP-setup-psa-torque` to refresh `psa-torque-sunny` in openpilot.
 7. Report the opendbc merge commit and resulting openpilot pointer commit.
 
 ## Safety

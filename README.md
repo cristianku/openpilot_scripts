@@ -4,10 +4,10 @@ These scripts prepare Cristian's Peugeot 3008 openpilot workspaces and update on
 
 ## Layout
 
-- `setup-peugeot-3008/`: creates or refreshes the stable Peugeot branches.
-- `setup-peugeot-3008-testing/`: creates or refreshes the testing Peugeot branches.
-- `merge-peugeot-3008-testing/`: promotes `peugeot-3008-testing` into `peugeot-3008` in opendbc.
-- `merge-peugeot-3008-sunny-testing/`: promotes `peugeot-3008-sunny-testing` into `peugeot-3008-sunny` in opendbc.
+- `setup-psa-torque/`: creates or refreshes the stable Peugeot branches.
+- `setup-psa-torque-testing/`: creates or refreshes the testing Peugeot branches.
+- `merge-psa-torque-testing/`: promotes `psa-torque-testing` into `psa-torque` in opendbc.
+- `merge-psa-torque-sunny-testing/`: promotes `psa-torque-sunny-testing` into `psa-torque-sunny` in opendbc.
 
 Each skill stores its wrapper and shared implementation under `scripts/`. Run the wrapper, not the `_common.sh` file directly.
 
@@ -29,20 +29,20 @@ Use this option to make both skills available in every repository opened with Co
 
 ```bash
 mkdir -p "$HOME/.agents/skills"
-ln -s "$PWD/setup-peugeot-3008" "$HOME/.agents/skills/setup-peugeot-3008"
-ln -s "$PWD/setup-peugeot-3008-testing" "$HOME/.agents/skills/setup-peugeot-3008-testing"
-ln -s "$PWD/merge-peugeot-3008-testing" "$HOME/.agents/skills/merge-peugeot-3008-testing"
-ln -s "$PWD/merge-peugeot-3008-sunny-testing" "$HOME/.agents/skills/merge-peugeot-3008-sunny-testing"
+ln -s "$PWD/setup-psa-torque" "$HOME/.agents/skills/setup-psa-torque"
+ln -s "$PWD/setup-psa-torque-testing" "$HOME/.agents/skills/setup-psa-torque-testing"
+ln -s "$PWD/merge-psa-torque-testing" "$HOME/.agents/skills/merge-psa-torque-testing"
+ln -s "$PWD/merge-psa-torque-sunny-testing" "$HOME/.agents/skills/merge-psa-torque-sunny-testing"
 ```
 
 The resulting layout is:
 
 ```text
 ~/.agents/skills/
-├── setup-peugeot-3008 -> /absolute/path/openpilot_scripts/setup-peugeot-3008
-├── setup-peugeot-3008-testing -> /absolute/path/openpilot_scripts/setup-peugeot-3008-testing
-├── merge-peugeot-3008-testing -> /absolute/path/openpilot_scripts/merge-peugeot-3008-testing
-└── merge-peugeot-3008-sunny-testing -> /absolute/path/openpilot_scripts/merge-peugeot-3008-sunny-testing
+├── setup-psa-torque -> /absolute/path/openpilot_scripts/setup-psa-torque
+├── setup-psa-torque-testing -> /absolute/path/openpilot_scripts/setup-psa-torque-testing
+├── merge-psa-torque-testing -> /absolute/path/openpilot_scripts/merge-psa-torque-testing
+└── merge-psa-torque-sunny-testing -> /absolute/path/openpilot_scripts/merge-psa-torque-sunny-testing
 ```
 
 ### Install for one repository only
@@ -51,20 +51,20 @@ Use repository-scoped skills when they should only be available while working in
 
 ```bash
 mkdir -p .agents/skills
-ln -s /absolute/path/openpilot_scripts/setup-peugeot-3008 .agents/skills/setup-peugeot-3008
-ln -s /absolute/path/openpilot_scripts/setup-peugeot-3008-testing .agents/skills/setup-peugeot-3008-testing
-ln -s /absolute/path/openpilot_scripts/merge-peugeot-3008-testing .agents/skills/merge-peugeot-3008-testing
-ln -s /absolute/path/openpilot_scripts/merge-peugeot-3008-sunny-testing .agents/skills/merge-peugeot-3008-sunny-testing
+ln -s /absolute/path/openpilot_scripts/setup-psa-torque .agents/skills/setup-psa-torque
+ln -s /absolute/path/openpilot_scripts/setup-psa-torque-testing .agents/skills/setup-psa-torque-testing
+ln -s /absolute/path/openpilot_scripts/merge-psa-torque-testing .agents/skills/merge-psa-torque-testing
+ln -s /absolute/path/openpilot_scripts/merge-psa-torque-sunny-testing .agents/skills/merge-psa-torque-sunny-testing
 ```
 
 Replace `/absolute/path/openpilot_scripts` with the actual clone location. Do not commit machine-specific absolute symlinks unless every contributor uses the same path.
 
 Codex normally detects skill changes automatically. If they do not appear, restart the Codex extension or VS Code. In Codex chat, run `/skills` or type `$` to select:
 
-- `$setup-peugeot-3008`
-- `$setup-peugeot-3008-testing`
-- `$merge-peugeot-3008-testing`
-- `$merge-peugeot-3008-sunny-testing`
+- `$setup-psa-torque`
+- `$setup-psa-torque-testing`
+- `$merge-psa-torque-testing`
+- `$merge-psa-torque-sunny-testing`
 
 After installation, updating this repository with `git pull` also updates the symlinked skills.
 
@@ -73,27 +73,27 @@ After installation, updating this repository with `git pull` also updates the sy
 Stable comma.ai variant:
 
 ```bash
-./setup-peugeot-3008/scripts/setup_peugeot_3008.sh comma
+./setup-psa-torque/scripts/setup_psa_torque.sh comma
 ```
 
 Stable sunnypilot variant for comma 4:
 
 ```bash
-./setup-peugeot-3008/scripts/setup_peugeot_3008.sh sunny
+./setup-psa-torque/scripts/setup_psa_torque.sh sunny
 ```
 
 Testing variants:
 
 ```bash
-./setup-peugeot-3008-testing/scripts/setup_peugeot_3008.sh comma
-./setup-peugeot-3008-testing/scripts/setup_peugeot_3008.sh sunny
+./setup-psa-torque-testing/scripts/setup_psa_torque.sh comma
+./setup-psa-torque-testing/scripts/setup_psa_torque.sh sunny
 ```
 
 Promote tested opendbc changes to stable and then refresh the matching openpilot submodule pointer:
 
 ```bash
-./merge-peugeot-3008-testing/scripts/merge_peugeot_3008.sh
-./merge-peugeot-3008-sunny-testing/scripts/merge_peugeot_3008.sh
+./merge-psa-torque-testing/scripts/merge_psa_torque.sh
+./merge-psa-torque-sunny-testing/scripts/merge_psa_torque.sh
 ```
 
 The merge skills operate only on `cristianku/opendbc`. They validate the Peugeot interface and PSA safety tests before pushing the stable opendbc branch, then invoke the corresponding stable setup skill. They never merge generated openpilot testing branches into stable openpilot branches.
@@ -102,10 +102,10 @@ The merge skills operate only on `cristianku/opendbc`. They validate the Peugeot
 
 | Workflow | Variant | Upstream source | openpilot branch | opendbc branch |
 | --- | --- | --- | --- | --- |
-| Stable | `comma` | `commaai/openpilot:master` | `peugeot-3008` | `peugeot-3008` |
-| Stable | `sunny` | `sunnypilot/sunnypilot:master` | `peugeot-3008-sunny` | `peugeot-3008-sunny` |
-| Testing | `comma` | `commaai/openpilot:master` | `peugeot-3008-testing` | `peugeot-3008-testing` |
-| Testing | `sunny` | `sunnypilot/sunnypilot:master` | `peugeot-3008-sunny-testing` | `peugeot-3008-sunny-testing` |
+| Stable | `comma` | `commaai/openpilot:master` | `psa-torque` | `psa-torque` |
+| Stable | `sunny` | `sunnypilot/sunnypilot:master` | `psa-torque-sunny` | `psa-torque-sunny` |
+| Testing | `comma` | `commaai/openpilot:master` | `psa-torque-testing` | `psa-torque-testing` |
+| Testing | `sunny` | `sunnypilot/sunnypilot:master` | `psa-torque-sunny-testing` | `psa-torque-sunny-testing` |
 
 ## Master source handling
 
@@ -142,7 +142,7 @@ The main overrides are:
 Example:
 
 ```bash
-WORKSPACE_ROOT="$HOME/GitHub" ./setup-peugeot-3008/scripts/setup_peugeot_3008.sh sunny
+WORKSPACE_ROOT="$HOME/GitHub" ./setup-psa-torque/scripts/setup_psa_torque.sh sunny
 ```
 
 ## Safety behavior

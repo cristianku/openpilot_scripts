@@ -41,4 +41,4 @@ Our port lives in `car/psa/` → [../entities/psa-peugeot-3008.md](../entities/p
 ## Notes
 
 - The fork adds the Peugeot 3008 platform; branches map per [../../docs/branches-and-submodules.md](../../docs/branches-and-submodules.md).
-- `master` here diverges from upstream only by the PSA additions on the `peugeot-3008*` branches.
+- `master` here diverges from upstream only by the PSA additions on the `psa-torque*` branches.

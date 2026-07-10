@@ -79,7 +79,7 @@ Resolves a model by fuzzy-matching `car_fingerprint` (optionally `+ eps_fw`) aga
 
 ### PSA 3008 status
 
-`PSA_PEUGEOT_3008.json` exists **only in `cristianku/neural-network-data`** (not in sunnypilot upstream), so it is present only on the `peugeot-3008-sunny*` branches that wire the submodule to Cristian's data repo ([../../docs/branches-and-submodules.md](../../docs/branches-and-submodules.md)). On a vanilla sunnypilot the 3008 would fall back to MOCK/substitute. When `NeuralNetworkLateralControl` is off, the model matches but is inactive, and the base controller (v0, above) runs with live `torqued`/`lagd` learning.
+`PSA_PEUGEOT_3008.json` exists **only in `cristianku/neural-network-data`** (not in sunnypilot upstream), so it is present only on the `psa-torque-sunny*` branches that wire the submodule to Cristian's data repo ([../../docs/branches-and-submodules.md](../../docs/branches-and-submodules.md)). On a vanilla sunnypilot the 3008 would fall back to MOCK/substitute. When `NeuralNetworkLateralControl` is off, the model matches but is inactive, and the base controller (v0, above) runs with live `torqued`/`lagd` learning.
 
 ## Torque controller v0 vs v1 (sunnypilot)
 
