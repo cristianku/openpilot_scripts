@@ -151,12 +151,20 @@ enable_psa_torqued_learning() {
   # PSA, so torqued (live latAccelFactor/friction learning) stays disabled for
   # the Peugeot 3008. Add 'psa' so the learner runs on the port. Idempotent.
   local dest="$1"
-  local torqued="${dest}/selfdrive/locationd/torqued.py"
+  # [monorepo-layout] - START
+  # commaai master moved selfdrive/ under openpilot/ (monorepo restructure);
+  # sunnypilot master still uses the old top-level layout. Try new, then old.
+  local torqued_rel="openpilot/selfdrive/locationd/torqued.py"
+  if [[ ! -f "${dest}/${torqued_rel}" ]]; then
+    torqued_rel="selfdrive/locationd/torqued.py"
+  fi
+  local torqued="${dest}/${torqued_rel}"
 
   if [[ ! -f "${torqued}" ]]; then
-    echo "ERROR: torqued.py not found at ${torqued}" >&2
+    echo "ERROR: torqued.py not found under ${dest} (tried openpilot/selfdrive/locationd and selfdrive/locationd)" >&2
     exit 1
   fi
+  # [monorepo-layout] - END
 
   if grep -Eq "^ALLOWED_CARS *=.*['\"]psa['\"]" "${torqued}"; then
     echo "torqued ALLOWED_CARS already includes psa; nothing to do"
@@ -176,7 +184,9 @@ enable_psa_torqued_learning() {
     exit 1
   fi
 
-  git -C "${dest}" add -- selfdrive/locationd/torqued.py
+  # [monorepo-layout] - START
+  git -C "${dest}" add -- "${torqued_rel}"
+  # [monorepo-layout] - END
   echo "Enabled PSA torque-param learning (added 'psa' to torqued ALLOWED_CARS)"
 }
 
