@@ -152,18 +152,23 @@ enable_psa_torqued_learning() {
   # the Peugeot 3008. Add 'psa' so the learner runs on the port. Idempotent.
   local dest="$1"
   # [monorepo-layout] - START
-  # commaai master moved selfdrive/ under openpilot/ (monorepo restructure);
-  # sunnypilot master still uses the old top-level layout. Try new, then old.
-  local torqued_rel="openpilot/selfdrive/locationd/torqued.py"
-  if [[ ! -f "${dest}/${torqued_rel}" ]]; then
-    torqued_rel="selfdrive/locationd/torqued.py"
-  fi
-  local torqued="${dest}/${torqued_rel}"
-
-  if [[ ! -f "${torqued}" ]]; then
-    echo "ERROR: torqued.py not found under ${dest} (tried openpilot/selfdrive/locationd and selfdrive/locationd)" >&2
+  # commaai master moved selfdrive/ under openpilot/ (monorepo restructure), so
+  # the real file lives at openpilot/selfdrive/locationd/torqued.py. sunnypilot
+  # master keeps the OLD top-level selfdrive/ AND adds an openpilot/selfdrive
+  # SYMLINK back to it. A filesystem -f test follows that symlink, but then
+  # `git add openpilot/selfdrive/...` fails with "beyond a symbolic link".
+  # Ask git for the real tracked path instead: symlinks are stored as
+  # mode-120000 blobs, so `git ls-files` never expands them and returns only
+  # the real regular file (top-level for sunnypilot, openpilot/ for commaai).
+  local torqued_rel
+  torqued_rel="$(git -C "${dest}" ls-files \
+    | grep -E '(^|/)selfdrive/locationd/torqued\.py$' | head -n1)"
+  if [[ -z "${torqued_rel}" ]]; then
+    echo "ERROR: torqued.py not tracked under ${dest}" >&2
     exit 1
   fi
+  local torqued="${dest}/${torqued_rel}"
+  echo "Using torqued at ${torqued_rel}"
   # [monorepo-layout] - END
 
   if grep -Eq "^ALLOWED_CARS *=.*['\"]psa['\"]" "${torqued}"; then
