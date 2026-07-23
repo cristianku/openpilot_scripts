@@ -1,6 +1,6 @@
 ---
 name: OP-setup-psa-torque
-description: Prepare Cristian's stable Peugeot 3008 workspace from current upstream master, point opendbc to the matching custom branch, and for Sunny point neural network data to Cristian's neural-network-data master branch. Use variant comma for psa-torque or sunny for psa-torque-sunny.
+description: Prepare Cristian's stable Peugeot 3008 workspace from a FROZEN stable release tag (sunny v2026.002.001 / comma v0.11.1), point opendbc to the matching custom branch, and for Sunny point neural network data to Cristian's neural-network-data master branch. Builds on device (submodule pointers, no prebuilt) - NOT master HEAD (breaks) nor the prebuilt release-mici branch (strips SConstruct). Use variant comma for psa-torque or sunny for psa-torque-sunny.
 ---
 
 # Setup Peugeot 3008
