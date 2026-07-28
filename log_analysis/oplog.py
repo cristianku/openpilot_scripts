@@ -19,7 +19,7 @@ LOGS_DIR = Path(os.environ.get(
     "/Users/cristianku/GitHub/COMMA.AI/CRISTIANKU/openpilot_scripts/comma_logs"))
 
 CONVERT_HINT = (
-    "uv run ~/.claude/skills/comma-logs-to-csv/scripts/log_to_csv.py {route} "
+    "uv run ~/.claude/skills/OP-comma-logs-to-csv/scripts/log_to_csv.py {route} "
     "--types carState,carControl,controlsState,liveParameters,liveTorqueParameters,liveDelay"
 )
 

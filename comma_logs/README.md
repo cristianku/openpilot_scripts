@@ -7,11 +7,11 @@ Everything in this folder except this README is **gitignored** — logs are big
 ## How data gets here
 
 - **Download**: `download-comma-logs` skill
-  (`~/.claude/skills/download-comma-logs/scripts/download_logs.sh`)
+  (`~/.claude/skills/OP-download-comma-logs/scripts/download_logs.sh`)
   - `--last` only the most recent route, `--route <id>` a specific one,
     `--no-video` skip cameras, `--list` show what's on the device.
 - **Convert to CSV**: `comma-logs-to-csv` skill
-  (`uv run ~/.claude/skills/comma-logs-to-csv/scripts/log_to_csv.py --last`)
+  (`uv run ~/.claude/skills/OP-comma-logs-to-csv/scripts/log_to_csv.py --last`)
 - **Analyze / A/B compare**: scripts in [`../log_analysis/`](../log_analysis/README.md)
   (`route_report.py`, `compare_routes.py` — oscillation metrics, learning state, `--json`)
 
