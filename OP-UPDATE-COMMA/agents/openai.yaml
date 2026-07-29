@@ -1,0 +1,6 @@
+# [comma update] - START
+interface:
+  display_name: "OP Update Comma"
+  short_description: "Aggiorna openpilot sul comma e riavvia"
+  default_prompt: "Usa $op-update-comma per aggiornare il branch attivo sul comma e riavviare il dispositivo."
+# [comma update] - END

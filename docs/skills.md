@@ -35,6 +35,17 @@ Stage/commit/push working changes in `cristianku/opendbc` on the current feature
 ./commit-push-opendbc/scripts/commit_push.sh "optional message"
 ```
 
+<!-- [comma update] - START -->
+## op-update-comma
+
+Aggiorna `/data/openpilot` sul dispositivo `comma` mantenendo branch e upstream attivi, accetta soltanto fast-forward, aggiorna ricorsivamente i submodule e riavvia soltanto dopo un aggiornamento riuscito. Rifiuta working tree sporchi, detached HEAD e branch divergenti.
+
+```bash
+./OP-UPDATE-COMMA/scripts/update_comma.sh comma
+./OP-UPDATE-COMMA/scripts/update_comma.sh --dry-run comma
+```
+<!-- [comma update] - END -->
+
 ## Common overrides
 
 `GITHUB_USER`, `WORKSPACE_ROOT`, `OPENPILOT_DIR`, `OPENPILOT_REPO`, `OPENPILOT_SOURCE_REPO`, `OPENPILOT_SOURCE_BRANCH`, `OPENDBC_REPO`, `OPENDBC_SOURCE_REPO`, `OPENDBC_SOURCE_BRANCH`, `NEURAL_NETWORK_DATA_REPO`, `NEURAL_NETWORK_DATA_BRANCH`, `COMMIT_MESSAGE`. Merge skills add `MERGE_DIR`, `SETUP_SCRIPT`, `MERGE_TEST_COMMAND`, and `SKIP_TESTS=true` (emergency only).
