@@ -2,10 +2,10 @@
 set -euo pipefail
 
 # ---------------------------------------------------------------------------
-# Master-based PSA setup (submodule pointers, builds on device).
+# Frozen-release PSA setup (submodule pointers, builds on device).
 #
-# Source is upstream MASTER (sunnypilot/sunnypilot or commaai/openpilot). This
-# is the approach that has always worked: master has SConstruct + all
+# Source is a configured full, buildable upstream release tag
+# (sunnypilot/sunnypilot or commaai/openpilot). The release source has SConstruct + all
 # SConscript, opendbc_repo / neural_network_data as real SUBMODULES, and NO
 # `prebuilt` marker, so the device compiles from source on first boot and our
 # torque-based psa.h lands in the panda firmware.
@@ -14,12 +14,11 @@ set -euo pipefail
 # sunnypilot's release-mici is prebuilt-only - it ships compiled binaries + a
 # `prebuilt` marker AND STRIPS the root SConstruct, so the device cannot
 # compile there ("No SConstruct file found") and our compiled psa.h can never
-# be deployed. So we stay on master (or, if a frozen base is ever wanted, a
-# release TAG like v2026.002.001, which is the full buildable source - just
-# pass it via OPENPILOT_SOURCE_BRANCH). Helpers below are layout-robust (ask
+# be deployed. We therefore stay on a frozen release tag like v2026.002.001,
+# which is the full buildable source. Helpers below are layout-robust (ask
 # git for real paths) so they work on both the old and new monorepo layout.
 # The device build takes ~15-20 min on first boot - the price for compiled
-# safety, same as master always did.
+# safety, the same way a source build does.
 # ---------------------------------------------------------------------------
 
 BRANCH="${BRANCH:?BRANCH must be set}"

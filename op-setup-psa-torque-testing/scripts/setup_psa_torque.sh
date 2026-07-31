@@ -26,7 +26,7 @@ if [[ ! -f "${common_script}" ]]; then
   exit 1
 fi
 
-# Source is a FROZEN stable release TAG (submodule-pointer mechanism, builds on
+# Source defaults to a FROZEN stable release TAG (submodule-pointer mechanism, builds on
 # device), NOT master HEAD. master HEAD kept breaking the device (stuck on logo,
 # 2026-07-23) because it moves under us mid-upstream-changes. The TAG is the
 # full buildable SOURCE of a shipped release: SConstruct + submodules + NO

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Setup PSA Torque Testing"
+  short_description: "Prepara i branch PSA torque di test"
+  default_prompt: "Usa $op-setup-psa-torque-testing per preparare il workspace PSA torque di test nella variante richiesta."

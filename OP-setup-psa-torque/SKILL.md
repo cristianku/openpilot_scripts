@@ -12,7 +12,7 @@ Use the bundled stable Peugeot 3008 setup workflow.
 - `comma`: use openpilot and opendbc branch `psa-torque`.
 - `sunny`: use openpilot and opendbc branch `psa-torque-sunny`.
 
-Default to `comma` only when the user does not specify a variant. Use the separate `OP-setup-psa-torque-testing` skill for testing branches.
+Default to `comma` only when the user does not specify a variant. Use the separate `op-setup-psa-torque-testing` skill for testing branches.
 
 ## Workflow
 

@@ -19,6 +19,21 @@ A PSA / **Peugeot 3008** port of openpilot, maintained across a small set of for
 - `panda` is never touched by any workflow here.
 - `master`/`main` are protected; work on the mapped feature branch.
 
+<!-- [authorization] - START -->
+## Change authorization — mandatory
+
+- **Default edit scope is `opendbc` only.** Do not modify generated openpilot/Sunnypilot checkouts, `openpilot_scripts`, `neural-network-data`, device files, or any other repository unless Cristian explicitly requests that exact scope.
+- **Never make a change merely because it appears useful.** Before editing code, configuration, scripts, documentation, branches, submodule pointers, or device state, tell Cristian exactly what will be changed and why, then wait for his explicit authorization.
+- Authorization is limited to the requested change. Do not add related refactors, cleanup, safety gates, behavior changes, alternative implementations, commits, pushes, deployments, updates, or reboots unless each action was explicitly requested.
+- Requests to inspect, analyze, explain, compare, check syntax, review logs, or answer a question are read-only and do **not** authorize modifications.
+- Preserve all existing user changes. If the worktree is dirty or the requested edit overlaps an existing modification, show the overlap before changing it.
+- After an authorized modification, report the exact files changed and summarize the effective behavior. Never claim that a change was made without verifying the resulting diff.
+
+When intent is uncertain, stop after read-only analysis and ask Cristian before writing anything.
+
+**Se fai modifiche per i cazzi tuoi senza prima informare Cristian e ottenere la sua autorizzazione esplicita, Cristian ti spacca i dentini.**
+<!-- [authorization] - END -->
+
 ## Branch mapping
 
 | Variant | Upstream | openpilot / opendbc branch (stable) | (testing) |
