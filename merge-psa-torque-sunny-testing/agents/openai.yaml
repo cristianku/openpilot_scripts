@@ -1,4 +1,4 @@
 interface:
-  display_name: "Merge Peugeot 3008 Sunny Testing"
-  short_description: "Promote sunny testing changes safely"
-  default_prompt: "Use $merge-psa-torque-sunny-testing to merge the sunny Peugeot testing branch into stable and refresh openpilot."
+  display_name: "Merge PSA Torque Sunny Testing"
+  short_description: "Promote Sunny PSA testing safely"
+  default_prompt: "Use $merge-psa-torque-sunny-testing to merge the Sunny PSA torque opendbc testing branch into stable without modifying testing or either openpilot branch."

@@ -3,7 +3,6 @@ set -euo pipefail
 
 STABLE_BRANCH="${STABLE_BRANCH:?STABLE_BRANCH must be set}"
 TESTING_BRANCH="${TESTING_BRANCH:?TESTING_BRANCH must be set}"
-SETUP_VARIANT="${SETUP_VARIANT:?SETUP_VARIANT must be set}"
 
 GITHUB_USER="${GITHUB_USER:-cristianku}"
 WORKSPACE_ROOT="${WORKSPACE_ROOT:-/Users/cristianku/GitHub/COMMA.AI/CRISTIANKU}"
@@ -12,10 +11,6 @@ MERGE_DIR="${MERGE_DIR:-merge_opendbc_${STABLE_BRANCH//-/_}}"
 COMMIT_MESSAGE="${COMMIT_MESSAGE:-Merge ${TESTING_BRANCH} into ${STABLE_BRANCH}}"
 MAX_EXAMPLES="${MAX_EXAMPLES:-5}"
 SKIP_TESTS="${SKIP_TESTS:-false}"
-
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-skill_dir="$(cd "${script_dir}/.." && pwd)"
-SETUP_SCRIPT="${SETUP_SCRIPT:-${skill_dir}/../setup-psa-torque/scripts/setup_psa_torque.sh}"
 
 remote_branch_sha() {
   local branch="$1"
@@ -39,16 +34,25 @@ run_tests() {
     return
   fi
 
-  echo "Running Peugeot 3008 interface tests"
+  if ! command -v uv >/dev/null 2>&1; then
+    echo "ERROR: uv is required to provision the clean merge test environment" >&2
+    exit 1
+  fi
+
+  local uv_cache_dir="${UV_CACHE_DIR:-/tmp/uv-cache-merge-psa-torque}"
+  local -a uv_test=(uv run --no-default-groups --with pytest --with "hypothesis==6.47.*" --with cffi python -m pytest -q)
+
+  echo "Running PSA interface tests"
   (
     cd "${repo_dir}"
-    MAX_EXAMPLES="${MAX_EXAMPLES}" python3 -m pytest -q       opendbc/car/tests/test_car_interfaces.py -k PSA_PEUGEOT_3008
+    UV_CACHE_DIR="${uv_cache_dir}" MAX_EXAMPLES="${MAX_EXAMPLES}" "${uv_test[@]}" \
+      opendbc/car/tests/test_car_interfaces.py -k PSA_PEUGEOT_3008
   )
 
   echo "Running PSA safety tests"
   (
     cd "${repo_dir}"
-    python3 -m pytest -q opendbc/safety/tests/test_psa.py
+    UV_CACHE_DIR="${uv_cache_dir}" "${uv_test[@]}" opendbc/safety/tests/test_psa.py
   )
 }
 
@@ -95,14 +99,6 @@ main() {
     git -C "${MERGE_DIR}" commit -m "${COMMIT_MESSAGE}"
     git -C "${MERGE_DIR}" push       --force-with-lease="refs/heads/${STABLE_BRANCH}:${stable_sha}" origin "${STABLE_BRANCH}"
   fi
-
-  if [[ ! -f "${SETUP_SCRIPT}" ]]; then
-    echo "ERROR: missing stable setup script: ${SETUP_SCRIPT}" >&2
-    exit 1
-  fi
-
-  echo "Refreshing the matching openpilot opendbc pointer"
-  /bin/bash "${SETUP_SCRIPT}" "${SETUP_VARIANT}"
 
   echo
   echo "Ready:"
