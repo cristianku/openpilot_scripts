@@ -270,7 +270,9 @@ main() {
   commit_and_push "." "${BRANCH}" "${COMMIT_MESSAGE}" "${expected_remote_sha}"
 
   echo
-  echo "Ready (source tag: ${OPENPILOT_SOURCE_BRANCH}, builds on device - no prebuilt):"
+  # [source] - START
+  echo "Ready (source ref: ${OPENPILOT_SOURCE_BRANCH}, builds on device - no prebuilt):"
+  # [source] - END
   echo "  ${WORKSPACE_ROOT}/${OPENPILOT_DIR}"
   echo "  ${WORKSPACE_ROOT}/${OPENPILOT_DIR}/opendbc_repo"
   if [[ "${USE_CUSTOM_NEURAL_NETWORK_DATA}" == "true" ]]; then

@@ -1,0 +1,6 @@
+# [skill] - START
+interface:
+  display_name: "Setup PSA Torque"
+  short_description: "Prepara i branch PSA torque stabili"
+  default_prompt: "Usa $op-setup-psa-torque per preparare il workspace PSA torque stabile nella variante richiesta."
+# [skill] - END

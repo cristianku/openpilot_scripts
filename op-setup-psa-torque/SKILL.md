@@ -1,6 +1,8 @@
 ---
-name: OP-setup-psa-torque
+# [skill] - START
+name: op-setup-psa-torque
 description: Prepare Cristian's stable Peugeot 3008 workspace from a FROZEN stable release tag (sunny v2026.002.001 / comma v0.11.1), point opendbc to the matching custom branch, and for Sunny point neural network data to Cristian's neural-network-data master branch. Builds on device (submodule pointers, no prebuilt) - NOT master HEAD (breaks) nor the prebuilt release-mici branch (strips SConstruct). Use variant comma for psa-torque or sunny for psa-torque-sunny.
+# [skill] - END
 ---
 
 # Setup Peugeot 3008
@@ -19,13 +21,17 @@ Default to `comma` only when the user does not specify a variant. Use the separa
 1. Determine the requested variant: `comma` or `sunny`.
 2. Resolve the directory containing this `SKILL.md`.
 3. Run the bundled wrapper by absolute path: `scripts/setup_psa_torque.sh <variant>`.
-4. Report the upstream master commit, opendbc pointer commit, Sunny neural-network-data pointer when applicable, and whether the workflow pushed the openpilot branch.
+<!-- [skill] - START -->
+4. Report the frozen upstream source commit, opendbc pointer commit, Sunny neural-network-data pointer when applicable, and whether the workflow pushed the openpilot stable branch.
+<!-- [skill] - END -->
 
 The wrapper recreates the mapped local openpilot folder every time. For `sunny` only, it points the existing `sunnypilot/neural_network_data` submodule to `cristianku/neural-network-data:master`. It does not alter the NNLC loader or copy model files. It does not commit inside opendbc and does not clone, update, stage, or commit panda.
 
-After cloning the fresh upstream `master`, the wrapper edits `selfdrive/locationd/torqued.py` to add `'psa'` to the `ALLOWED_CARS` gate, so torqued (live `latAccelFactor`/friction learning) runs for the Peugeot 3008. Upstream master ships this list without PSA and the clone is recreated every run, so this patch is reapplied each time. The edit is idempotent (skipped if `psa` is already present) and is staged so it lands in the pushed branch commit.
+<!-- [skill] - START -->
+After cloning the frozen upstream release tag, the wrapper edits `selfdrive/locationd/torqued.py` to add `'psa'` to the `ALLOWED_CARS` gate, so torqued (live `latAccelFactor`/friction learning) runs for the Peugeot 3008. The upstream source ships this list without PSA and the clone is recreated every run, so this patch is reapplied each time. The edit is idempotent (skipped if `psa` is already present) and is staged so it lands in the pushed branch commit.
 
-For both variants, clone the current upstream `master` branch directly, recreate the custom branch from its exact HEAD, update `.gitmodules` to `cristianku/opendbc`, set the `opendbc_repo` gitlink to Cristian's matching opendbc branch commit, and push with `--force-with-lease`. Use `commaai/openpilot` for `comma` and `sunnypilot/sunnypilot` for `sunny`. Do not copy opendbc files into openpilot.
+For both variants, clone the configured frozen upstream release tag directly, recreate the custom stable branch from its exact commit, update `.gitmodules` to `cristianku/opendbc`, set the `opendbc_repo` gitlink to Cristian's matching stable opendbc branch commit, and push with `--force-with-lease`. The defaults are `commaai/openpilot:v0.11.1` for `comma` and `sunnypilot/sunnypilot:v2026.002.001` for `sunny`. Do not copy opendbc files into openpilot.
+<!-- [skill] - END -->
 
 ## Safety
 
