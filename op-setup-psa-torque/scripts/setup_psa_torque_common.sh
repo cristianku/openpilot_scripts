@@ -53,6 +53,11 @@ COMMIT_MESSAGE="${COMMIT_MESSAGE:-Update Peugeot 3008${title_suffix} repository 
 
 NEURAL_NETWORK_DATA_SHA=""
 
+# [nnlc] - START
+COMMON_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SUNNY_NNLC_PATCH="${COMMON_SCRIPT_DIR}/sunny_nnlc_torque_space.patch"
+# [nnlc] - END
+
 ensure_remote_branch() {
   local repo_url="$1"
   local branch="$2"
@@ -226,6 +231,57 @@ enable_psa_torqued_learning() {
   echo "Enabled PSA torque-param learning (added 'psa' to torqued ALLOWED_CARS)"
 }
 
+# [nnlc] - START
+patch_sunny_nnlc_controller() {
+  local dest="$1"
+  if [[ "${USE_CUSTOM_NEURAL_NETWORK_DATA}" != "true" ]]; then
+    return
+  fi
+
+  if [[ ! -f "${SUNNY_NNLC_PATCH}" ]]; then
+    echo "ERROR: missing Sunny NNLC patch ${SUNNY_NNLC_PATCH}" >&2
+    return 1
+  fi
+
+  local nnlc_suffix="sunnypilot/selfdrive/controls/lib/nnlc/nnlc.py"
+  local nnlc_rel
+  nnlc_rel="$(git -C "${dest}" ls-files \
+    | awk -v suffix="${nnlc_suffix}" 'substr($0, length($0) - length(suffix) + 1) == suffix && !found { found = $0 } END { print found }')"
+  if [[ -z "${nnlc_rel}" ]]; then
+    echo "ERROR: NNLC controller is not tracked under ${dest}" >&2
+    return 1
+  fi
+
+  local layout_prefix="${nnlc_rel%"${nnlc_suffix}"}"
+  local torque_rel="${layout_prefix}selfdrive/controls/lib/latcontrol_torque.py"
+  local ext_rel="${layout_prefix}sunnypilot/selfdrive/controls/lib/latcontrol_torque_ext.py"
+  local path
+  for path in "${torque_rel}" "${ext_rel}" "${nnlc_rel}"; do
+    if ! git -C "${dest}" ls-files --error-unmatch "${path}" >/dev/null 2>&1; then
+      echo "ERROR: required Sunny NNLC source is not tracked: ${path}" >&2
+      return 1
+    fi
+  done
+
+  local directory_arg=""
+  if [[ -n "${layout_prefix}" ]]; then
+    directory_arg="--directory=${layout_prefix%/}"
+  fi
+
+  if git -C "${dest}" apply --reverse --check ${directory_arg:+"${directory_arg}"} "${SUNNY_NNLC_PATCH}" >/dev/null 2>&1; then
+    echo "Sunny NNLC torque-space patch already applied; nothing to do"
+  elif git -C "${dest}" apply --check ${directory_arg:+"${directory_arg}"} "${SUNNY_NNLC_PATCH}"; then
+    git -C "${dest}" apply ${directory_arg:+"${directory_arg}"} "${SUNNY_NNLC_PATCH}"
+    echo "Applied Sunny NNLC torque-space friction and dedicated PID patch"
+  else
+    echo "ERROR: Sunny NNLC source changed upstream; refusing to apply an unverified patch" >&2
+    return 1
+  fi
+
+  git -C "${dest}" add -- "${torque_rel}" "${ext_rel}" "${nnlc_rel}"
+}
+# [nnlc] - END
+
 commit_and_push() {
   local dest="$1"
   local branch="$2"
@@ -267,6 +323,9 @@ main() {
   cd "${OPENPILOT_DIR}"
 
   enable_psa_torqued_learning "."
+  # [nnlc] - START
+  patch_sunny_nnlc_controller "."
+  # [nnlc] - END
   set_opendbc_pointer "." "${OPENDBC_REPO}" "${BRANCH}" "${OPENDBC_SOURCE_REPO}" "${OPENDBC_SOURCE_BRANCH}"
   set_neural_network_data_pointer "."
   commit_and_push "." "${BRANCH}" "${COMMIT_MESSAGE}" "${expected_remote_sha}"
