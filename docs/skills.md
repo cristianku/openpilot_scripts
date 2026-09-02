@@ -4,10 +4,11 @@ Each skill directory contains a `SKILL.md` manifest and a `scripts/` implementat
 
 ## setup-psa-torque (stable)
 
-Recreates the mapped local openpilot folder from current upstream `master`, recreates the custom **stable** branch (`psa-torque` / `psa-torque-sunny`) from that HEAD, points `.gitmodules` to `cristianku/opendbc`, sets the `opendbc_repo` gitlink to the matching opendbc branch commit, and for `sunny` points `sunnypilot/neural_network_data` to `cristianku/neural-network-data:master`. Pushes with `--force-with-lease`. Does not commit inside opendbc or touch panda.
+Recreates the mapped local openpilot folder from upstream `master` by default, or from the latest published GitHub Release with `release`. It recreates the custom **stable** branch (`psa-torque` / `psa-torque-sunny`) from that source, points `.gitmodules` to `cristianku/opendbc`, sets the `opendbc_repo` gitlink to the matching stable opendbc branch commit, and for `sunny` points `sunnypilot/neural_network_data` to `cristianku/neural-network-data:master`. Pushes with `--force-with-lease`. Does not commit inside opendbc or touch panda.
 
 ```bash
-./setup-psa-torque/scripts/setup_psa_torque.sh comma   # or: sunny
+./setup-psa-torque/scripts/setup_psa_torque.sh comma master
+./setup-psa-torque/scripts/setup_psa_torque.sh sunny release
 ```
 
 ## setup-psa-torque-testing (testing)

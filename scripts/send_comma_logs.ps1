@@ -1,11 +1,18 @@
 #requires -Version 5.1
 
+# [comma host] - START
+param(
+  [Parameter(Mandatory = $true)]
+  [ValidateNotNullOrEmpty()]
+  [string]$COMMA_HOST
+)
+# [comma host] - END
+
 # [comma logs] - START
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 # ===== CONFIG =====
-$CommaHost = '192.168.1.123' # <-- IP del comma
 $CommaUser = 'comma'
 
 $FileBrowser = 'https://drive.farm.14bodhi.com'
@@ -67,7 +74,9 @@ if ($null -eq $sshCommand) {
 
 $timestamp = Get-Date -Format 'yyyy-MM-dd_HH-mm-ss'
 $backup = Join-Path ([System.IO.Path]::GetTempPath()) "comma-$timestamp.tar.gz"
-$remoteTarget = "$CommaUser@$CommaHost"
+# [comma host] - START
+$remoteTarget = "$CommaUser@$COMMA_HOST"
+# [comma host] - END
 $remoteSeparator = $RemotePath.LastIndexOf('/')
 
 if ($remoteSeparator -le 0 -or $remoteSeparator -eq ($RemotePath.Length - 1)) {
