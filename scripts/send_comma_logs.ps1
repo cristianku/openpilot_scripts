@@ -15,9 +15,9 @@ $ErrorActionPreference = 'Stop'
 # ===== CONFIG =====
 $CommaUser = 'comma'
 
-$FileBrowser = 'https://drive.farm.14bodhi.com'
-$FbUser = 'user'
-$FbPassword = 'password'
+$FileBrowser = 'https://drive.14bodhi.com'
+$FbUser = 'joseph'
+$FbPassword = 'mokby5-tIvmuk-buknez'
 
 $RemotePath = '/data/media/0/realdata'
 
@@ -30,6 +30,10 @@ function ConvertFrom-RemoteFileListing {
   )
 
   foreach ($record in $ListingText.Split([char]0, [System.StringSplitOptions]::RemoveEmptyEntries)) {
+    if ([string]::IsNullOrWhiteSpace($record)) {
+      continue
+    }
+
     $separator = $record.IndexOf("`t")
     if ($separator -le 0 -or $separator -eq ($record.Length - 1)) {
       throw "Record non valido nel listing remoto: $record"
@@ -54,6 +58,19 @@ function ConvertFrom-RemoteFileListing {
     }
   }
 }
+
+# [nnlc logs] - START
+function Test-NnlcTrainingLogPath {
+  param(
+    [Parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
+    [string]$RelativePath
+  )
+
+  $fileName = $RelativePath.Substring($RelativePath.LastIndexOf('/') + 1)
+  return $fileName -cin @('rlog.zst', 'rlog.bz2', 'rlog')
+}
+# [nnlc logs] - END
 
 function ConvertTo-FileBrowserResourcePath {
   param(
@@ -645,11 +662,15 @@ $listingText = Invoke-SshTextCommand `
   -SshPath $sshCommand.Source `
   -RemoteTarget $remoteTarget `
   -RemoteCommand $listingCommand
-$remoteFiles = @(ConvertFrom-RemoteFileListing -ListingText $listingText | Sort-Object RelativePath)
+# [nnlc logs] - START
+$remoteFiles = @(ConvertFrom-RemoteFileListing -ListingText $listingText |
+    Where-Object { Test-NnlcTrainingLogPath -RelativePath $_.RelativePath } |
+    Sort-Object RelativePath)
 
 if ($remoteFiles.Count -eq 0) {
-  throw "Nessun file trovato in $RemotePath."
+  throw "Nessun rlog supportato per NNLC trovato in $RemotePath."
 }
+# [nnlc logs] - END
 
 $totalBytes = [long](($remoteFiles | Measure-Object -Property Size -Sum).Sum)
 Write-Host ("Trovati {0} file ({1:N1} MB)." -f $remoteFiles.Count, ($totalBytes / 1MB))
