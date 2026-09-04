@@ -2,7 +2,22 @@
 set -euo pipefail
 
 variant="${1:-comma}"
-source_mode="${2:-master}"
+# [pinned source] - START
+source_arg="${2:-master}"
+source_mode="${source_arg}"
+pinned_source_commit=""
+usage="Usage: $0 [comma|openpilot|sunny|sunnypilot] [master|master=<upstream-commit>|release]"
+
+if [[ "${source_arg}" == master=* ]]; then
+  source_mode="master"
+  pinned_source_commit="${source_arg#master=}"
+  if [[ ! "${pinned_source_commit}" =~ ^[0-9a-fA-F]{7,40}$ ]]; then
+    echo "ERROR: master=<upstream-commit> requires a 7-40 character hexadecimal Git commit" >&2
+    echo "${usage}" >&2
+    exit 2
+  fi
+fi
+# [pinned source] - END
 
 case "${variant}" in
   comma|openpilot)
@@ -16,7 +31,7 @@ case "${variant}" in
     source_branch="psa-torque-sunny"
     ;;
   *)
-    echo "Usage: $0 [comma|openpilot|sunny|sunnypilot] [master|release]" >&2
+    echo "${usage}" >&2
     exit 2
     ;;
 esac
@@ -25,7 +40,7 @@ case "${source_mode}" in
   master|release)
     ;;
   *)
-    echo "Usage: $0 [comma|openpilot|sunny|sunnypilot] [master|release]" >&2
+    echo "${usage}" >&2
     exit 2
     ;;
 esac
@@ -77,9 +92,12 @@ else
 fi
 # [source] - END
 
+# [pinned source] - START
 BRANCH="${branch}" \
   OPENPILOT_SOURCE_REPO="${openpilot_source_repo}" \
   OPENPILOT_SOURCE_BRANCH="${openpilot_source_branch}" \
+  OPENPILOT_SOURCE_COMMIT="${pinned_source_commit}" \
   OPENDBC_SOURCE_BRANCH="${OPENDBC_SOURCE_BRANCH:-${source_branch}}" \
   USE_CUSTOM_NEURAL_NETWORK_DATA="${use_custom_neural_network_data}" \
   bash "${common_script}"
+# [pinned source] - END

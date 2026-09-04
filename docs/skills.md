@@ -19,6 +19,22 @@ Same as above but for the **testing** branches (`psa-torque-testing` / `psa-torq
 ./setup-psa-torque-testing/scripts/setup_psa_torque.sh comma   # or: sunny
 ```
 
+<!-- [pinned source] - START -->
+### Bloccare il testing a un commit del master
+
+Usa `master=<commit>` per generare la branch testing da uno specifico commit appartenente alla storia del `master` ufficiale selezionato:
+
+```bash
+./op-setup-psa-torque-testing/scripts/setup_psa_torque.sh sunny master=de197ba6
+```
+
+Sono accettati SHA Git esadecimali da 7 a 40 caratteri. Lo script clona il master ufficiale, risolve lo SHA, verifica che sia un suo antenato e interrompe il workflow senza push se il controllo fallisce.
+
+Lo SHA deve appartenere all'upstream ufficiale (`sunnypilot/sunnypilot` oppure `commaai/openpilot`), non alla branch generata in `cristianku/openpilot`. Per riprodurre la base del commit personalizzato `4b34316`, usa il suo parent upstream Sunnypilot: `master=de197ba6`.
+
+Il pin blocca soltanto il codice upstream. Con `sunny`, il submodule `sunnypilot/neural_network_data` continua a essere aggiornato al commit più recente pubblicato su `cristianku/neural-network-data:master`, quindi `neural_network_lateral_control/PSA_PEUGEOT_3008.json` resta fresco. Il workflow non modifica il codice del loader o del controller NNLC.
+<!-- [pinned source] - END -->
+
 ## merge-psa-torque-testing / merge-psa-torque-sunny-testing (promote)
 
 Promote opendbc testing → stable: recreate a dedicated opendbc merge workspace, merge `*-testing` into stable with a merge commit, require Peugeot 3008 interface tests + PSA safety tests to pass, push stable with a lease protecting the previously observed remote SHA, then run the matching stable `setup-psa-torque` variant to refresh the openpilot pointer. Only operates on `cristianku/opendbc`; never merges openpilot branches into each other.

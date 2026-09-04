@@ -41,6 +41,10 @@ OPENPILOT_DIR="${OPENPILOT_DIR:-new_openpilot_psa_torque${dir_suffix}}"
 OPENPILOT_REPO="${OPENPILOT_REPO:-https://github.com/${GITHUB_USER}/openpilot.git}"
 OPENPILOT_SOURCE_REPO="${OPENPILOT_SOURCE_REPO:?OPENPILOT_SOURCE_REPO must be set}"
 OPENPILOT_SOURCE_BRANCH="${OPENPILOT_SOURCE_BRANCH:?OPENPILOT_SOURCE_BRANCH must be set (a branch like master, or a release tag)}"
+# [pinned source] - START
+OPENPILOT_SOURCE_COMMIT="${OPENPILOT_SOURCE_COMMIT:-}"
+RESOLVED_OPENPILOT_SOURCE_COMMIT=""
+# [pinned source] - END
 OPENDBC_REPO="${OPENDBC_REPO:-https://github.com/${GITHUB_USER}/opendbc.git}"
 OPENDBC_SOURCE_REPO="${OPENDBC_SOURCE_REPO:-${OPENDBC_REPO}}"
 OPENDBC_SOURCE_BRANCH="${OPENDBC_SOURCE_BRANCH:-}"
@@ -50,11 +54,6 @@ NEURAL_NETWORK_DATA_BRANCH="${NEURAL_NETWORK_DATA_BRANCH:-master}"
 COMMIT_MESSAGE="${COMMIT_MESSAGE:-Update Peugeot 3008${title_suffix} repository pointers (on ${OPENPILOT_SOURCE_BRANCH})}"
 
 NEURAL_NETWORK_DATA_SHA=""
-
-# [nnlc] - START
-COMMON_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SUNNY_NNLC_PATCH="${COMMON_SCRIPT_DIR}/sunny_nnlc_torque_space.patch"
-# [nnlc] - END
 
 ensure_remote_branch() {
   local repo_url="$1"
@@ -121,7 +120,23 @@ recreate_clone_from_source() {
   # that exact tree so the device tracks a normal branch.
   GIT_LFS_SKIP_SMUDGE=1 git clone --no-tags --single-branch --branch "${source_ref}" "${source_repo_url}" "${dest}"
   local source_commit
-  source_commit="$(git -C "${dest}" rev-parse HEAD)"
+  # [pinned source] - START
+  local source_tip
+  source_tip="$(git -C "${dest}" rev-parse HEAD)"
+  source_commit="${source_tip}"
+  if [[ -n "${OPENPILOT_SOURCE_COMMIT}" ]]; then
+    if ! source_commit="$(git -C "${dest}" rev-parse --verify "${OPENPILOT_SOURCE_COMMIT}^{commit}" 2>/dev/null)"; then
+      echo "ERROR: commit ${OPENPILOT_SOURCE_COMMIT} is unavailable from ${source_repo_url} ${source_ref}" >&2
+      exit 1
+    fi
+    if ! git -C "${dest}" merge-base --is-ancestor "${source_commit}" "${source_tip}"; then
+      echo "ERROR: commit ${source_commit} is not in ${source_repo_url} ${source_ref}" >&2
+      exit 1
+    fi
+    GIT_LFS_SKIP_SMUDGE=1 git -C "${dest}" checkout --detach "${source_commit}"
+  fi
+  RESOLVED_OPENPILOT_SOURCE_COMMIT="${source_commit}"
+  # [pinned source] - END
   echo "Using upstream source ${source_ref} (${source_commit})"
   git -C "${dest}" checkout -B "${branch}"
   git -C "${dest}" remote rename origin source
@@ -229,57 +244,6 @@ enable_psa_torqued_learning() {
   echo "Enabled PSA torque-param learning (added 'psa' to torqued ALLOWED_CARS)"
 }
 
-# [nnlc] - START
-patch_sunny_nnlc_controller() {
-  local dest="$1"
-  if [[ "${USE_CUSTOM_NEURAL_NETWORK_DATA}" != "true" ]]; then
-    return
-  fi
-
-  if [[ ! -f "${SUNNY_NNLC_PATCH}" ]]; then
-    echo "ERROR: missing Sunny NNLC patch ${SUNNY_NNLC_PATCH}" >&2
-    return 1
-  fi
-
-  local nnlc_suffix="sunnypilot/selfdrive/controls/lib/nnlc/nnlc.py"
-  local nnlc_rel
-  nnlc_rel="$(git -C "${dest}" ls-files \
-    | awk -v suffix="${nnlc_suffix}" 'substr($0, length($0) - length(suffix) + 1) == suffix && !found { found = $0 } END { print found }')"
-  if [[ -z "${nnlc_rel}" ]]; then
-    echo "ERROR: NNLC controller is not tracked under ${dest}" >&2
-    return 1
-  fi
-
-  local layout_prefix="${nnlc_rel%"${nnlc_suffix}"}"
-  local torque_rel="${layout_prefix}selfdrive/controls/lib/latcontrol_torque.py"
-  local ext_rel="${layout_prefix}sunnypilot/selfdrive/controls/lib/latcontrol_torque_ext.py"
-  local path
-  for path in "${torque_rel}" "${ext_rel}" "${nnlc_rel}"; do
-    if ! git -C "${dest}" ls-files --error-unmatch "${path}" >/dev/null 2>&1; then
-      echo "ERROR: required Sunny NNLC source is not tracked: ${path}" >&2
-      return 1
-    fi
-  done
-
-  local directory_arg=""
-  if [[ -n "${layout_prefix}" ]]; then
-    directory_arg="--directory=${layout_prefix%/}"
-  fi
-
-  if git -C "${dest}" apply --reverse --check ${directory_arg:+"${directory_arg}"} "${SUNNY_NNLC_PATCH}" >/dev/null 2>&1; then
-    echo "Sunny NNLC torque-space patch already applied; nothing to do"
-  elif git -C "${dest}" apply --check ${directory_arg:+"${directory_arg}"} "${SUNNY_NNLC_PATCH}"; then
-    git -C "${dest}" apply ${directory_arg:+"${directory_arg}"} "${SUNNY_NNLC_PATCH}"
-    echo "Applied Sunny NNLC torque-space friction and dedicated PID patch"
-  else
-    echo "ERROR: Sunny NNLC source changed upstream; refusing to apply an unverified patch" >&2
-    return 1
-  fi
-
-  git -C "${dest}" add -- "${torque_rel}" "${ext_rel}" "${nnlc_rel}"
-}
-# [nnlc] - END
-
 commit_and_push() {
   local dest="$1"
   local branch="$2"
@@ -321,16 +285,15 @@ main() {
   cd "${OPENPILOT_DIR}"
 
   enable_psa_torqued_learning "."
-  # [nnlc] - START
-  patch_sunny_nnlc_controller "."
-  # [nnlc] - END
   set_opendbc_pointer "." "${OPENDBC_REPO}" "${BRANCH}" "${OPENDBC_SOURCE_REPO}" "${OPENDBC_SOURCE_BRANCH}"
   set_neural_network_data_pointer "."
   commit_and_push "." "${BRANCH}" "${COMMIT_MESSAGE}" "${expected_remote_sha}"
 
   echo
   # [source] - START
-  echo "Ready (source ref: ${OPENPILOT_SOURCE_BRANCH}, builds on device - no prebuilt):"
+  # [pinned source] - START
+  echo "Ready (source ref: ${OPENPILOT_SOURCE_BRANCH}, commit: ${RESOLVED_OPENPILOT_SOURCE_COMMIT}, builds on device - no prebuilt):"
+  # [pinned source] - END
   # [source] - END
   echo "  ${WORKSPACE_ROOT}/${OPENPILOT_DIR}"
   echo "  ${WORKSPACE_ROOT}/${OPENPILOT_DIR}/opendbc_repo"
