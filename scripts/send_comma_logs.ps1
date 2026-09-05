@@ -4,7 +4,11 @@
 param(
   [Parameter(Mandatory = $true)]
   [ValidateNotNullOrEmpty()]
-  [string]$COMMA_HOST
+  [string]$COMMA_HOST,
+
+  # [zip resume] - START
+  [string]$CacheDirectory = (Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'comma-log-upload')
+  # [zip resume] - END
 )
 # [comma host] - END
 
@@ -91,6 +95,159 @@ function ConvertTo-FileBrowserResourcePath {
   return '/' + [string]::Join('/', $encodedSegments)
 }
 
+# [resume] - START
+function Select-LatestFileBrowserBackupName {
+  param(
+    [Parameter(Mandatory = $true)]
+    [AllowEmptyCollection()]
+    [object[]]$Items
+  )
+
+  $candidates = foreach ($item in $Items) {
+    if (-not $item.isDir -or $item.name -notmatch '^comma-(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})$') {
+      continue
+    }
+
+    $parsedTimestamp = [DateTime]::MinValue
+    if ([DateTime]::TryParseExact(
+        $Matches[1],
+        'yyyy-MM-dd_HH-mm-ss',
+        [System.Globalization.CultureInfo]::InvariantCulture,
+        [System.Globalization.DateTimeStyles]::None,
+        [ref]$parsedTimestamp)) {
+      [pscustomobject]@{
+        Name = [string]$item.name
+        Timestamp = $parsedTimestamp
+      }
+    }
+  }
+
+  $latest = $candidates | Sort-Object Timestamp -Descending | Select-Object -First 1
+  if ($null -eq $latest) {
+    return $null
+  }
+
+  return $latest.Name
+}
+
+function Get-FileTransferDecision {
+  param(
+    [Parameter(Mandatory = $true)]
+    [long]$ExpectedBytes,
+
+    [long]$ExistingBytes
+  )
+
+  if (-not $PSBoundParameters.ContainsKey('ExistingBytes')) {
+    return 'Upload'
+  }
+
+  if ($ExistingBytes -eq $ExpectedBytes) {
+    return 'Skip'
+  }
+
+  throw "File gia presente su Drive con dimensione diversa: $ExistingBytes byte invece di $ExpectedBytes."
+}
+
+function Invoke-FileTransferWithRetry {
+  param(
+    [Parameter(Mandatory = $true)]
+    [long]$InitialExpectedBytes,
+
+    [Parameter(Mandatory = $true)]
+    [scriptblock]$TransferAction,
+
+    [Parameter(Mandatory = $true)]
+    [scriptblock]$RefreshExpectedBytes,
+
+    [ValidateRange(1, 10)]
+    [int]$MaxAttempts = 3,
+
+    [ValidateRange(0, 60000)]
+    [int]$RetryDelayMilliseconds = 2000
+  )
+
+  [long]$expectedBytes = $InitialExpectedBytes
+
+  for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++) {
+    try {
+      return & $TransferAction $expectedBytes
+    }
+    catch {
+      $transferErrorMessage = $_.Exception.Message
+      if ($attempt -eq $MaxAttempts) {
+        throw
+      }
+
+      Write-Warning ("Trasferimento fallito al tentativo {0}/{1}: {2}" -f `
+          $attempt, $MaxAttempts, $transferErrorMessage)
+      if ($RetryDelayMilliseconds -gt 0) {
+        Start-Sleep -Milliseconds $RetryDelayMilliseconds
+      }
+
+      for ($refreshAttempt = 1; $refreshAttempt -le $MaxAttempts; $refreshAttempt++) {
+        try {
+          $expectedBytes = [long](& $RefreshExpectedBytes)
+          break
+        }
+        catch {
+          if ($refreshAttempt -eq $MaxAttempts) {
+            throw ("Trasferimento fallito: {0} Rilettura dimensione fallita dopo {1} tentativi: {2}" -f `
+                $transferErrorMessage, $MaxAttempts, $_.Exception.Message)
+          }
+
+          Write-Warning ("Rilettura dimensione fallita al tentativo {0}/{1}: {2}" -f `
+              $refreshAttempt, $MaxAttempts, $_.Exception.Message)
+          if ($RetryDelayMilliseconds -gt 0) {
+            Start-Sleep -Milliseconds $RetryDelayMilliseconds
+          }
+        }
+      }
+    }
+  }
+}
+
+function Get-FileBrowserResource {
+  param(
+    [Parameter(Mandatory = $true)]
+    [object]$Client,
+
+    [Parameter(Mandatory = $true)]
+    [string]$BaseUrl,
+
+    [Parameter(Mandatory = $true)]
+    [AllowEmptyString()]
+    [string]$RemoteName
+  )
+
+  if ([string]::IsNullOrEmpty($RemoteName)) {
+    $resourcePath = '/'
+  }
+  else {
+    $resourcePath = ConvertTo-FileBrowserResourcePath -RelativePath $RemoteName
+  }
+
+  $resourceUrl = '{0}/api/resources{1}' -f $BaseUrl.TrimEnd('/'), $resourcePath
+  $response = $null
+  try {
+    $response = $Client.GetAsync($resourceUrl).GetAwaiter().GetResult()
+    if ($response.StatusCode -eq [System.Net.HttpStatusCode]::NotFound) {
+      return $null
+    }
+    if (-not $response.IsSuccessStatusCode) {
+      $responseBody = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+      throw "Lettura FileBrowser fallita ($([int]$response.StatusCode)): $responseBody"
+    }
+
+    $responseBody = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+    return $responseBody | ConvertFrom-Json
+  }
+  finally {
+    if ($null -ne $response) { $response.Dispose() }
+  }
+}
+# [resume] - END
+
 function Get-RequiredFileBrowserDirectories {
   param(
     [Parameter(Mandatory = $true)]
@@ -146,12 +303,34 @@ function Get-RemoteFileListingCommand {
 function Get-RemoteFileReadCommand {
   param(
     [Parameter(Mandatory = $true)]
+    [string]$RemoteFilePath,
+
+    # [zip resume] - START
+    [ValidateRange(0, [long]::MaxValue)]
+    [long]$OffsetBytes = 0
+    # [zip resume] - END
+  )
+
+  $encodedPath = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($RemoteFilePath))
+  # [zip resume] - START
+  if ($OffsetBytes -gt 0) {
+    return "printf '%s' '$encodedPath' | base64 -d | xargs -0 tail -c +$($OffsetBytes + 1) --"
+  }
+  return "printf '%s' '$encodedPath' | base64 -d | xargs -0 cat --"
+  # [zip resume] - END
+}
+
+# [resume] - START
+function Get-RemoteFileSizeCommand {
+  param(
+    [Parameter(Mandatory = $true)]
     [string]$RemoteFilePath
   )
 
   $encodedPath = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($RemoteFilePath))
-  return "printf '%s' '$encodedPath' | base64 -d | xargs -0 cat --"
+  return "printf '%s' '$encodedPath' | base64 -d | xargs -0 stat -c '%s' --"
 }
+# [resume] - END
 
 function Invoke-SshTextCommand {
   param(
@@ -332,13 +511,15 @@ function Copy-StreamWithProgress {
       }
     }
 
-    if ($TotalBytes -gt 0 -and $transferredBytes -ne $TotalBytes) {
-      throw "Dimensione trasferita non valida: attesi $TotalBytes byte, ricevuti $transferredBytes."
-    }
-
+    # [ssh error] - START
     if ($null -ne $CompletionValidator) {
       & $CompletionValidator | Out-Null
     }
+
+    if ($TotalBytes -gt 0 -and $transferredBytes -ne $TotalBytes) {
+      throw "Dimensione trasferita non valida: attesi $TotalBytes byte, ricevuti $transferredBytes."
+    }
+    # [ssh error] - END
 
     if ($TotalBytes -gt 0) {
       $lastProgressPercent = 100
@@ -444,7 +625,19 @@ function Receive-RemoteFile {
     [string]$Activity
   )
 
-  $remoteCommand = Get-RemoteFileReadCommand -RemoteFilePath $RemoteFilePath
+  # [zip resume] - START
+  [long]$offset = 0
+  if (Test-Path -LiteralPath $LocalPath) {
+    $offset = (Get-Item -LiteralPath $LocalPath).Length
+    if ($offset -gt $ExpectedBytes) {
+      Remove-Item -LiteralPath $LocalPath -Force
+      $offset = 0
+    }
+  }
+  if ($offset -eq $ExpectedBytes -and (Test-Path -LiteralPath $LocalPath)) { return $offset }
+  if ($offset -gt 0) { Write-Host "Ripresa download da $offset byte: $RemoteFilePath" }
+  $remoteCommand = Get-RemoteFileReadCommand -RemoteFilePath $RemoteFilePath -OffsetBytes $offset
+  # [zip resume] - END
   $startInfo = New-Object System.Diagnostics.ProcessStartInfo
   $startInfo.FileName = $SshPath
   $startInfo.Arguments = "-o BatchMode=yes -o ConnectTimeout=10 `"$RemoteTarget`" `"$remoteCommand`""
@@ -472,17 +665,22 @@ function Receive-RemoteFile {
         throw "Download SSH fallito (codice $($process.ExitCode)). $errorOutput"
       }
     }.GetNewClosure()
-    $localStream = [System.IO.File]::Create($LocalPath)
+    # [zip resume] - START
+    $localStream = [System.IO.File]::Open($LocalPath, [System.IO.FileMode]::Append)
+    # [zip resume] - END
     $receivedBytes = Copy-StreamWithProgress `
       -InputStream $process.StandardOutput.BaseStream `
       -OutputStream $localStream `
       -Activity $Activity `
-      -TotalBytes $ExpectedBytes `
+      -TotalBytes ($ExpectedBytes - $offset) `
       -CompletionValidator $completionValidator
     $localStream.Dispose()
     $localStream = $null
 
-    return $receivedBytes
+    # [zip resume] - START
+    if (($receivedBytes + $offset) -ne $ExpectedBytes) { throw 'Dimensione download non valida.' }
+    return ($receivedBytes + $offset)
+    # [zip resume] - END
   }
   finally {
     if ($null -ne $localStream) { $localStream.Dispose() }
@@ -492,9 +690,13 @@ function Receive-RemoteFile {
 }
 
 function New-FileBrowserHttpClient {
+  param(
+    [TimeSpan]$Timeout = [System.Threading.Timeout]::InfiniteTimeSpan
+  )
+
   Add-Type -AssemblyName System.Net.Http
   $client = New-Object System.Net.Http.HttpClient
-  $client.Timeout = [System.Threading.Timeout]::InfiniteTimeSpan
+  $client.Timeout = $Timeout
   return $client
 }
 
@@ -635,6 +837,145 @@ function Send-FileBrowserFile {
   # [upload progress] - END
 }
 
+# [zip resume] - START
+function New-LogZip {
+  param([string]$LocalPath, [string]$ZipPath, [string]$EntryName)
+
+  Add-Type -AssemblyName System.IO.Compression
+  Add-Type -AssemblyName System.IO.Compression.FileSystem
+  $temporaryZip = "$ZipPath.tmp"
+  $stream = $null
+  $archive = $null
+  try {
+    $stream = [IO.File]::Create($temporaryZip)
+    $archive = New-Object IO.Compression.ZipArchive($stream, [IO.Compression.ZipArchiveMode]::Create)
+    $entry = $archive.CreateEntry($EntryName, [IO.Compression.CompressionLevel]::Optimal)
+    # Timestamp fisso: stessi dati producono gli stessi byte anche dopo un riavvio.
+    $entry.LastWriteTime = [DateTimeOffset]::new(2000, 1, 1, 0, 0, 0, [TimeSpan]::Zero)
+    $inputStream = [IO.File]::OpenRead($LocalPath)
+    try {
+      $outputStream = $entry.Open()
+      try { $inputStream.CopyTo($outputStream) }
+      finally { $outputStream.Dispose() }
+    } finally { $inputStream.Dispose() }
+    $archive.Dispose()
+    $archive = $null
+    $stream.Dispose()
+    $stream = $null
+    Move-Item -LiteralPath $temporaryZip -Destination $ZipPath -Force
+  }
+  finally {
+    if ($null -ne $archive) { $archive.Dispose() }
+    if ($null -ne $stream) { $stream.Dispose() }
+    if (Test-Path -LiteralPath $temporaryZip) { Remove-Item -LiteralPath $temporaryZip -Force }
+  }
+}
+
+function Invoke-TusRequest {
+  param($Client, [string]$Method, [string]$Url, [hashtable]$Headers = @{}, [byte[]]$Bytes)
+
+  $request = New-Object System.Net.Http.HttpRequestMessage(
+    (New-Object System.Net.Http.HttpMethod($Method)), $Url)
+  try {
+    $request.Headers.Add('Tus-Resumable', '1.0.0')
+    foreach ($key in $Headers.Keys) { $request.Headers.Add($key, [string]$Headers[$key]) }
+    if ($null -ne $Bytes) {
+      $request.Content = New-Object System.Net.Http.ByteArrayContent -ArgumentList (, $Bytes)
+      $request.Content.Headers.ContentType = [System.Net.Http.Headers.MediaTypeHeaderValue]::new('application/offset+octet-stream')
+    }
+    return $Client.SendAsync($request).GetAwaiter().GetResult()
+  } finally { $request.Dispose() }
+}
+
+function Send-FileBrowserZip {
+  param(
+    [string]$BaseUrl, [string]$Token, [string]$LocalPath, [string]$RemoteName,
+    [ValidateRange(1, 10)][int]$MaxAttempts = 3,
+    [ValidateRange(0, 60000)][int]$RetryDelayMilliseconds = 2000
+  )
+
+  # Il nome contiene SHA-256 dello ZIP: un parziale appartiene agli stessi byte.
+  $zipHash = (Get-FileHash -LiteralPath $LocalPath -Algorithm SHA256).Hash.ToLowerInvariant()
+  if (-not $RemoteName.EndsWith(".$zipHash.zip")) { throw 'Nome ZIP privo del checksum corretto.' }
+  $client = New-FileBrowserHttpClient -Timeout ([TimeSpan]::FromMinutes(5))
+  $stream = [IO.File]::OpenRead($LocalPath)
+  $url = $BaseUrl.TrimEnd('/') + '/api/tus' + (ConvertTo-FileBrowserResourcePath $RemoteName)
+  $activity = "Upload ZIP: $RemoteName"
+  try {
+    $client.DefaultRequestHeaders.Add('X-Auth', $Token)
+    for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++) {
+      try {
+        $existing = Get-FileBrowserResource -Client $client -BaseUrl $BaseUrl -RemoteName $RemoteName
+        if ($null -ne $existing -and $existing.isDir) { throw 'Una cartella occupa il percorso ZIP.' }
+        if ($null -ne $existing -and [long]$existing.size -eq $stream.Length) { return }
+
+        $head = Invoke-TusRequest -Client $client -Method HEAD -Url $url
+        try {
+          if ([int]$head.StatusCode -eq 404) {
+            # Sessione assente/scaduta: ricrea soltanto questo ZIP, mai i precedenti.
+            if ($null -ne $existing) { Write-Warning 'Sessione TUS scaduta: reinvio soltanto lo ZIP incompleto.' }
+            $create = Invoke-TusRequest -Client $client -Method POST -Url "$url`?override=true" `
+              -Headers @{ 'Upload-Length' = $stream.Length }
+            try {
+              if ([int]$create.StatusCode -ne 201) {
+                throw "Creazione TUS fallita (HTTP $([int]$create.StatusCode)). Verificare supporto TUS e permessi FileBrowser."
+              }
+              [long]$offset = 0
+            } finally { $create.Dispose() }
+          }
+          elseif ($head.IsSuccessStatusCode) {
+            [long]$offset = [long](@($head.Headers.GetValues('Upload-Offset'))[0])
+            [long]$length = [long](@($head.Headers.GetValues('Upload-Length'))[0])
+            if ($length -ne $stream.Length -or $offset -lt 0 -or $offset -gt $length) {
+              throw 'Offset o lunghezza TUS incompatibili con lo ZIP locale.'
+            }
+          }
+          else { throw "Verifica TUS fallita (HTTP $([int]$head.StatusCode))." }
+        } finally { $head.Dispose() }
+
+        Write-Host "Upload da $offset / $($stream.Length) byte"
+        $stream.Position = $offset
+        while ($offset -lt $stream.Length) {
+          $count = [int][Math]::Min(4MB, $stream.Length - $offset)
+          $buffer = New-Object byte[] $count
+          $read = 0
+          while ($read -lt $count) {
+            $n = $stream.Read($buffer, $read, $count - $read)
+            if ($n -eq 0) { throw 'ZIP locale troncato durante la lettura.' }
+            $read += $n
+          }
+          $response = Invoke-TusRequest -Client $client -Method PATCH -Url $url `
+            -Headers @{ 'Upload-Offset' = $offset } -Bytes $buffer
+          try {
+            if ([int]$response.StatusCode -ne 204) { throw "Upload TUS fallito (HTTP $([int]$response.StatusCode))." }
+            [long]$confirmed = [long](@($response.Headers.GetValues('Upload-Offset'))[0])
+            if ($confirmed -ne ($offset + $count)) { throw 'Offset TUS non confermato dal server.' }
+            $offset = $confirmed
+          } finally { $response.Dispose() }
+          Write-Progress -Activity $activity -Status "$offset / $($stream.Length) byte confermati" `
+            -PercentComplete (Get-TransferPercent $offset $stream.Length)
+        }
+        $verified = Get-FileBrowserResource -Client $client -BaseUrl $BaseUrl -RemoteName $RemoteName
+        if ($null -eq $verified -or $verified.isDir -or [long]$verified.size -ne $stream.Length) {
+          throw 'Verifica finale ZIP su FileBrowser fallita.'
+        }
+        return
+      }
+      catch {
+        if ($attempt -eq $MaxAttempts) { throw }
+        Write-Warning "Upload interrotto: riprovo dall'offset del server. $($_.Exception.Message)"
+        Start-Sleep -Milliseconds $RetryDelayMilliseconds
+      }
+    }
+  }
+  finally {
+    $stream.Dispose()
+    $client.Dispose()
+    Write-Progress -Activity $activity -Completed
+  }
+}
+# [zip resume] - END
+
 $sshCommand = Get-Command 'ssh.exe' -ErrorAction SilentlyContinue
 if ($null -eq $sshCommand) {
   $sshCommand = Get-Command 'ssh' -ErrorAction SilentlyContinue
@@ -644,10 +985,12 @@ if ($null -eq $sshCommand) {
 }
 
 $timestamp = Get-Date -Format 'yyyy-MM-dd_HH-mm-ss'
+# [resume] - START
+$destinationRoot = $null
+# [resume] - END
 # [comma host] - START
 $remoteTarget = "$CommaUser@$COMMA_HOST"
 # [comma host] - END
-$destinationRoot = "comma-$timestamp/realdata"
 
 Write-Host '=== Test connessione al comma ==='
 & $sshCommand.Source -o BatchMode=yes -o ConnectTimeout=10 $remoteTarget "echo 'Comma connected'"
@@ -694,61 +1037,159 @@ if ([string]::IsNullOrWhiteSpace($token)) {
   throw 'Impossibile ottenere il token FileBrowser.'
 }
 
+# [resume] - START
+$resourceClient = New-FileBrowserHttpClient -Timeout ([TimeSpan]::FromSeconds(30))
+try {
+$resourceClient.DefaultRequestHeaders.Add('X-Auth', $token)
+$rootResource = Get-FileBrowserResource `
+  -Client $resourceClient `
+  -BaseUrl $FileBrowser `
+  -RemoteName ''
+$latestBackupName = Select-LatestFileBrowserBackupName -Items @($rootResource.items)
+if ([string]::IsNullOrEmpty($latestBackupName)) {
+  $latestBackupName = "comma-$timestamp"
+  Write-Host "Nessun backup precedente: creo $latestBackupName."
+}
+else {
+  Write-Host "Ripresa backup: $latestBackupName."
+}
+$destinationRoot = "$latestBackupName/realdata"
+# [resume] - END
 $createdDirectories = New-Object 'System.Collections.Generic.HashSet[string]'
 $fileIndex = 0
+# [resume] - START
+$uploadedCount = 0
+$skippedCount = 0
+# [resume] - END
+
+# [zip resume] - START
+# Cache separata per dispositivo, account e server. Non dipende dal timestamp del lancio.
+$cacheIdentity = "$FileBrowser`n$FbUser`n$remoteTarget`n$RemotePath"
+$hasher = [Security.Cryptography.SHA256]::Create()
+try { $scopeKey = ([BitConverter]::ToString($hasher.ComputeHash([Text.Encoding]::UTF8.GetBytes($cacheIdentity)))).Replace('-', '').ToLowerInvariant() }
+finally { $hasher.Dispose() }
+$cacheRoot = Join-Path $CacheDirectory $scopeKey
+[IO.Directory]::CreateDirectory($cacheRoot) | Out-Null
+$cacheLock = [IO.File]::Open((Join-Path $cacheRoot 'upload.lock'), [IO.FileMode]::OpenOrCreate,
+  [IO.FileAccess]::ReadWrite, [IO.FileShare]::None)
+try {
+$backupStatePath = Join-Path $cacheRoot 'backup.txt'
+if (Test-Path -LiteralPath $backupStatePath) {
+  $savedBackup = [IO.File]::ReadAllText($backupStatePath).Trim()
+  if ($savedBackup -notmatch '^comma-\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}$') { throw 'Stato backup locale non valido.' }
+  $destinationRoot = "$savedBackup/realdata"
+}
+else { [IO.File]::WriteAllText($backupStatePath, $latestBackupName) }
+Write-Host "Destinazione persistente: $destinationRoot"
+Write-Host "Stato e file interrotti: $cacheRoot"
 
 foreach ($remoteFile in $remoteFiles) {
   $fileIndex++
   $relativePath = $remoteFile.RelativePath
   $remoteFilePath = $RemotePath.TrimEnd('/') + '/' + $relativePath
   $destinationPath = $destinationRoot + '/' + $relativePath
-  $localPath = Join-Path `
-    ([System.IO.Path]::GetTempPath()) `
-    ("comma-{0}-{1}.part" -f $timestamp, [Guid]::NewGuid().ToString('N'))
-  $uploadCompleted = $false
+  Write-Host "=== Log $fileIndex/$($remoteFiles.Count): $relativePath ==="
 
-  Write-Host
-  Write-Host ("=== File {0}/{1}: {2} ({3:N1} MB) ===" -f `
-      $fileIndex, $remoteFiles.Count, $relativePath, ($remoteFile.Size / 1MB))
+  # Compatibilita con i log gia inviati senza ZIP.
+  $legacy = Get-FileBrowserResource -Client $resourceClient -BaseUrl $FileBrowser -RemoteName $destinationPath
+  if ($null -ne $legacy -and -not $legacy.isDir -and [long]$legacy.size -eq $remoteFile.Size) {
+    Write-Host 'Log originale gia completo su Drive: salto.'
+    $skippedCount++
+    continue
+  }
 
-  try {
-    foreach ($directory in (Get-RequiredFileBrowserDirectories `
-        -DestinationRoot $destinationRoot `
-        -FileRelativePath $relativePath)) {
-      if ($createdDirectories.Add($directory)) {
-        Ensure-FileBrowserDirectory `
-          -BaseUrl $FileBrowser `
-          -Token $token `
-          -RemoteDirectory $directory
+  $encodedPath = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($remoteFilePath))
+  $hashText = Invoke-SshTextCommand -SshPath $sshCommand.Source -RemoteTarget $remoteTarget `
+    -RemoteCommand "printf '%s' '$encodedPath' | base64 -d | xargs -0 sha256sum --"
+  if ($hashText -notmatch '^\\?([a-fA-F0-9]{64})\s') { throw 'SHA-256 remoto non valido.' }
+  $sourceHash = $Matches[1].ToLowerInvariant()
+  $hasher = [Security.Cryptography.SHA256]::Create()
+  try { $key = ([BitConverter]::ToString($hasher.ComputeHash([Text.Encoding]::UTF8.GetBytes("$relativePath`n$sourceHash")))).Replace('-', '').ToLowerInvariant() }
+  finally { $hasher.Dispose() }
+  $localPath = Join-Path $cacheRoot "$key.part"
+  $zipPath = Join-Path $cacheRoot "$key.zip"
+  $statePath = Join-Path $cacheRoot "$key.json"
+  $state = $null
+  if (Test-Path -LiteralPath $statePath) {
+    $state = [IO.File]::ReadAllText($statePath) | ConvertFrom-Json
+    if ($state.SourceHash -ne $sourceHash -or $state.ZipHash -notmatch '^[a-f0-9]{64}$' -or [long]$state.ZipBytes -le 0) {
+      throw "Stato ZIP locale non valido: $statePath"
+    }
+    $zipDestination = "$destinationPath.$($state.ZipHash).zip"
+    $existing = Get-FileBrowserResource -Client $resourceClient -BaseUrl $FileBrowser -RemoteName $zipDestination
+    if ($null -ne $existing -and -not $existing.isDir -and [long]$existing.size -eq [long]$state.ZipBytes) {
+      Write-Host 'ZIP gia completo su Drive: salto download e upload.'
+      foreach ($path in @($localPath, $zipPath)) {
+        if (Test-Path -LiteralPath $path) { Remove-Item -LiteralPath $path -Force }
       }
+      $skippedCount++
+      continue
     }
-
-    Receive-RemoteFile `
-      -SshPath $sshCommand.Source `
-      -RemoteTarget $remoteTarget `
-      -RemoteFilePath $remoteFilePath `
-      -ExpectedBytes $remoteFile.Size `
-      -LocalPath $localPath `
-      -Activity ("Download {0}/{1}: {2}" -f $fileIndex, $remoteFiles.Count, $relativePath) | Out-Null
-
-    Send-FileBrowserFile `
-      -BaseUrl $FileBrowser `
-      -Token $token `
-      -LocalPath $localPath `
-      -RemoteName $destinationPath
-    $uploadCompleted = $true
   }
-  finally {
-    if ($uploadCompleted -and (Test-Path -LiteralPath $localPath)) {
+
+  $validZip = $false
+  if ($null -ne $state -and (Test-Path -LiteralPath $zipPath)) {
+    $validZip = ((Get-FileHash -LiteralPath $zipPath -Algorithm SHA256).Hash.ToLowerInvariant() -eq $state.ZipHash)
+  }
+  if (-not $validZip) {
+    # [retry scope] - START
+    # Callback sincroni: mantengono lo scope dello script e le sue funzioni.
+    # GetNewClosure li sposterebbe in un modulo che non vede gli helper locali.
+    $downloadAction = {
+      param($expectedBytes)
+      Receive-RemoteFile -SshPath $sshCommand.Source -RemoteTarget $remoteTarget `
+        -RemoteFilePath $remoteFilePath -ExpectedBytes $expectedBytes -LocalPath $localPath `
+        -Activity "Download $fileIndex/$($remoteFiles.Count): $relativePath"
+    }
+    $refreshSizeAction = {
+      $sizeText = (Invoke-SshTextCommand -SshPath $sshCommand.Source -RemoteTarget $remoteTarget `
+          -RemoteCommand (Get-RemoteFileSizeCommand -RemoteFilePath $remoteFilePath)).Trim()
+      [long]$size = 0
+      if (-not [long]::TryParse($sizeText, [ref]$size) -or $size -lt 0) { throw 'Dimensione remota non valida.' }
+      return $size
+    }
+    # [retry scope] - END
+    Invoke-FileTransferWithRetry -InitialExpectedBytes $remoteFile.Size `
+      -TransferAction $downloadAction -RefreshExpectedBytes $refreshSizeAction | Out-Null
+    if ((Get-FileHash -LiteralPath $localPath -Algorithm SHA256).Hash.ToLowerInvariant() -ne $sourceHash) {
       Remove-Item -LiteralPath $localPath -Force
+      throw "Log cambiato durante il download o parziale non valido: $relativePath. Rilancia lo script per riprovare."
     }
-    elseif (Test-Path -LiteralPath $localPath) {
-      Write-Host "Copia locale conservata dopo l'errore: $localPath"
+    Write-Host 'Compressione ZIP prima dell invio...'
+    New-LogZip -LocalPath $localPath -ZipPath $zipPath -EntryName $relativePath
+    $state = [pscustomobject]@{
+      SourceHash = $sourceHash
+      ZipHash = (Get-FileHash -LiteralPath $zipPath -Algorithm SHA256).Hash.ToLowerInvariant()
+      ZipBytes = (Get-Item -LiteralPath $zipPath).Length
+    }
+    [IO.File]::WriteAllText("$statePath.tmp", ($state | ConvertTo-Json -Compress))
+    Move-Item -LiteralPath "$statePath.tmp" -Destination $statePath -Force
+    Remove-Item -LiteralPath $localPath -Force
+  }
+
+  $zipDestination = "$destinationPath.$($state.ZipHash).zip"
+  foreach ($directory in (Get-RequiredFileBrowserDirectories -DestinationRoot $destinationRoot -FileRelativePath $relativePath)) {
+    if ($createdDirectories.Add($directory)) {
+      Ensure-FileBrowserDirectory -BaseUrl $FileBrowser -Token $token -RemoteDirectory $directory
     }
   }
+  # In caso di errore ZIP e stato restano nella cache per il prossimo lancio.
+  Send-FileBrowserZip -BaseUrl $FileBrowser -Token $token -LocalPath $zipPath -RemoteName $zipDestination
+  Remove-Item -LiteralPath $zipPath -Force
+  $uploadedCount++
 }
+}
+finally { $cacheLock.Dispose() }
+# [zip resume] - END
 
 Write-Host
-Write-Host ("=== Upload completato: {0} file ===" -f $remoteFiles.Count)
+# [resume] - START
+Write-Host ("=== Sincronizzazione completata: {0} caricati, {1} gia presenti ===" -f `
+    $uploadedCount, $skippedCount)
+}
+finally {
+  $resourceClient.Dispose()
+}
+# [resume] - END
 # [file-by-file] - END
 # [comma logs] - END
