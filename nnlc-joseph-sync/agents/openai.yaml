@@ -1,0 +1,4 @@
+interface:
+  display_name: "Log NNLC Joseph via USB"
+  short_description: "Copia log Joseph su USB e importa offline"
+  default_prompt: "Usa $nnlc-joseph-sync per copiare i log di Joseph da TrueNAS sulla chiavetta USB senza rimuovere gli originali."

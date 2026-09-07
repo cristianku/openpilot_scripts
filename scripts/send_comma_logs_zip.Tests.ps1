@@ -164,7 +164,14 @@ try {
     }
     return $script:driveFiles[$RemoteName]
   }
-  function Ensure-FileBrowserDirectory { param($BaseUrl, $Token, $RemoteDirectory) }
+  # [fixed path] - START
+  function Ensure-FileBrowserDirectory {
+    param($BaseUrl, $Token, $RemoteDirectory)
+    if ($RemoteDirectory -ne 'realdata' -and -not $RemoteDirectory.StartsWith('realdata/')) {
+      throw "Destinazione cartella errata: $RemoteDirectory"
+    }
+  }
+  # [fixed path] - END
   function Receive-RemoteFile {
     param($SshPath, $RemoteTarget, $RemoteFilePath, $ExpectedBytes, $LocalPath, $Activity)
     $script:downloadCalls++
@@ -173,6 +180,9 @@ try {
   }
   function Send-FileBrowserZip {
     param($BaseUrl, $Token, $LocalPath, $RemoteName)
+    # [fixed path] - START
+    if (-not $RemoteName.StartsWith('realdata/')) { throw "Destinazione upload errata: $RemoteName" }
+    # [fixed path] - END
     $script:uploadCalls++
     $archive = [IO.Compression.ZipFile]::OpenRead($LocalPath)
     try { Assert-Equal 'route--0/rlog' $archive.Entries[0].FullName }
@@ -194,6 +204,12 @@ try {
   Assert-Equal 'Interruzione simulata prima dell upload' $message
   Assert-Equal 1 $script:downloadCalls
   Assert-Equal 1 $script:uploadCalls
+  # [fixed path] - START
+  # Simula la cache Windows precedente: il vecchio backup non deve cambiare destinazione.
+  $cachedZip = @(Get-ChildItem $CacheDirectory -Filter '*.zip' -Recurse)[0]
+  $oldBackupState = Join-Path $cachedZip.DirectoryName 'backup.txt'
+  [IO.File]::WriteAllText($oldBackupState, 'comma-2026-09-04_22-12-01')
+  # [fixed path] - END
   $script:failUpload = $false
   & $main
   Assert-Equal 1 $script:downloadCalls
@@ -210,11 +226,11 @@ try {
   Assert-Equal 3 $script:uploadCalls
   Assert-Equal 1 $script:driveFiles.Count
   # I vecchi log non compressi completi non vengono spediti una seconda volta.
-  $script:driveFiles['comma-2026-09-01_10-00-00/realdata/route--0/rlog'] = [pscustomobject]@{ isDir = $false; size = 10 }
+  $script:driveFiles['realdata/route--0/rlog'] = [pscustomobject]@{ isDir = $false; size = 10 }
   & $main
   Assert-Equal 2 $script:downloadCalls
   Assert-Equal 3 $script:uploadCalls
-  $script:driveFiles.Remove('comma-2026-09-01_10-00-00/realdata/route--0/rlog')
+  $script:driveFiles.Remove('realdata/route--0/rlog')
   [IO.File]::WriteAllText($script:sourcePath, 'abcdefghij')
   & $main
   Assert-Equal 3 $script:downloadCalls

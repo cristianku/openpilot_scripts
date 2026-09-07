@@ -207,6 +207,54 @@ function Invoke-FileTransferWithRetry {
   }
 }
 
+# [auth retry] - START
+function Invoke-FileBrowserAuthenticatedRequest {
+  param(
+    $Client, $Session, [string]$Method, [string]$Url,
+    [hashtable]$Headers = @{}, [byte[]]$Bytes,
+    [string]$ContentType = 'application/octet-stream'
+  )
+
+  for ($attempt = 0; $attempt -lt 2; $attempt++) {
+    # Un nuovo messaggio e un nuovo corpo per ogni tentativo HTTP.
+    $request = New-Object System.Net.Http.HttpRequestMessage(
+      (New-Object System.Net.Http.HttpMethod($Method)), $Url)
+    try {
+      $request.Headers.Add('X-Auth', [string]$Session.Token)
+      foreach ($key in $Headers.Keys) { $request.Headers.Add($key, [string]$Headers[$key]) }
+      if ($null -ne $Bytes) {
+        $request.Content = New-Object System.Net.Http.ByteArrayContent -ArgumentList (, $Bytes)
+        $request.Content.Headers.ContentType = [System.Net.Http.Headers.MediaTypeHeaderValue]::new($ContentType)
+      }
+      $response = $Client.SendAsync($request).GetAwaiter().GetResult()
+    } finally { $request.Dispose() }
+
+    if ([int]$response.StatusCode -ne 401) { return $response }
+    $response.Dispose()
+    if ($attempt -eq 1) {
+      throw [System.Security.Authentication.AuthenticationException]::new(
+        'FileBrowser HTTP 401 anche dopo un nuovo login. Verificare autenticazione e configurazione del server; ZIP e stato restano in cache.')
+    }
+
+    Write-Warning 'FileBrowser HTTP 401: effettuo un nuovo login e riprovo la richiesta.'
+    $body = @{ username = $Session.Username; password = $Session.Password } | ConvertTo-Json -Compress
+    try {
+      $newToken = [string](Invoke-RestMethod -Method Post `
+          -Uri "$($Session.BaseUrl.TrimEnd('/'))/api/login" -ContentType 'application/json' -Body $body)
+    }
+    catch {
+      throw [System.Security.Authentication.AuthenticationException]::new(
+        'Nuovo login FileBrowser fallito dopo HTTP 401. Verificare credenziali e accesso al server; ZIP e stato restano in cache.')
+    }
+    if ([string]::IsNullOrWhiteSpace($newToken)) {
+      throw [System.Security.Authentication.AuthenticationException]::new('Nuovo login FileBrowser: token vuoto.')
+    }
+    # Oggetto condiviso: tutti i client usano il token aggiornato alla richiesta successiva.
+    $Session.Token = $newToken.Trim()
+  }
+}
+# [auth retry] - END
+
 function Get-FileBrowserResource {
   param(
     [Parameter(Mandatory = $true)]
@@ -217,7 +265,11 @@ function Get-FileBrowserResource {
 
     [Parameter(Mandatory = $true)]
     [AllowEmptyString()]
-    [string]$RemoteName
+    [string]$RemoteName,
+
+    # [auth retry] - START
+    [object]$Session = $null
+    # [auth retry] - END
   )
 
   if ([string]::IsNullOrEmpty($RemoteName)) {
@@ -230,7 +282,12 @@ function Get-FileBrowserResource {
   $resourceUrl = '{0}/api/resources{1}' -f $BaseUrl.TrimEnd('/'), $resourcePath
   $response = $null
   try {
-    $response = $Client.GetAsync($resourceUrl).GetAwaiter().GetResult()
+    # [auth retry] - START
+    if ($null -ne $Session) {
+      $response = Invoke-FileBrowserAuthenticatedRequest -Client $Client -Session $Session -Method GET -Url $resourceUrl
+    }
+    else { $response = $Client.GetAsync($resourceUrl).GetAwaiter().GetResult() }
+    # [auth retry] - END
     if ($response.StatusCode -eq [System.Net.HttpStatusCode]::NotFound) {
       return $null
     }
@@ -709,7 +766,11 @@ function Ensure-FileBrowserDirectory {
     [string]$Token,
 
     [Parameter(Mandatory = $true)]
-    [string]$RemoteDirectory
+    [string]$RemoteDirectory,
+
+    # [auth retry] - START
+    [object]$Session = $null
+    # [auth retry] - END
   )
 
   $client = New-FileBrowserHttpClient
@@ -720,7 +781,13 @@ function Ensure-FileBrowserDirectory {
     $client.DefaultRequestHeaders.Add('X-Auth', $Token)
     $resourcePath = (ConvertTo-FileBrowserResourcePath -RelativePath $RemoteDirectory) + '/'
     $directoryUrl = '{0}/api/resources{1}?override=false' -f $BaseUrl.TrimEnd('/'), $resourcePath
-    $response = $client.PostAsync($directoryUrl, $content).GetAwaiter().GetResult()
+    # [auth retry] - START
+    if ($null -ne $Session) {
+      $response = Invoke-FileBrowserAuthenticatedRequest -Client $client -Session $Session `
+        -Method POST -Url $directoryUrl -Bytes ([byte[]]@())
+    }
+    else { $response = $client.PostAsync($directoryUrl, $content).GetAwaiter().GetResult() }
+    # [auth retry] - END
 
     if (-not $response.IsSuccessStatusCode -and [int]$response.StatusCode -ne 409) {
       $responseBody = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
@@ -872,7 +939,16 @@ function New-LogZip {
 }
 
 function Invoke-TusRequest {
-  param($Client, [string]$Method, [string]$Url, [hashtable]$Headers = @{}, [byte[]]$Bytes)
+  # [auth retry] - START
+  param($Client, [string]$Method, [string]$Url, [hashtable]$Headers = @{}, [byte[]]$Bytes, $Session = $null)
+
+  if ($null -ne $Session) {
+    $authHeaders = @{ 'Tus-Resumable' = '1.0.0' }
+    foreach ($key in $Headers.Keys) { $authHeaders[$key] = $Headers[$key] }
+    return Invoke-FileBrowserAuthenticatedRequest -Client $Client -Session $Session -Method $Method `
+      -Url $Url -Headers $authHeaders -Bytes $Bytes -ContentType 'application/offset+octet-stream'
+  }
+  # [auth retry] - END
 
   $request = New-Object System.Net.Http.HttpRequestMessage(
     (New-Object System.Net.Http.HttpMethod($Method)), $Url)
@@ -891,7 +967,10 @@ function Send-FileBrowserZip {
   param(
     [string]$BaseUrl, [string]$Token, [string]$LocalPath, [string]$RemoteName,
     [ValidateRange(1, 10)][int]$MaxAttempts = 3,
-    [ValidateRange(0, 60000)][int]$RetryDelayMilliseconds = 2000
+    # [auth retry] - START
+    [ValidateRange(0, 60000)][int]$RetryDelayMilliseconds = 2000,
+    [object]$Session = $null
+    # [auth retry] - END
   )
 
   # Il nome contiene SHA-256 dello ZIP: un parziale appartiene agli stessi byte.
@@ -905,17 +984,17 @@ function Send-FileBrowserZip {
     $client.DefaultRequestHeaders.Add('X-Auth', $Token)
     for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++) {
       try {
-        $existing = Get-FileBrowserResource -Client $client -BaseUrl $BaseUrl -RemoteName $RemoteName
+        $existing = Get-FileBrowserResource -Client $client -BaseUrl $BaseUrl -RemoteName $RemoteName -Session $Session
         if ($null -ne $existing -and $existing.isDir) { throw 'Una cartella occupa il percorso ZIP.' }
         if ($null -ne $existing -and [long]$existing.size -eq $stream.Length) { return }
 
-        $head = Invoke-TusRequest -Client $client -Method HEAD -Url $url
+        $head = Invoke-TusRequest -Client $client -Method HEAD -Url $url -Session $Session
         try {
           if ([int]$head.StatusCode -eq 404) {
             # Sessione assente/scaduta: ricrea soltanto questo ZIP, mai i precedenti.
             if ($null -ne $existing) { Write-Warning 'Sessione TUS scaduta: reinvio soltanto lo ZIP incompleto.' }
             $create = Invoke-TusRequest -Client $client -Method POST -Url "$url`?override=true" `
-              -Headers @{ 'Upload-Length' = $stream.Length }
+              -Headers @{ 'Upload-Length' = $stream.Length } -Session $Session
             try {
               if ([int]$create.StatusCode -ne 201) {
                 throw "Creazione TUS fallita (HTTP $([int]$create.StatusCode)). Verificare supporto TUS e permessi FileBrowser."
@@ -945,7 +1024,7 @@ function Send-FileBrowserZip {
             $read += $n
           }
           $response = Invoke-TusRequest -Client $client -Method PATCH -Url $url `
-            -Headers @{ 'Upload-Offset' = $offset } -Bytes $buffer
+            -Headers @{ 'Upload-Offset' = $offset } -Bytes $buffer -Session $Session
           try {
             if ([int]$response.StatusCode -ne 204) { throw "Upload TUS fallito (HTTP $([int]$response.StatusCode))." }
             [long]$confirmed = [long](@($response.Headers.GetValues('Upload-Offset'))[0])
@@ -955,13 +1034,16 @@ function Send-FileBrowserZip {
           Write-Progress -Activity $activity -Status "$offset / $($stream.Length) byte confermati" `
             -PercentComplete (Get-TransferPercent $offset $stream.Length)
         }
-        $verified = Get-FileBrowserResource -Client $client -BaseUrl $BaseUrl -RemoteName $RemoteName
+        $verified = Get-FileBrowserResource -Client $client -BaseUrl $BaseUrl -RemoteName $RemoteName -Session $Session
         if ($null -eq $verified -or $verified.isDir -or [long]$verified.size -ne $stream.Length) {
           throw 'Verifica finale ZIP su FileBrowser fallita.'
         }
         return
       }
       catch {
+        # [auth retry] - START
+        if ($_.Exception -is [System.Security.Authentication.AuthenticationException]) { throw }
+        # [auth retry] - END
         if ($attempt -eq $MaxAttempts) { throw }
         Write-Warning "Upload interrotto: riprovo dall'offset del server. $($_.Exception.Message)"
         Start-Sleep -Milliseconds $RetryDelayMilliseconds
@@ -984,10 +1066,9 @@ if ($null -eq $sshCommand) {
   throw 'Comando ssh non trovato. Installa o abilita il client OpenSSH.'
 }
 
-$timestamp = Get-Date -Format 'yyyy-MM-dd_HH-mm-ss'
-# [resume] - START
-$destinationRoot = $null
-# [resume] - END
+# [fixed path] - START
+$destinationRoot = 'realdata'
+# [fixed path] - END
 # [comma host] - START
 $remoteTarget = "$CommaUser@$COMMA_HOST"
 # [comma host] - END
@@ -1037,23 +1118,19 @@ if ([string]::IsNullOrWhiteSpace($token)) {
   throw 'Impossibile ottenere il token FileBrowser.'
 }
 
+# [auth retry] - START
+$authSession = [pscustomobject]@{
+  BaseUrl = $FileBrowser
+  Username = $FbUser
+  Password = $FbPassword
+  Token = $token.Trim()
+}
+# [auth retry] - END
+
 # [resume] - START
 $resourceClient = New-FileBrowserHttpClient -Timeout ([TimeSpan]::FromSeconds(30))
 try {
 $resourceClient.DefaultRequestHeaders.Add('X-Auth', $token)
-$rootResource = Get-FileBrowserResource `
-  -Client $resourceClient `
-  -BaseUrl $FileBrowser `
-  -RemoteName ''
-$latestBackupName = Select-LatestFileBrowserBackupName -Items @($rootResource.items)
-if ([string]::IsNullOrEmpty($latestBackupName)) {
-  $latestBackupName = "comma-$timestamp"
-  Write-Host "Nessun backup precedente: creo $latestBackupName."
-}
-else {
-  Write-Host "Ripresa backup: $latestBackupName."
-}
-$destinationRoot = "$latestBackupName/realdata"
 # [resume] - END
 $createdDirectories = New-Object 'System.Collections.Generic.HashSet[string]'
 $fileIndex = 0
@@ -1073,13 +1150,10 @@ $cacheRoot = Join-Path $CacheDirectory $scopeKey
 $cacheLock = [IO.File]::Open((Join-Path $cacheRoot 'upload.lock'), [IO.FileMode]::OpenOrCreate,
   [IO.FileAccess]::ReadWrite, [IO.FileShare]::None)
 try {
-$backupStatePath = Join-Path $cacheRoot 'backup.txt'
-if (Test-Path -LiteralPath $backupStatePath) {
-  $savedBackup = [IO.File]::ReadAllText($backupStatePath).Trim()
-  if ($savedBackup -notmatch '^comma-\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}$') { throw 'Stato backup locale non valido.' }
-  $destinationRoot = "$savedBackup/realdata"
-}
-else { [IO.File]::WriteAllText($backupStatePath, $latestBackupName) }
+# [fixed path] - START
+# Ignora il vecchio backup.txt: i dati sono stati spostati nella radice realdata.
+# La cache di ZIP, parziali e checksum resta valida e viene riutilizzata.
+# [fixed path] - END
 Write-Host "Destinazione persistente: $destinationRoot"
 Write-Host "Stato e file interrotti: $cacheRoot"
 
@@ -1091,7 +1165,7 @@ foreach ($remoteFile in $remoteFiles) {
   Write-Host "=== Log $fileIndex/$($remoteFiles.Count): $relativePath ==="
 
   # Compatibilita con i log gia inviati senza ZIP.
-  $legacy = Get-FileBrowserResource -Client $resourceClient -BaseUrl $FileBrowser -RemoteName $destinationPath
+  $legacy = Get-FileBrowserResource -Client $resourceClient -BaseUrl $FileBrowser -RemoteName $destinationPath -Session $authSession
   if ($null -ne $legacy -and -not $legacy.isDir -and [long]$legacy.size -eq $remoteFile.Size) {
     Write-Host 'Log originale gia completo su Drive: salto.'
     $skippedCount++
@@ -1116,7 +1190,7 @@ foreach ($remoteFile in $remoteFiles) {
       throw "Stato ZIP locale non valido: $statePath"
     }
     $zipDestination = "$destinationPath.$($state.ZipHash).zip"
-    $existing = Get-FileBrowserResource -Client $resourceClient -BaseUrl $FileBrowser -RemoteName $zipDestination
+    $existing = Get-FileBrowserResource -Client $resourceClient -BaseUrl $FileBrowser -RemoteName $zipDestination -Session $authSession
     if ($null -ne $existing -and -not $existing.isDir -and [long]$existing.size -eq [long]$state.ZipBytes) {
       Write-Host 'ZIP gia completo su Drive: salto download e upload.'
       foreach ($path in @($localPath, $zipPath)) {
@@ -1170,11 +1244,11 @@ foreach ($remoteFile in $remoteFiles) {
   $zipDestination = "$destinationPath.$($state.ZipHash).zip"
   foreach ($directory in (Get-RequiredFileBrowserDirectories -DestinationRoot $destinationRoot -FileRelativePath $relativePath)) {
     if ($createdDirectories.Add($directory)) {
-      Ensure-FileBrowserDirectory -BaseUrl $FileBrowser -Token $token -RemoteDirectory $directory
+      Ensure-FileBrowserDirectory -BaseUrl $FileBrowser -Token $token -RemoteDirectory $directory -Session $authSession
     }
   }
   # In caso di errore ZIP e stato restano nella cache per il prossimo lancio.
-  Send-FileBrowserZip -BaseUrl $FileBrowser -Token $token -LocalPath $zipPath -RemoteName $zipDestination
+  Send-FileBrowserZip -BaseUrl $FileBrowser -Token $token -LocalPath $zipPath -RemoteName $zipDestination -Session $authSession
   Remove-Item -LiteralPath $zipPath -Force
   $uploadedCount++
 }
