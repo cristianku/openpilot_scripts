@@ -1,0 +1,2041 @@
+{
+  "dbc_differences": {
+    "0x2b6": {
+      "only_current": [],
+      "only_elkoled": []
+    },
+    "0x2f6": {
+      "only_current": [],
+      "only_elkoled": []
+    }
+  },
+  "messages": {
+    "0x2b6": {
+      "n": 21656,
+      "checksum_bad": 0,
+      "repacked_identical": 21656,
+      "counter_steps": {
+        "1": 21653,
+        "2": 1,
+        "6": 1
+      },
+      "gear_counter_matches": 21656,
+      "requested_torque_different": 6098,
+      "requested_torque_n": 6252,
+      "torque_delta_min": -672.0,
+      "torque_delta_max": 510.0,
+      "first": 55.387601071,
+      "last": 489.267576786,
+      "hz": 49.91,
+      "values": {
+        "MDD_DESIRED_DECELERATION": {
+          "min": -0.8,
+          "max": 2.05,
+          "distinct": 25,
+          "most_common": [
+            [
+              2.05,
+              19462
+            ],
+            [
+              -0.5,
+              462
+            ],
+            [
+              -0.8,
+              270
+            ],
+            [
+              -0.7,
+              206
+            ],
+            [
+              -0.65,
+              206
+            ],
+            [
+              -0.3,
+              126
+            ],
+            [
+              -0.15,
+              116
+            ],
+            [
+              -0.05,
+              114
+            ],
+            [
+              -0.4,
+              110
+            ],
+            [
+              -0.1,
+              86
+            ],
+            [
+              -0.45,
+              84
+            ],
+            [
+              -0.35,
+              80
+            ]
+          ]
+        },
+        "POTENTIAL_WHEEL_TORQUE_REQUEST": {
+          "min": 0.0,
+          "max": 2.0,
+          "distinct": 3,
+          "most_common": [
+            [
+              0.0,
+              13210
+            ],
+            [
+              1.0,
+              6252
+            ],
+            [
+              2.0,
+              2194
+            ]
+          ]
+        },
+        "MIN_TIME_FOR_DESIRED_GEAR": {
+          "min": 0.0,
+          "max": 6.2,
+          "distinct": 16,
+          "most_common": [
+            [
+              0.0,
+              15414
+            ],
+            [
+              6.2,
+              3127
+            ],
+            [
+              1.5,
+              1779
+            ],
+            [
+              1.4,
+              404
+            ],
+            [
+              1.3,
+              306
+            ],
+            [
+              2.5,
+              182
+            ],
+            [
+              1.8,
+              81
+            ],
+            [
+              2.4,
+              80
+            ],
+            [
+              1.2,
+              76
+            ],
+            [
+              1.9,
+              58
+            ],
+            [
+              1.6,
+              46
+            ],
+            [
+              1.7,
+              39
+            ]
+          ]
+        },
+        "GMP_POTENTIAL_WHEEL_TORQUE": {
+          "min": -4000.0,
+          "max": 776.0,
+          "distinct": 191,
+          "most_common": [
+            [
+              -4000.0,
+              15404
+            ],
+            [
+              0.0,
+              1094
+            ],
+            [
+              320.0,
+              96
+            ],
+            [
+              576.0,
+              90
+            ],
+            [
+              316.0,
+              82
+            ],
+            [
+              252.0,
+              76
+            ],
+            [
+              584.0,
+              74
+            ],
+            [
+              580.0,
+              72
+            ],
+            [
+              268.0,
+              68
+            ],
+            [
+              256.0,
+              64
+            ],
+            [
+              236.0,
+              62
+            ],
+            [
+              272.0,
+              56
+            ]
+          ]
+        },
+        "ACC_STATUS": {
+          "min": 2.0,
+          "max": 5.0,
+          "distinct": 4,
+          "most_common": [
+            [
+              2.0,
+              12524
+            ],
+            [
+              4.0,
+              8374
+            ],
+            [
+              3.0,
+              686
+            ],
+            [
+              5.0,
+              72
+            ]
+          ]
+        },
+        "GMP_WHEEL_TORQUE": {
+          "min": -4000.0,
+          "max": 832.0,
+          "distinct": 865,
+          "most_common": [
+            [
+              -4000.0,
+              15404
+            ],
+            [
+              -92.0,
+              98
+            ],
+            [
+              598.0,
+              34
+            ],
+            [
+              304.0,
+              32
+            ],
+            [
+              601.0,
+              30
+            ],
+            [
+              271.0,
+              30
+            ],
+            [
+              -76.0,
+              30
+            ],
+            [
+              -94.0,
+              30
+            ],
+            [
+              605.0,
+              28
+            ],
+            [
+              269.0,
+              28
+            ],
+            [
+              267.0,
+              28
+            ],
+            [
+              66.0,
+              26
+            ]
+          ]
+        },
+        "WHEEL_TORQUE_REQUEST": {
+          "min": 0.0,
+          "max": 2.0,
+          "distinct": 3,
+          "most_common": [
+            [
+              0.0,
+              15404
+            ],
+            [
+              1.0,
+              5984
+            ],
+            [
+              2.0,
+              268
+            ]
+          ]
+        },
+        "AUTO_BRAKING_STATUS": {
+          "min": 3.0,
+          "max": 6.0,
+          "distinct": 3,
+          "most_common": [
+            [
+              6.0,
+              11516
+            ],
+            [
+              3.0,
+              9750
+            ],
+            [
+              5.0,
+              390
+            ]
+          ]
+        },
+        "MDD_DECEL_TYPE": {
+          "min": 0.0,
+          "max": 1.0,
+          "distinct": 2,
+          "most_common": [
+            [
+              0.0,
+              19462
+            ],
+            [
+              1.0,
+              2194
+            ]
+          ]
+        },
+        "MDD_DECEL_CONTROL_REQ": {
+          "min": 0.0,
+          "max": 1.0,
+          "distinct": 2,
+          "most_common": [
+            [
+              0.0,
+              19462
+            ],
+            [
+              1.0,
+              2194
+            ]
+          ]
+        },
+        "GEAR_TYPE": {
+          "min": 0.0,
+          "max": 1.0,
+          "distinct": 2,
+          "most_common": [
+            [
+              0.0,
+              10828
+            ],
+            [
+              1.0,
+              10828
+            ]
+          ]
+        },
+        "PREFILL_REQUEST": {
+          "min": 0.0,
+          "max": 0.0,
+          "distinct": 1,
+          "most_common": [
+            [
+              0.0,
+              21656
+            ]
+          ]
+        },
+        "CHECKSUM": {
+          "min": 0.0,
+          "max": 15.0,
+          "distinct": 16,
+          "most_common": [
+            [
+              12.0,
+              1389
+            ],
+            [
+              7.0,
+              1384
+            ],
+            [
+              10.0,
+              1377
+            ],
+            [
+              0.0,
+              1368
+            ],
+            [
+              5.0,
+              1360
+            ],
+            [
+              9.0,
+              1356
+            ],
+            [
+              8.0,
+              1351
+            ],
+            [
+              1.0,
+              1350
+            ],
+            [
+              6.0,
+              1348
+            ],
+            [
+              11.0,
+              1342
+            ],
+            [
+              15.0,
+              1342
+            ],
+            [
+              2.0,
+              1342
+            ]
+          ]
+        },
+        "COUNTER": {
+          "min": 0.0,
+          "max": 15.0,
+          "distinct": 16,
+          "most_common": [
+            [
+              10.0,
+              1354
+            ],
+            [
+              11.0,
+              1354
+            ],
+            [
+              1.0,
+              1354
+            ],
+            [
+              2.0,
+              1354
+            ],
+            [
+              3.0,
+              1354
+            ],
+            [
+              4.0,
+              1354
+            ],
+            [
+              5.0,
+              1354
+            ],
+            [
+              6.0,
+              1354
+            ],
+            [
+              7.0,
+              1354
+            ],
+            [
+              12.0,
+              1353
+            ],
+            [
+              14.0,
+              1353
+            ],
+            [
+              15.0,
+              1353
+            ]
+          ]
+        }
+      },
+      "groups": [
+        {
+          "values": [
+            2.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            3.0
+          ],
+          "count": 9518,
+          "example": {
+            "segment": "0000003a--e445e79563--0",
+            "mono": 55.387601071,
+            "hex": "fe 00 00 02 00 00 03 a0",
+            "signals": {
+              "MDD_DESIRED_DECELERATION": 2.05,
+              "POTENTIAL_WHEEL_TORQUE_REQUEST": 0.0,
+              "MIN_TIME_FOR_DESIRED_GEAR": 0.0,
+              "GMP_POTENTIAL_WHEEL_TORQUE": -4000.0,
+              "ACC_STATUS": 2.0,
+              "GMP_WHEEL_TORQUE": -4000.0,
+              "WHEEL_TORQUE_REQUEST": 0.0,
+              "AUTO_BRAKING_STATUS": 3.0,
+              "MDD_DECEL_TYPE": 0.0,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "GEAR_TYPE": 0.0,
+              "PREFILL_REQUEST": 0.0,
+              "CHECKSUM": 0.0,
+              "COUNTER": 10.0
+            }
+          }
+        },
+        {
+          "values": [
+            4.0,
+            1.0,
+            1.0,
+            0.0,
+            0.0,
+            6.0
+          ],
+          "count": 5770,
+          "example": {
+            "segment": "0000003a--e445e79563--2",
+            "mono": 234.890781545,
+            "hex": "fe f9 3e 84 48 c5 46 9a",
+            "signals": {
+              "MDD_DESIRED_DECELERATION": 2.05,
+              "POTENTIAL_WHEEL_TORQUE_REQUEST": 1.0,
+              "MIN_TIME_FOR_DESIRED_GEAR": 6.2,
+              "GMP_POTENTIAL_WHEEL_TORQUE": 0.0,
+              "ACC_STATUS": 4.0,
+              "GMP_WHEEL_TORQUE": 657.0,
+              "WHEEL_TORQUE_REQUEST": 1.0,
+              "AUTO_BRAKING_STATUS": 6.0,
+              "MDD_DECEL_TYPE": 0.0,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "GEAR_TYPE": 1.0,
+              "PREFILL_REQUEST": 0.0,
+              "CHECKSUM": 10.0,
+              "COUNTER": 9.0
+            }
+          }
+        },
+        {
+          "values": [
+            2.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            6.0
+          ],
+          "count": 2636,
+          "example": {
+            "segment": "0000003a--e445e79563--1",
+            "mono": 168.98248134,
+            "hex": "fe 00 00 02 00 00 46 9a",
+            "signals": {
+              "MDD_DESIRED_DECELERATION": 2.05,
+              "POTENTIAL_WHEEL_TORQUE_REQUEST": 0.0,
+              "MIN_TIME_FOR_DESIRED_GEAR": 0.0,
+              "GMP_POTENTIAL_WHEEL_TORQUE": -4000.0,
+              "ACC_STATUS": 2.0,
+              "GMP_WHEEL_TORQUE": -4000.0,
+              "WHEEL_TORQUE_REQUEST": 0.0,
+              "AUTO_BRAKING_STATUS": 6.0,
+              "MDD_DECEL_TYPE": 0.0,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "GEAR_TYPE": 1.0,
+              "PREFILL_REQUEST": 0.0,
+              "CHECKSUM": 10.0,
+              "COUNTER": 9.0
+            }
+          }
+        },
+        {
+          "values": [
+            4.0,
+            2.0,
+            0.0,
+            1.0,
+            1.0,
+            6.0
+          ],
+          "count": 2194,
+          "example": {
+            "segment": "0000003a--e445e79563--3",
+            "mono": 263.920966146,
+            "hex": "c7 02 00 04 00 00 6e 5a",
+            "signals": {
+              "MDD_DESIRED_DECELERATION": -0.7,
+              "POTENTIAL_WHEEL_TORQUE_REQUEST": 2.0,
+              "MIN_TIME_FOR_DESIRED_GEAR": 0.0,
+              "GMP_POTENTIAL_WHEEL_TORQUE": -4000.0,
+              "ACC_STATUS": 4.0,
+              "GMP_WHEEL_TORQUE": -4000.0,
+              "WHEEL_TORQUE_REQUEST": 0.0,
+              "AUTO_BRAKING_STATUS": 6.0,
+              "MDD_DECEL_TYPE": 1.0,
+              "MDD_DECEL_CONTROL_REQ": 1.0,
+              "GEAR_TYPE": 1.0,
+              "PREFILL_REQUEST": 0.0,
+              "CHECKSUM": 10.0,
+              "COUNTER": 5.0
+            }
+          }
+        },
+        {
+          "values": [
+            3.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            6.0
+          ],
+          "count": 596,
+          "example": {
+            "segment": "0000003a--e445e79563--2",
+            "mono": 197.457657892,
+            "hex": "fe 00 00 03 00 00 46 99",
+            "signals": {
+              "MDD_DESIRED_DECELERATION": 2.05,
+              "POTENTIAL_WHEEL_TORQUE_REQUEST": 0.0,
+              "MIN_TIME_FOR_DESIRED_GEAR": 0.0,
+              "GMP_POTENTIAL_WHEEL_TORQUE": -4000.0,
+              "ACC_STATUS": 3.0,
+              "GMP_WHEEL_TORQUE": -4000.0,
+              "WHEEL_TORQUE_REQUEST": 0.0,
+              "AUTO_BRAKING_STATUS": 6.0,
+              "MDD_DECEL_TYPE": 0.0,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "GEAR_TYPE": 1.0,
+              "PREFILL_REQUEST": 0.0,
+              "CHECKSUM": 9.0,
+              "COUNTER": 9.0
+            }
+          }
+        },
+        {
+          "values": [
+            2.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            5.0
+          ],
+          "count": 370,
+          "example": {
+            "segment": "0000003a--e445e79563--1",
+            "mono": 129.897546355,
+            "hex": "fe 00 00 02 00 00 45 7d",
+            "signals": {
+              "MDD_DESIRED_DECELERATION": 2.05,
+              "POTENTIAL_WHEEL_TORQUE_REQUEST": 0.0,
+              "MIN_TIME_FOR_DESIRED_GEAR": 0.0,
+              "GMP_POTENTIAL_WHEEL_TORQUE": -4000.0,
+              "ACC_STATUS": 2.0,
+              "GMP_WHEEL_TORQUE": -4000.0,
+              "WHEEL_TORQUE_REQUEST": 0.0,
+              "AUTO_BRAKING_STATUS": 5.0,
+              "MDD_DECEL_TYPE": 0.0,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "GEAR_TYPE": 1.0,
+              "PREFILL_REQUEST": 0.0,
+              "CHECKSUM": 13.0,
+              "COUNTER": 7.0
+            }
+          }
+        },
+        {
+          "values": [
+            4.0,
+            1.0,
+            2.0,
+            0.0,
+            0.0,
+            6.0
+          ],
+          "count": 248,
+          "example": {
+            "segment": "0000003a--e445e79563--2",
+            "mono": 234.809827587,
+            "hex": "fe 01 3e 84 3b 02 46 52",
+            "signals": {
+              "MDD_DESIRED_DECELERATION": 2.05,
+              "POTENTIAL_WHEEL_TORQUE_REQUEST": 1.0,
+              "MIN_TIME_FOR_DESIRED_GEAR": 0.0,
+              "GMP_POTENTIAL_WHEEL_TORQUE": 0.0,
+              "ACC_STATUS": 4.0,
+              "GMP_WHEEL_TORQUE": -224.0,
+              "WHEEL_TORQUE_REQUEST": 2.0,
+              "AUTO_BRAKING_STATUS": 6.0,
+              "MDD_DECEL_TYPE": 0.0,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "GEAR_TYPE": 1.0,
+              "PREFILL_REQUEST": 0.0,
+              "CHECKSUM": 2.0,
+              "COUNTER": 5.0
+            }
+          }
+        },
+        {
+          "values": [
+            4.0,
+            1.0,
+            1.0,
+            0.0,
+            0.0,
+            3.0
+          ],
+          "count": 138,
+          "example": {
+            "segment": "0000003a--e445e79563--4",
+            "mono": 327.642829495,
+            "hex": "fe f9 3e 84 47 e5 43 7e",
+            "signals": {
+              "MDD_DESIRED_DECELERATION": 2.05,
+              "POTENTIAL_WHEEL_TORQUE_REQUEST": 1.0,
+              "MIN_TIME_FOR_DESIRED_GEAR": 6.2,
+              "GMP_POTENTIAL_WHEEL_TORQUE": 0.0,
+              "ACC_STATUS": 4.0,
+              "GMP_WHEEL_TORQUE": 601.0,
+              "WHEEL_TORQUE_REQUEST": 1.0,
+              "AUTO_BRAKING_STATUS": 3.0,
+              "MDD_DECEL_TYPE": 0.0,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "GEAR_TYPE": 1.0,
+              "PREFILL_REQUEST": 0.0,
+              "CHECKSUM": 14.0,
+              "COUNTER": 7.0
+            }
+          }
+        },
+        {
+          "values": [
+            3.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            3.0
+          ],
+          "count": 82,
+          "example": {
+            "segment": "0000003a--e445e79563--2",
+            "mono": 204.820550493,
+            "hex": "fe 00 00 03 00 00 43 9c",
+            "signals": {
+              "MDD_DESIRED_DECELERATION": 2.05,
+              "POTENTIAL_WHEEL_TORQUE_REQUEST": 0.0,
+              "MIN_TIME_FOR_DESIRED_GEAR": 0.0,
+              "GMP_POTENTIAL_WHEEL_TORQUE": -4000.0,
+              "ACC_STATUS": 3.0,
+              "GMP_WHEEL_TORQUE": -4000.0,
+              "WHEEL_TORQUE_REQUEST": 0.0,
+              "AUTO_BRAKING_STATUS": 3.0,
+              "MDD_DECEL_TYPE": 0.0,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "GEAR_TYPE": 1.0,
+              "PREFILL_REQUEST": 0.0,
+              "CHECKSUM": 12.0,
+              "COUNTER": 9.0
+            }
+          }
+        },
+        {
+          "values": [
+            5.0,
+            1.0,
+            1.0,
+            0.0,
+            0.0,
+            6.0
+          ],
+          "count": 68,
+          "example": {
+            "segment": "0000003a--e445e79563--4",
+            "mono": 328.085072918,
+            "hex": "fe f9 3f e5 3e e5 46 d7",
+            "signals": {
+              "MDD_DESIRED_DECELERATION": 2.05,
+              "POTENTIAL_WHEEL_TORQUE_REQUEST": 1.0,
+              "MIN_TIME_FOR_DESIRED_GEAR": 6.2,
+              "GMP_POTENTIAL_WHEEL_TORQUE": 88.0,
+              "ACC_STATUS": 5.0,
+              "GMP_WHEEL_TORQUE": 25.0,
+              "WHEEL_TORQUE_REQUEST": 1.0,
+              "AUTO_BRAKING_STATUS": 6.0,
+              "MDD_DECEL_TYPE": 0.0,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "GEAR_TYPE": 1.0,
+              "PREFILL_REQUEST": 0.0,
+              "CHECKSUM": 7.0,
+              "COUNTER": 13.0
+            }
+          }
+        },
+        {
+          "values": [
+            4.0,
+            1.0,
+            2.0,
+            0.0,
+            0.0,
+            3.0
+          ],
+          "count": 12,
+          "example": {
+            "segment": "0000003a--e445e79563--4",
+            "mono": 327.573107343,
+            "hex": "fe 01 3e 84 3a 12 43 37",
+            "signals": {
+              "MDD_DESIRED_DECELERATION": 2.05,
+              "POTENTIAL_WHEEL_TORQUE_REQUEST": 1.0,
+              "MIN_TIME_FOR_DESIRED_GEAR": 0.0,
+              "GMP_POTENTIAL_WHEEL_TORQUE": 0.0,
+              "ACC_STATUS": 4.0,
+              "GMP_WHEEL_TORQUE": -284.0,
+              "WHEEL_TORQUE_REQUEST": 2.0,
+              "AUTO_BRAKING_STATUS": 3.0,
+              "MDD_DECEL_TYPE": 0.0,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "GEAR_TYPE": 1.0,
+              "PREFILL_REQUEST": 0.0,
+              "CHECKSUM": 7.0,
+              "COUNTER": 3.0
+            }
+          }
+        },
+        {
+          "values": [
+            3.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            5.0
+          ],
+          "count": 8,
+          "example": {
+            "segment": "0000003a--e445e79563--2",
+            "mono": 234.28849829,
+            "hex": "fe 00 00 03 00 00 45 b8",
+            "signals": {
+              "MDD_DESIRED_DECELERATION": 2.05,
+              "POTENTIAL_WHEEL_TORQUE_REQUEST": 0.0,
+              "MIN_TIME_FOR_DESIRED_GEAR": 0.0,
+              "GMP_POTENTIAL_WHEEL_TORQUE": -4000.0,
+              "ACC_STATUS": 3.0,
+              "GMP_WHEEL_TORQUE": -4000.0,
+              "WHEEL_TORQUE_REQUEST": 0.0,
+              "AUTO_BRAKING_STATUS": 5.0,
+              "MDD_DECEL_TYPE": 0.0,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "GEAR_TYPE": 1.0,
+              "PREFILL_REQUEST": 0.0,
+              "CHECKSUM": 8.0,
+              "COUNTER": 11.0
+            }
+          }
+        },
+        {
+          "values": [
+            4.0,
+            1.0,
+            1.0,
+            0.0,
+            0.0,
+            5.0
+          ],
+          "count": 8,
+          "example": {
+            "segment": "0000003a--e445e79563--4",
+            "mono": 327.723217953,
+            "hex": "fe f9 3e 84 46 dd 45 b2",
+            "signals": {
+              "MDD_DESIRED_DECELERATION": 2.05,
+              "POTENTIAL_WHEEL_TORQUE_REQUEST": 1.0,
+              "MIN_TIME_FOR_DESIRED_GEAR": 6.2,
+              "GMP_POTENTIAL_WHEEL_TORQUE": 0.0,
+              "ACC_STATUS": 4.0,
+              "GMP_WHEEL_TORQUE": 535.0,
+              "WHEEL_TORQUE_REQUEST": 1.0,
+              "AUTO_BRAKING_STATUS": 5.0,
+              "MDD_DECEL_TYPE": 0.0,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "GEAR_TYPE": 1.0,
+              "PREFILL_REQUEST": 0.0,
+              "CHECKSUM": 2.0,
+              "COUNTER": 11.0
+            }
+          }
+        },
+        {
+          "values": [
+            5.0,
+            1.0,
+            2.0,
+            0.0,
+            0.0,
+            6.0
+          ],
+          "count": 4,
+          "example": {
+            "segment": "0000003a--e445e79563--4",
+            "mono": 328.012454573,
+            "hex": "fe f9 3e 85 3a 92 46 9e",
+            "signals": {
+              "MDD_DESIRED_DECELERATION": 2.05,
+              "POTENTIAL_WHEEL_TORQUE_REQUEST": 1.0,
+              "MIN_TIME_FOR_DESIRED_GEAR": 6.2,
+              "GMP_POTENTIAL_WHEEL_TORQUE": 0.0,
+              "ACC_STATUS": 5.0,
+              "GMP_WHEEL_TORQUE": -252.0,
+              "WHEEL_TORQUE_REQUEST": 2.0,
+              "AUTO_BRAKING_STATUS": 6.0,
+              "MDD_DECEL_TYPE": 0.0,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "GEAR_TYPE": 1.0,
+              "PREFILL_REQUEST": 0.0,
+              "CHECKSUM": 14.0,
+              "COUNTER": 9.0
+            }
+          }
+        },
+        {
+          "values": [
+            4.0,
+            1.0,
+            2.0,
+            0.0,
+            0.0,
+            5.0
+          ],
+          "count": 4,
+          "example": {
+            "segment": "0000003a--e445e79563--6",
+            "mono": 421.061342896,
+            "hex": "fe f9 3e 84 3a 4a 45 51",
+            "signals": {
+              "MDD_DESIRED_DECELERATION": 2.05,
+              "POTENTIAL_WHEEL_TORQUE_REQUEST": 1.0,
+              "MIN_TIME_FOR_DESIRED_GEAR": 6.2,
+              "GMP_POTENTIAL_WHEEL_TORQUE": 0.0,
+              "ACC_STATUS": 4.0,
+              "GMP_WHEEL_TORQUE": -270.0,
+              "WHEEL_TORQUE_REQUEST": 2.0,
+              "AUTO_BRAKING_STATUS": 5.0,
+              "MDD_DECEL_TYPE": 0.0,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "GEAR_TYPE": 1.0,
+              "PREFILL_REQUEST": 0.0,
+              "CHECKSUM": 1.0,
+              "COUNTER": 5.0
+            }
+          }
+        }
+      ]
+    },
+    "0x2f6": {
+      "n": 21655,
+      "checksum_bad": 0,
+      "repacked_identical": 21655,
+      "counter_steps": {
+        "1": 21651,
+        "2": 2,
+        "6": 1
+      },
+      "gear_counter_matches": 0,
+      "requested_torque_different": 0,
+      "requested_torque_n": 0,
+      "torque_delta_min": 1000000000.0,
+      "torque_delta_max": -1000000000.0,
+      "first": 55.377726852,
+      "last": 489.247081064,
+      "hz": 49.909,
+      "values": {
+        "TARGET_DETECTED": {
+          "min": 0.0,
+          "max": 1.0,
+          "distinct": 2,
+          "most_common": [
+            [
+              0.0,
+              18561
+            ],
+            [
+              1.0,
+              3094
+            ]
+          ]
+        },
+        "REQUEST_TAKEOVER": {
+          "min": 0.0,
+          "max": 0.0,
+          "distinct": 1,
+          "most_common": [
+            [
+              0.0,
+              21655
+            ]
+          ]
+        },
+        "BLIND_SENSOR": {
+          "min": 0.0,
+          "max": 0.0,
+          "distinct": 1,
+          "most_common": [
+            [
+              0.0,
+              21655
+            ]
+          ]
+        },
+        "REQ_VISUAL_COLL_ALERT_ARC": {
+          "min": 0.0,
+          "max": 0.0,
+          "distinct": 1,
+          "most_common": [
+            [
+              0.0,
+              21655
+            ]
+          ]
+        },
+        "REQ_AUDIO_COLL_ALERT_ARC": {
+          "min": 0.0,
+          "max": 0.0,
+          "distinct": 1,
+          "most_common": [
+            [
+              0.0,
+              21655
+            ]
+          ]
+        },
+        "REQ_HAPTIC_COLL_ALERT_ARC": {
+          "min": 0.0,
+          "max": 0.0,
+          "distinct": 1,
+          "most_common": [
+            [
+              0.0,
+              21655
+            ]
+          ]
+        },
+        "INTER_VEHICLE_DISTANCE": {
+          "min": 1.0,
+          "max": 255.5,
+          "distinct": 274,
+          "most_common": [
+            [
+              255.5,
+              18561
+            ],
+            [
+              9.25,
+              448
+            ],
+            [
+              1.25,
+              188
+            ],
+            [
+              9.0,
+              130
+            ],
+            [
+              9.75,
+              110
+            ],
+            [
+              76.0,
+              94
+            ],
+            [
+              1.5,
+              92
+            ],
+            [
+              83.75,
+              86
+            ],
+            [
+              9.5,
+              74
+            ],
+            [
+              78.0,
+              71
+            ],
+            [
+              78.25,
+              41
+            ],
+            [
+              81.5,
+              40
+            ]
+          ]
+        },
+        "ARC_STATUS": {
+          "min": 6.0,
+          "max": 12.0,
+          "distinct": 3,
+          "most_common": [
+            [
+              12.0,
+              14316
+            ],
+            [
+              6.0,
+              7320
+            ],
+            [
+              10.0,
+              19
+            ]
+          ]
+        },
+        "AUTO_BRAKING_IN_PROGRESS": {
+          "min": 0.0,
+          "max": 0.0,
+          "distinct": 1,
+          "most_common": [
+            [
+              0.0,
+              21655
+            ]
+          ]
+        },
+        "AEB_ENABLED": {
+          "min": 0.0,
+          "max": 0.0,
+          "distinct": 1,
+          "most_common": [
+            [
+              0.0,
+              21655
+            ]
+          ]
+        },
+        "DRIVE_AWAY_REQUEST": {
+          "min": 0.0,
+          "max": 0.0,
+          "distinct": 1,
+          "most_common": [
+            [
+              0.0,
+              21655
+            ]
+          ]
+        },
+        "DISPLAY_INTERVEHICLE_TIME": {
+          "min": 1.5,
+          "max": 6.2,
+          "distinct": 47,
+          "most_common": [
+            [
+              6.2,
+              18561
+            ],
+            [
+              6.1,
+              992
+            ],
+            [
+              4.7,
+              298
+            ],
+            [
+              4.8,
+              223
+            ],
+            [
+              4.6,
+              156
+            ],
+            [
+              4.4,
+              154
+            ],
+            [
+              5.4,
+              118
+            ],
+            [
+              4.9,
+              107
+            ],
+            [
+              4.5,
+              106
+            ],
+            [
+              4.3,
+              88
+            ],
+            [
+              4.2,
+              86
+            ],
+            [
+              5.1,
+              84
+            ]
+          ]
+        },
+        "MDD_DECEL_CONTROL_REQ": {
+          "min": 0.0,
+          "max": 1.0,
+          "distinct": 2,
+          "most_common": [
+            [
+              0.0,
+              19462
+            ],
+            [
+              1.0,
+              2193
+            ]
+          ]
+        },
+        "AUTO_BRAKING_STATUS": {
+          "min": 3.0,
+          "max": 6.0,
+          "distinct": 3,
+          "most_common": [
+            [
+              6.0,
+              11514
+            ],
+            [
+              3.0,
+              9751
+            ],
+            [
+              5.0,
+              390
+            ]
+          ]
+        },
+        "CHECKSUM": {
+          "min": 0.0,
+          "max": 15.0,
+          "distinct": 16,
+          "most_common": [
+            [
+              11.0,
+              1361
+            ],
+            [
+              5.0,
+              1360
+            ],
+            [
+              2.0,
+              1359
+            ],
+            [
+              4.0,
+              1358
+            ],
+            [
+              8.0,
+              1356
+            ],
+            [
+              12.0,
+              1354
+            ],
+            [
+              10.0,
+              1354
+            ],
+            [
+              7.0,
+              1354
+            ],
+            [
+              1.0,
+              1352
+            ],
+            [
+              13.0,
+              1352
+            ],
+            [
+              3.0,
+              1351
+            ],
+            [
+              14.0,
+              1350
+            ]
+          ]
+        },
+        "COUNTER": {
+          "min": 0.0,
+          "max": 15.0,
+          "distinct": 16,
+          "most_common": [
+            [
+              9.0,
+              1354
+            ],
+            [
+              10.0,
+              1354
+            ],
+            [
+              11.0,
+              1354
+            ],
+            [
+              1.0,
+              1354
+            ],
+            [
+              2.0,
+              1354
+            ],
+            [
+              3.0,
+              1354
+            ],
+            [
+              4.0,
+              1354
+            ],
+            [
+              5.0,
+              1354
+            ],
+            [
+              6.0,
+              1354
+            ],
+            [
+              12.0,
+              1353
+            ],
+            [
+              14.0,
+              1353
+            ],
+            [
+              15.0,
+              1353
+            ]
+          ]
+        },
+        "TARGET_POSITION": {
+          "min": 0.0,
+          "max": 0.0,
+          "distinct": 1,
+          "most_common": [
+            [
+              0.0,
+              21655
+            ]
+          ]
+        }
+      },
+      "groups": [
+        {
+          "values": [
+            0.0,
+            12.0,
+            0.0,
+            6.0,
+            0.0
+          ],
+          "count": 7869,
+          "example": {
+            "segment": "0000003a--e445e79563--1",
+            "mono": 169.362873215,
+            "hex": "00 ff 8c 00 f8 c0 c7 00",
+            "signals": {
+              "TARGET_DETECTED": 0.0,
+              "REQUEST_TAKEOVER": 0.0,
+              "BLIND_SENSOR": 0.0,
+              "REQ_VISUAL_COLL_ALERT_ARC": 0.0,
+              "REQ_AUDIO_COLL_ALERT_ARC": 0.0,
+              "REQ_HAPTIC_COLL_ALERT_ARC": 0.0,
+              "INTER_VEHICLE_DISTANCE": 255.5,
+              "ARC_STATUS": 12.0,
+              "AUTO_BRAKING_IN_PROGRESS": 0.0,
+              "AEB_ENABLED": 0.0,
+              "DRIVE_AWAY_REQUEST": 0.0,
+              "DISPLAY_INTERVEHICLE_TIME": 6.2,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "AUTO_BRAKING_STATUS": 6.0,
+              "CHECKSUM": 7.0,
+              "COUNTER": 12.0,
+              "TARGET_POSITION": 0.0
+            }
+          }
+        },
+        {
+          "values": [
+            0.0,
+            6.0,
+            0.0,
+            3.0,
+            0.0
+          ],
+          "count": 6180,
+          "example": {
+            "segment": "0000003a--e445e79563--0",
+            "mono": 55.377726852,
+            "hex": "00 ff 86 00 f8 60 96 00",
+            "signals": {
+              "TARGET_DETECTED": 0.0,
+              "REQUEST_TAKEOVER": 0.0,
+              "BLIND_SENSOR": 0.0,
+              "REQ_VISUAL_COLL_ALERT_ARC": 0.0,
+              "REQ_AUDIO_COLL_ALERT_ARC": 0.0,
+              "REQ_HAPTIC_COLL_ALERT_ARC": 0.0,
+              "INTER_VEHICLE_DISTANCE": 255.5,
+              "ARC_STATUS": 6.0,
+              "AUTO_BRAKING_IN_PROGRESS": 0.0,
+              "AEB_ENABLED": 0.0,
+              "DRIVE_AWAY_REQUEST": 0.0,
+              "DISPLAY_INTERVEHICLE_TIME": 6.2,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "AUTO_BRAKING_STATUS": 3.0,
+              "CHECKSUM": 6.0,
+              "COUNTER": 9.0,
+              "TARGET_POSITION": 0.0
+            }
+          }
+        },
+        {
+          "values": [
+            0.0,
+            12.0,
+            0.0,
+            3.0,
+            0.0
+          ],
+          "count": 2398,
+          "example": {
+            "segment": "0000003a--e445e79563--1",
+            "mono": 147.964545671,
+            "hex": "00 ff 8c 00 f8 60 eb 00",
+            "signals": {
+              "TARGET_DETECTED": 0.0,
+              "REQUEST_TAKEOVER": 0.0,
+              "BLIND_SENSOR": 0.0,
+              "REQ_VISUAL_COLL_ALERT_ARC": 0.0,
+              "REQ_AUDIO_COLL_ALERT_ARC": 0.0,
+              "REQ_HAPTIC_COLL_ALERT_ARC": 0.0,
+              "INTER_VEHICLE_DISTANCE": 255.5,
+              "ARC_STATUS": 12.0,
+              "AUTO_BRAKING_IN_PROGRESS": 0.0,
+              "AEB_ENABLED": 0.0,
+              "DRIVE_AWAY_REQUEST": 0.0,
+              "DISPLAY_INTERVEHICLE_TIME": 6.2,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "AUTO_BRAKING_STATUS": 3.0,
+              "CHECKSUM": 11.0,
+              "COUNTER": 14.0,
+              "TARGET_POSITION": 0.0
+            }
+          }
+        },
+        {
+          "values": [
+            0.0,
+            12.0,
+            0.0,
+            6.0,
+            1.0
+          ],
+          "count": 1789,
+          "example": {
+            "segment": "0000003a--e445e79563--3",
+            "mono": 263.931798656,
+            "hex": "00 ff 8c 00 f8 c4 5a 00",
+            "signals": {
+              "TARGET_DETECTED": 0.0,
+              "REQUEST_TAKEOVER": 0.0,
+              "BLIND_SENSOR": 0.0,
+              "REQ_VISUAL_COLL_ALERT_ARC": 0.0,
+              "REQ_AUDIO_COLL_ALERT_ARC": 0.0,
+              "REQ_HAPTIC_COLL_ALERT_ARC": 0.0,
+              "INTER_VEHICLE_DISTANCE": 255.5,
+              "ARC_STATUS": 12.0,
+              "AUTO_BRAKING_IN_PROGRESS": 0.0,
+              "AEB_ENABLED": 0.0,
+              "DRIVE_AWAY_REQUEST": 0.0,
+              "DISPLAY_INTERVEHICLE_TIME": 6.2,
+              "MDD_DECEL_CONTROL_REQ": 1.0,
+              "AUTO_BRAKING_STATUS": 6.0,
+              "CHECKSUM": 10.0,
+              "COUNTER": 5.0,
+              "TARGET_POSITION": 0.0
+            }
+          }
+        },
+        {
+          "values": [
+            1.0,
+            12.0,
+            0.0,
+            6.0,
+            0.0
+          ],
+          "count": 1432,
+          "example": {
+            "segment": "0000003a--e445e79563--2",
+            "mono": 235.182001152,
+            "hex": "01 28 0c 00 a4 c0 70 00",
+            "signals": {
+              "TARGET_DETECTED": 1.0,
+              "REQUEST_TAKEOVER": 0.0,
+              "BLIND_SENSOR": 0.0,
+              "REQ_VISUAL_COLL_ALERT_ARC": 0.0,
+              "REQ_AUDIO_COLL_ALERT_ARC": 0.0,
+              "REQ_HAPTIC_COLL_ALERT_ARC": 0.0,
+              "INTER_VEHICLE_DISTANCE": 40.0,
+              "ARC_STATUS": 12.0,
+              "AUTO_BRAKING_IN_PROGRESS": 0.0,
+              "AEB_ENABLED": 0.0,
+              "DRIVE_AWAY_REQUEST": 0.0,
+              "DISPLAY_INTERVEHICLE_TIME": 4.1,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "AUTO_BRAKING_STATUS": 6.0,
+              "CHECKSUM": 0.0,
+              "COUNTER": 7.0,
+              "TARGET_POSITION": 0.0
+            }
+          }
+        },
+        {
+          "values": [
+            1.0,
+            6.0,
+            0.0,
+            3.0,
+            0.0
+          ],
+          "count": 1108,
+          "example": {
+            "segment": "0000003a--e445e79563--1",
+            "mono": 142.721428173,
+            "hex": "01 03 46 00 58 60 8f 00",
+            "signals": {
+              "TARGET_DETECTED": 1.0,
+              "REQUEST_TAKEOVER": 0.0,
+              "BLIND_SENSOR": 0.0,
+              "REQ_VISUAL_COLL_ALERT_ARC": 0.0,
+              "REQ_AUDIO_COLL_ALERT_ARC": 0.0,
+              "REQ_HAPTIC_COLL_ALERT_ARC": 0.0,
+              "INTER_VEHICLE_DISTANCE": 3.25,
+              "ARC_STATUS": 6.0,
+              "AUTO_BRAKING_IN_PROGRESS": 0.0,
+              "AEB_ENABLED": 0.0,
+              "DRIVE_AWAY_REQUEST": 0.0,
+              "DISPLAY_INTERVEHICLE_TIME": 2.2,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "AUTO_BRAKING_STATUS": 3.0,
+              "CHECKSUM": 15.0,
+              "COUNTER": 8.0,
+              "TARGET_POSITION": 0.0
+            }
+          }
+        },
+        {
+          "values": [
+            1.0,
+            12.0,
+            0.0,
+            6.0,
+            1.0
+          ],
+          "count": 404,
+          "example": {
+            "segment": "0000003a--e445e79563--3",
+            "mono": 266.452073526,
+            "hex": "01 4c 4c 00 cc c4 3c 00",
+            "signals": {
+              "TARGET_DETECTED": 1.0,
+              "REQUEST_TAKEOVER": 0.0,
+              "BLIND_SENSOR": 0.0,
+              "REQ_VISUAL_COLL_ALERT_ARC": 0.0,
+              "REQ_AUDIO_COLL_ALERT_ARC": 0.0,
+              "REQ_HAPTIC_COLL_ALERT_ARC": 0.0,
+              "INTER_VEHICLE_DISTANCE": 76.25,
+              "ARC_STATUS": 12.0,
+              "AUTO_BRAKING_IN_PROGRESS": 0.0,
+              "AEB_ENABLED": 0.0,
+              "DRIVE_AWAY_REQUEST": 0.0,
+              "DISPLAY_INTERVEHICLE_TIME": 5.1,
+              "MDD_DECEL_CONTROL_REQ": 1.0,
+              "AUTO_BRAKING_STATUS": 6.0,
+              "CHECKSUM": 12.0,
+              "COUNTER": 3.0,
+              "TARGET_POSITION": 0.0
+            }
+          }
+        },
+        {
+          "values": [
+            0.0,
+            12.0,
+            0.0,
+            5.0,
+            0.0
+          ],
+          "count": 274,
+          "example": {
+            "segment": "0000003a--e445e79563--1",
+            "mono": 145.281917026,
+            "hex": "00 ff 8c 00 f8 a0 8d 00",
+            "signals": {
+              "TARGET_DETECTED": 0.0,
+              "REQUEST_TAKEOVER": 0.0,
+              "BLIND_SENSOR": 0.0,
+              "REQ_VISUAL_COLL_ALERT_ARC": 0.0,
+              "REQ_AUDIO_COLL_ALERT_ARC": 0.0,
+              "REQ_HAPTIC_COLL_ALERT_ARC": 0.0,
+              "INTER_VEHICLE_DISTANCE": 255.5,
+              "ARC_STATUS": 12.0,
+              "AUTO_BRAKING_IN_PROGRESS": 0.0,
+              "AEB_ENABLED": 0.0,
+              "DRIVE_AWAY_REQUEST": 0.0,
+              "DISPLAY_INTERVEHICLE_TIME": 6.2,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "AUTO_BRAKING_STATUS": 5.0,
+              "CHECKSUM": 13.0,
+              "COUNTER": 8.0,
+              "TARGET_POSITION": 0.0
+            }
+          }
+        },
+        {
+          "values": [
+            1.0,
+            12.0,
+            0.0,
+            5.0,
+            0.0
+          ],
+          "count": 96,
+          "example": {
+            "segment": "0000003a--e445e79563--1",
+            "mono": 149.801306087,
+            "hex": "01 0e cc 00 84 a0 a1 00",
+            "signals": {
+              "TARGET_DETECTED": 1.0,
+              "REQUEST_TAKEOVER": 0.0,
+              "BLIND_SENSOR": 0.0,
+              "REQ_VISUAL_COLL_ALERT_ARC": 0.0,
+              "REQ_AUDIO_COLL_ALERT_ARC": 0.0,
+              "REQ_HAPTIC_COLL_ALERT_ARC": 0.0,
+              "INTER_VEHICLE_DISTANCE": 14.75,
+              "ARC_STATUS": 12.0,
+              "AUTO_BRAKING_IN_PROGRESS": 0.0,
+              "AEB_ENABLED": 0.0,
+              "DRIVE_AWAY_REQUEST": 0.0,
+              "DISPLAY_INTERVEHICLE_TIME": 3.3,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "AUTO_BRAKING_STATUS": 5.0,
+              "CHECKSUM": 1.0,
+              "COUNTER": 10.0,
+              "TARGET_POSITION": 0.0
+            }
+          }
+        },
+        {
+          "values": [
+            1.0,
+            12.0,
+            0.0,
+            3.0,
+            0.0
+          ],
+          "count": 54,
+          "example": {
+            "segment": "0000003a--e445e79563--6",
+            "mono": 474.406121891,
+            "hex": "01 07 4c 00 60 60 04 00",
+            "signals": {
+              "TARGET_DETECTED": 1.0,
+              "REQUEST_TAKEOVER": 0.0,
+              "BLIND_SENSOR": 0.0,
+              "REQ_VISUAL_COLL_ALERT_ARC": 0.0,
+              "REQ_AUDIO_COLL_ALERT_ARC": 0.0,
+              "REQ_HAPTIC_COLL_ALERT_ARC": 0.0,
+              "INTER_VEHICLE_DISTANCE": 7.25,
+              "ARC_STATUS": 12.0,
+              "AUTO_BRAKING_IN_PROGRESS": 0.0,
+              "AEB_ENABLED": 0.0,
+              "DRIVE_AWAY_REQUEST": 0.0,
+              "DISPLAY_INTERVEHICLE_TIME": 2.4,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "AUTO_BRAKING_STATUS": 3.0,
+              "CHECKSUM": 4.0,
+              "COUNTER": 0.0,
+              "TARGET_POSITION": 0.0
+            }
+          }
+        },
+        {
+          "values": [
+            0.0,
+            6.0,
+            0.0,
+            5.0,
+            0.0
+          ],
+          "count": 16,
+          "example": {
+            "segment": "0000003a--e445e79563--1",
+            "mono": 129.876957918,
+            "hex": "00 ff 86 00 f8 a0 65 00",
+            "signals": {
+              "TARGET_DETECTED": 0.0,
+              "REQUEST_TAKEOVER": 0.0,
+              "BLIND_SENSOR": 0.0,
+              "REQ_VISUAL_COLL_ALERT_ARC": 0.0,
+              "REQ_AUDIO_COLL_ALERT_ARC": 0.0,
+              "REQ_HAPTIC_COLL_ALERT_ARC": 0.0,
+              "INTER_VEHICLE_DISTANCE": 255.5,
+              "ARC_STATUS": 6.0,
+              "AUTO_BRAKING_IN_PROGRESS": 0.0,
+              "AEB_ENABLED": 0.0,
+              "DRIVE_AWAY_REQUEST": 0.0,
+              "DISPLAY_INTERVEHICLE_TIME": 6.2,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "AUTO_BRAKING_STATUS": 5.0,
+              "CHECKSUM": 5.0,
+              "COUNTER": 6.0,
+              "TARGET_POSITION": 0.0
+            }
+          }
+        },
+        {
+          "values": [
+            0.0,
+            6.0,
+            0.0,
+            6.0,
+            0.0
+          ],
+          "count": 16,
+          "example": {
+            "segment": "0000003a--e445e79563--1",
+            "mono": 168.962907226,
+            "hex": "00 ff 86 00 f8 c0 81 00",
+            "signals": {
+              "TARGET_DETECTED": 0.0,
+              "REQUEST_TAKEOVER": 0.0,
+              "BLIND_SENSOR": 0.0,
+              "REQ_VISUAL_COLL_ALERT_ARC": 0.0,
+              "REQ_AUDIO_COLL_ALERT_ARC": 0.0,
+              "REQ_HAPTIC_COLL_ALERT_ARC": 0.0,
+              "INTER_VEHICLE_DISTANCE": 255.5,
+              "ARC_STATUS": 6.0,
+              "AUTO_BRAKING_IN_PROGRESS": 0.0,
+              "AEB_ENABLED": 0.0,
+              "DRIVE_AWAY_REQUEST": 0.0,
+              "DISPLAY_INTERVEHICLE_TIME": 6.2,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "AUTO_BRAKING_STATUS": 6.0,
+              "CHECKSUM": 1.0,
+              "COUNTER": 8.0,
+              "TARGET_POSITION": 0.0
+            }
+          }
+        },
+        {
+          "values": [
+            0.0,
+            10.0,
+            0.0,
+            3.0,
+            0.0
+          ],
+          "count": 11,
+          "example": {
+            "segment": "0000003a--e445e79563--2",
+            "mono": 180.286666232,
+            "hex": "00 ff 8a 00 f8 60 ed 00",
+            "signals": {
+              "TARGET_DETECTED": 0.0,
+              "REQUEST_TAKEOVER": 0.0,
+              "BLIND_SENSOR": 0.0,
+              "REQ_VISUAL_COLL_ALERT_ARC": 0.0,
+              "REQ_AUDIO_COLL_ALERT_ARC": 0.0,
+              "REQ_HAPTIC_COLL_ALERT_ARC": 0.0,
+              "INTER_VEHICLE_DISTANCE": 255.5,
+              "ARC_STATUS": 10.0,
+              "AUTO_BRAKING_IN_PROGRESS": 0.0,
+              "AEB_ENABLED": 0.0,
+              "DRIVE_AWAY_REQUEST": 0.0,
+              "DISPLAY_INTERVEHICLE_TIME": 6.2,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "AUTO_BRAKING_STATUS": 3.0,
+              "CHECKSUM": 13.0,
+              "COUNTER": 14.0,
+              "TARGET_POSITION": 0.0
+            }
+          }
+        },
+        {
+          "values": [
+            0.0,
+            10.0,
+            0.0,
+            5.0,
+            0.0
+          ],
+          "count": 4,
+          "example": {
+            "segment": "0000003a--e445e79563--1",
+            "mono": 145.202417235,
+            "hex": "00 ff 8a 00 f8 a0 43 00",
+            "signals": {
+              "TARGET_DETECTED": 0.0,
+              "REQUEST_TAKEOVER": 0.0,
+              "BLIND_SENSOR": 0.0,
+              "REQ_VISUAL_COLL_ALERT_ARC": 0.0,
+              "REQ_AUDIO_COLL_ALERT_ARC": 0.0,
+              "REQ_HAPTIC_COLL_ALERT_ARC": 0.0,
+              "INTER_VEHICLE_DISTANCE": 255.5,
+              "ARC_STATUS": 10.0,
+              "AUTO_BRAKING_IN_PROGRESS": 0.0,
+              "AEB_ENABLED": 0.0,
+              "DRIVE_AWAY_REQUEST": 0.0,
+              "DISPLAY_INTERVEHICLE_TIME": 6.2,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "AUTO_BRAKING_STATUS": 5.0,
+              "CHECKSUM": 3.0,
+              "COUNTER": 4.0,
+              "TARGET_POSITION": 0.0
+            }
+          }
+        },
+        {
+          "values": [
+            0.0,
+            10.0,
+            0.0,
+            6.0,
+            0.0
+          ],
+          "count": 4,
+          "example": {
+            "segment": "0000003a--e445e79563--1",
+            "mono": 169.282094153,
+            "hex": "00 ff 8a 00 f8 c0 8d 00",
+            "signals": {
+              "TARGET_DETECTED": 0.0,
+              "REQUEST_TAKEOVER": 0.0,
+              "BLIND_SENSOR": 0.0,
+              "REQ_VISUAL_COLL_ALERT_ARC": 0.0,
+              "REQ_AUDIO_COLL_ALERT_ARC": 0.0,
+              "REQ_HAPTIC_COLL_ALERT_ARC": 0.0,
+              "INTER_VEHICLE_DISTANCE": 255.5,
+              "ARC_STATUS": 10.0,
+              "AUTO_BRAKING_IN_PROGRESS": 0.0,
+              "AEB_ENABLED": 0.0,
+              "DRIVE_AWAY_REQUEST": 0.0,
+              "DISPLAY_INTERVEHICLE_TIME": 6.2,
+              "MDD_DECEL_CONTROL_REQ": 0.0,
+              "AUTO_BRAKING_STATUS": 6.0,
+              "CHECKSUM": 13.0,
+              "COUNTER": 8.0,
+              "TARGET_POSITION": 0.0
+            }
+          }
+        }
+      ]
+    }
+  },
+  "elkoled_examples": {
+    "disabled_braking": {
+      "0x2b6": {
+        "hex": "fe 00 00 03 00 00 03 09",
+        "signals": {
+          "MDD_DESIRED_DECELERATION": 2.05,
+          "POTENTIAL_WHEEL_TORQUE_REQUEST": 0.0,
+          "MIN_TIME_FOR_DESIRED_GEAR": 0.0,
+          "GMP_POTENTIAL_WHEEL_TORQUE": -4000.0,
+          "ACC_STATUS": 3.0,
+          "GMP_WHEEL_TORQUE": -4000.0,
+          "WHEEL_TORQUE_REQUEST": 0.0,
+          "AUTO_BRAKING_STATUS": 3.0,
+          "MDD_DECEL_TYPE": 0.0,
+          "MDD_DECEL_CONTROL_REQ": 0.0,
+          "GEAR_TYPE": 0.0,
+          "PREFILL_REQUEST": 0.0,
+          "CHECKSUM": 9.0,
+          "COUNTER": 0.0
+        }
+      },
+      "0x2f6": {
+        "hex": "00 00 00 00 c8 04 08 80",
+        "signals": {
+          "TARGET_DETECTED": 0.0,
+          "REQUEST_TAKEOVER": 0.0,
+          "BLIND_SENSOR": 0.0,
+          "REQ_VISUAL_COLL_ALERT_ARC": 0.0,
+          "REQ_AUDIO_COLL_ALERT_ARC": 0.0,
+          "REQ_HAPTIC_COLL_ALERT_ARC": 0.0,
+          "INTER_VEHICLE_DISTANCE": 0.0,
+          "ARC_STATUS": 0.0,
+          "AUTO_BRAKING_IN_PROGRESS": 0.0,
+          "AEB_ENABLED": 0.0,
+          "DRIVE_AWAY_REQUEST": 0.0,
+          "DISPLAY_INTERVEHICLE_TIME": 5.0,
+          "MDD_DECEL_CONTROL_REQ": 1.0,
+          "AUTO_BRAKING_STATUS": 0.0,
+          "CHECKSUM": 8.0,
+          "COUNTER": 0.0,
+          "TARGET_POSITION": 4.0
+        }
+      }
+    },
+    "enabled_drive": {
+      "0x2b6": {
+        "hex": "fe f9 44 04 43 f9 03 09",
+        "signals": {
+          "MDD_DESIRED_DECELERATION": 2.05,
+          "POTENTIAL_WHEEL_TORQUE_REQUEST": 1.0,
+          "MIN_TIME_FOR_DESIRED_GEAR": 6.2,
+          "GMP_POTENTIAL_WHEEL_TORQUE": 352.0,
+          "ACC_STATUS": 4.0,
+          "GMP_WHEEL_TORQUE": 350.0,
+          "WHEEL_TORQUE_REQUEST": 1.0,
+          "AUTO_BRAKING_STATUS": 3.0,
+          "MDD_DECEL_TYPE": 0.0,
+          "MDD_DECEL_CONTROL_REQ": 0.0,
+          "GEAR_TYPE": 0.0,
+          "PREFILL_REQUEST": 0.0,
+          "CHECKSUM": 9.0,
+          "COUNTER": 0.0
+        }
+      },
+      "0x2f6": {
+        "hex": "00 00 00 00 c8 00 0c 80",
+        "signals": {
+          "TARGET_DETECTED": 0.0,
+          "REQUEST_TAKEOVER": 0.0,
+          "BLIND_SENSOR": 0.0,
+          "REQ_VISUAL_COLL_ALERT_ARC": 0.0,
+          "REQ_AUDIO_COLL_ALERT_ARC": 0.0,
+          "REQ_HAPTIC_COLL_ALERT_ARC": 0.0,
+          "INTER_VEHICLE_DISTANCE": 0.0,
+          "ARC_STATUS": 0.0,
+          "AUTO_BRAKING_IN_PROGRESS": 0.0,
+          "AEB_ENABLED": 0.0,
+          "DRIVE_AWAY_REQUEST": 0.0,
+          "DISPLAY_INTERVEHICLE_TIME": 5.0,
+          "MDD_DECEL_CONTROL_REQ": 0.0,
+          "AUTO_BRAKING_STATUS": 0.0,
+          "CHECKSUM": 12.0,
+          "COUNTER": 0.0,
+          "TARGET_POSITION": 4.0
+        }
+      }
+    },
+    "enabled_brake": {
+      "0x2b6": {
+        "hex": "c1 02 00 04 00 00 2b 0c",
+        "signals": {
+          "MDD_DESIRED_DECELERATION": -1.0,
+          "POTENTIAL_WHEEL_TORQUE_REQUEST": 2.0,
+          "MIN_TIME_FOR_DESIRED_GEAR": 0.0,
+          "GMP_POTENTIAL_WHEEL_TORQUE": -4000.0,
+          "ACC_STATUS": 4.0,
+          "GMP_WHEEL_TORQUE": -4000.0,
+          "WHEEL_TORQUE_REQUEST": 0.0,
+          "AUTO_BRAKING_STATUS": 3.0,
+          "MDD_DECEL_TYPE": 1.0,
+          "MDD_DECEL_CONTROL_REQ": 1.0,
+          "GEAR_TYPE": 0.0,
+          "PREFILL_REQUEST": 0.0,
+          "CHECKSUM": 12.0,
+          "COUNTER": 0.0
+        }
+      },
+      "0x2f6": {
+        "hex": "00 00 00 00 c8 04 08 80",
+        "signals": {
+          "TARGET_DETECTED": 0.0,
+          "REQUEST_TAKEOVER": 0.0,
+          "BLIND_SENSOR": 0.0,
+          "REQ_VISUAL_COLL_ALERT_ARC": 0.0,
+          "REQ_AUDIO_COLL_ALERT_ARC": 0.0,
+          "REQ_HAPTIC_COLL_ALERT_ARC": 0.0,
+          "INTER_VEHICLE_DISTANCE": 0.0,
+          "ARC_STATUS": 0.0,
+          "AUTO_BRAKING_IN_PROGRESS": 0.0,
+          "AEB_ENABLED": 0.0,
+          "DRIVE_AWAY_REQUEST": 0.0,
+          "DISPLAY_INTERVEHICLE_TIME": 5.0,
+          "MDD_DECEL_CONTROL_REQ": 1.0,
+          "AUTO_BRAKING_STATUS": 0.0,
+          "CHECKSUM": 8.0,
+          "COUNTER": 0.0,
+          "TARGET_POSITION": 4.0
+        }
+      }
+    }
+  },
+  "other_radar_counts": {
+    "0x4f6": 4331,
+    "0x796": 433
+  },
+  "elkoled_auto_counters": [
+    0,
+    1,
+    2
+  ]
+}

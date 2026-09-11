@@ -99,3 +99,9 @@ Every claim about how the code works must be grounded in the actual repos, not m
 **Query** (answering a question): read `index.md` → open the relevant pages → verify against the code if it matters → answer with citations. If the answer is durable knowledge, file it back as a new/updated page (and log it).
 
 **Lint** (periodic health check): find contradictions, stale claims, orphan pages, missing cross-references, concepts mentioned but lacking a page, and drafts to verify against current code. Report + fix, then log it.
+
+<!-- [documentation location] - START -->
+## Documentazione del port
+
+Preferenza esplicita di Cristian: conservare la documentazione prodotta per il port esclusivamente in `openpilot_scripts`, non accanto al codice in `opendbc` o nei checkout openpilot. La documentazione del longitudinale PSA va in `plans/longitudinal/`, insieme al piano e ai findings.
+<!-- [documentation location] - END -->
