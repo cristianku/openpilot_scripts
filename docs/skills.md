@@ -52,6 +52,18 @@ Stage/commit/push working changes in `cristianku/opendbc` on the current feature
 ./commit-push-opendbc/scripts/commit_push.sh "optional message"
 ```
 
+<!-- [upstream merge] - START -->
+## op-merge-upstream
+
+Integra il `master` ufficiale di opendbc nel branch testing locale: `sunny` usa `sunnypilot/opendbc` e `psa-torque-sunny-testing`; `comma` usa `commaai/opendbc` e `psa-torque-testing`. Richiede il branch corretto già attivo e un checkout pulito. Completa la storia shallow, verifica l'antenato comune e crea un branch di backup prima del merge.
+
+```bash
+bash /Users/cristianku/GitHub/COMMA.AI/CRISTIANKU/openpilot_scripts/op-merge-upstream/scripts/merge_upstream.sh sunny
+```
+
+Il merge resta **senza commit e senza push**, anche se sarebbe possibile un fast-forward. In caso di conflitti si ferma e mostra i file da esaminare; non sceglie automaticamente ours/theirs. Verificare il diff, i test PSA e la compatibilità con la base openpilot scelta prima di pubblicare. Per annullare il merge ancora in corso usare `git merge --abort`, dopo aver verificato che non ci siano nuove modifiche da preservare. Non aggiorna openpilot né dispositivi.
+<!-- [upstream merge] - END -->
+
 <!-- [comma update] - START -->
 ## op-update-comma
 

@@ -1,0 +1,6 @@
+# [upstream merge] - START
+interface:
+  display_name: "OP Merge Upstream"
+  short_description: "Merge opendbc upstream master into PSA testing"
+  default_prompt: "Use $op-merge-upstream sunny to prepare an opendbc upstream master merge for review."
+# [upstream merge] - END
