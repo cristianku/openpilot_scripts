@@ -492,6 +492,20 @@ self.assertTrue(self._tx(neutral_message))
 
 La prima consegna implementativa è il generatore dinamico offline dei passi 1–2. Il controllo longitudinale completo richiede anche sessione, safety, calibrazione e integrazione dei passi 3–6. Il display del passo 7 è indipendente dalla capacità di attuazione e può essere completato successivamente.
 
+<!-- [stock resume] - START -->
+## Promemoria futuro — GO/RESUME automatico in coda con ACC originale
+
+Richiesta di Cristian del 12 settembre 2026: tenere questa funzione fra le implementazioni future da riprendere quando richiesto. Questa nota non avvia l'implementazione.
+
+- [ ] Implementare, dopo verifica del comportamento PSA, la simulazione GO/RESUME per evitare di dover dare un colpetto di acceleratore dopo una fermata in coda gestita dall'ACC originale.
+
+Lo spunto è il ramo `stock long` di Elkoled in `opendbc/car/psa/carcontroller.py` e il relativo `create_resume_acc()` in `psacan.py`, nel repository `/Users/cristianku/GitHub/COMMA.AI/ELKOLED/elkoled_opendbc`. Con laterale attivo, vettura ferma e lead visibile, invia due messaggi `HS2_DAT_MDD_CMD_452` (`0x452`), impostando `COCKPIT_GO_ACC_REQUEST` a 0 e poi a 1 dopo 5 frame (50 ms a 100 Hz), ogni 300 frame (3 secondi). Gli altri campi derivano dal messaggio ricevuto e il contatore viene incrementato modulo 16. Il commento Elkoled dichiara l'intento di evitare il timeout dell'autohold; l'efficacia sulla Peugeot di Cristian non è ancora verificata.
+
+L'obiettivo riguarda la sosta e la ripartenza con ACC originale già in uso. Non riguarda la prima attivazione sotto i 30 km/h, né dimostra di poter riattivare un ACC completamente disinserito. Cristian riferisce che sulla 208 di origine il problema era la richiesta del colpetto di acceleratore dopo la sosta.
+
+Prima di implementare: confrontare nei log originali stato ACC, richiesta GO, pedali e transizioni durante arresto, attesa e ripartenza; distinguere attesa di conferma da disattivazione completa. Verificare la convivenza con il mittente originale di `0x452`, contatori/checksum e ammissibilità nella safety. La sola presenza di un lead non dimostra che stia ripartendo: le condizioni per una richiesta automatica restano da definire. Logica e frequenza nel controller, sola codifica in `psacan.py`; installazione e prove sul comma restano a Cristian.
+<!-- [stock resume] - END -->
+
 ## Allegati
 
 - [Findings del confronto con Elkoled](findings-dashcam.json): conteggi, campioni originali, distribuzioni e casi di codifica sperimentale.
