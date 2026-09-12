@@ -1,0 +1,1382 @@
+{
+  "init": [
+    {
+      "gitCommit": "81854c4da1ca9793d2c73911df38fa84b7e1fc69",
+      "gitBranch": "psa-torque-sunny-testing",
+      "version": "2026.003.000",
+      "dongleId": "6616faac453a3064"
+    }
+  ],
+  "params": [
+    {
+      "carFingerprint": "PSA_PEUGEOT_3008",
+      "dashcamOnly": false,
+      "passive": false,
+      "openpilotLongitudinalControl": false,
+      "pcmCruise": true,
+      "safetyConfigs": [
+        {
+          "safetyModel": "psa",
+          "deprecated": {
+            "safetyParam": 0,
+            "safetyParam2": 0
+          },
+          "safetyParam": 0
+        }
+      ]
+    }
+  ],
+  "logs": [
+    {
+      "t": -0.012433646,
+      "message": "logging radarState"
+    },
+    {
+      "t": -0.012348125,
+      "message": "logging radarTracks"
+    },
+    {
+      "t": 0.456418593,
+      "message": "starting python openpilot.selfdrive.controls.radard"
+    },
+    {
+      "t": 0.696954114,
+      "message": "radard is waiting for CarParams"
+    },
+    {
+      "t": 2.401547343,
+      "message": "radard got CarParams"
+    },
+    {
+      "t": 2.403342603,
+      "message": "radard is waiting for CarParamsSP"
+    },
+    {
+      "t": 2.404076093,
+      "message": "radard got CarParamsSP"
+    },
+    {
+      "t": 17.156802025,
+      "message": "ARTIV neutral: programming requested; waiting for 50 02 and radar silence"
+    },
+    {
+      "t": 17.228661972,
+      "message": "ARTIV: emulation started (parked neutral trial)"
+    },
+    {
+      "t": 36.536026132,
+      "message": "ARTIV neutral: stopped (vehicle moved); no automatic retry"
+    },
+    {
+      "t": 41.439783265,
+      "message": {
+        "event": "commIssue",
+        "error": true,
+        "invalid": [
+          "extrinsicsCalibration",
+          "carOutput",
+          "driverMonitoringState",
+          "longitudinalPlan",
+          "lateralDelay",
+          "vehicleParameters",
+          "radarState",
+          "lateralTorqueParameters",
+          "controlsState",
+          "carControl",
+          "driverAssistance",
+          "alertDebug",
+          "lateralManeuverPlan",
+          "modelDataV2SP",
+          "longitudinalPlanSP"
+        ],
+        "not_alive": [
+          "alertDebug",
+          "lateralManeuverPlan"
+        ],
+        "not_freq_ok": [
+          "alertDebug",
+          "lateralManeuverPlan"
+        ]
+      }
+    },
+    {
+      "t": 41.439610401,
+      "message": {
+        "event": "commIssue",
+        "error": true,
+        "invalid": [
+          "extrinsicsCalibration",
+          "carOutput",
+          "driverMonitoringState",
+          "longitudinalPlan",
+          "lateralDelay",
+          "vehicleParameters",
+          "radarState",
+          "lateralTorqueParameters",
+          "controlsState",
+          "carControl",
+          "driverAssistance",
+          "alertDebug",
+          "lateralManeuverPlan",
+          "modelDataV2SP",
+          "longitudinalPlanSP"
+        ],
+        "not_alive": [
+          "alertDebug",
+          "lateralManeuverPlan"
+        ],
+        "not_freq_ok": [
+          "alertDebug",
+          "lateralManeuverPlan"
+        ]
+      }
+    },
+    {
+      "t": 41.44656488,
+      "message": {
+        "event": "commIssue",
+        "error": true,
+        "invalid": [
+          "extrinsicsCalibration",
+          "driverMonitoringState",
+          "longitudinalPlan",
+          "lateralDelay",
+          "vehicleParameters",
+          "radarState",
+          "lateralTorqueParameters",
+          "driverAssistance",
+          "alertDebug",
+          "lateralManeuverPlan",
+          "modelDataV2SP",
+          "longitudinalPlanSP"
+        ],
+        "not_alive": [
+          "alertDebug",
+          "lateralManeuverPlan"
+        ],
+        "not_freq_ok": [
+          "alertDebug",
+          "lateralManeuverPlan"
+        ]
+      }
+    },
+    {
+      "t": 41.446473213,
+      "message": {
+        "event": "commIssue",
+        "error": true,
+        "invalid": [
+          "extrinsicsCalibration",
+          "driverMonitoringState",
+          "longitudinalPlan",
+          "lateralDelay",
+          "vehicleParameters",
+          "radarState",
+          "lateralTorqueParameters",
+          "driverAssistance",
+          "alertDebug",
+          "lateralManeuverPlan",
+          "modelDataV2SP",
+          "longitudinalPlanSP"
+        ],
+        "not_alive": [
+          "alertDebug",
+          "lateralManeuverPlan"
+        ],
+        "not_freq_ok": [
+          "alertDebug",
+          "lateralManeuverPlan"
+        ]
+      }
+    }
+  ],
+  "alerts": [
+    {
+      "t": 2.486597395,
+      "alertText1": "",
+      "alertText2": "",
+      "alertStatus": "normal",
+      "alertSize": "none",
+      "alertType": "",
+      "alertHudVisual": "none",
+      "alertSound": "none"
+    },
+    {
+      "t": 30.22293853,
+      "alertText1": "Reverse",
+      "alertText2": "",
+      "alertStatus": "normal",
+      "alertSize": "full",
+      "alertType": "reverseGear/permanent",
+      "alertHudVisual": "none",
+      "alertSound": "none"
+    },
+    {
+      "t": 36.660809986,
+      "alertText1": "Cruise Fault: Restart the car to engage",
+      "alertText2": "",
+      "alertStatus": "normal",
+      "alertSize": "small",
+      "alertType": "accFaulted/permanent",
+      "alertHudVisual": "none",
+      "alertSound": "none"
+    },
+    {
+      "t": 36.872948788,
+      "alertText1": "",
+      "alertText2": "",
+      "alertStatus": "normal",
+      "alertSize": "none",
+      "alertType": "",
+      "alertHudVisual": "none",
+      "alertSound": "none"
+    },
+    {
+      "t": 37.744656652,
+      "alertText1": "Unknown Vehicle Variant",
+      "alertText2": "",
+      "alertStatus": "normal",
+      "alertSize": "small",
+      "alertType": "canError/permanent",
+      "alertHudVisual": "none",
+      "alertSound": "none"
+    },
+    {
+      "t": 41.443627224,
+      "alertText1": "Cruise Fault: Restart the car to engage",
+      "alertText2": "",
+      "alertStatus": "normal",
+      "alertSize": "small",
+      "alertType": "accFaulted/permanent",
+      "alertHudVisual": "none",
+      "alertSound": "none"
+    },
+    {
+      "t": 44.894552014,
+      "alertText1": "",
+      "alertText2": "",
+      "alertStatus": "normal",
+      "alertSize": "none",
+      "alertType": "",
+      "alertHudVisual": "none",
+      "alertSound": "none"
+    }
+  ],
+  "state_transitions": [
+    {
+      "t": 2.398932239,
+      "vEgo": 0.0,
+      "vEgoRaw": 0.0,
+      "gearShifter": "drive",
+      "standstill": true,
+      "gasPressed": false,
+      "brakePressed": false,
+      "canValid": false,
+      "accFaulted": false,
+      "cruiseEnabled": false,
+      "cruiseAvailable": true
+    },
+    {
+      "t": 2.415646457,
+      "vEgo": 0.0,
+      "vEgoRaw": 0.0,
+      "gearShifter": "drive",
+      "standstill": true,
+      "gasPressed": false,
+      "brakePressed": true,
+      "canValid": false,
+      "accFaulted": false,
+      "cruiseEnabled": false,
+      "cruiseAvailable": true
+    },
+    {
+      "t": 2.493364061,
+      "vEgo": 0.0,
+      "vEgoRaw": 0.0,
+      "gearShifter": "drive",
+      "standstill": true,
+      "gasPressed": false,
+      "brakePressed": true,
+      "canValid": true,
+      "accFaulted": false,
+      "cruiseEnabled": false,
+      "cruiseAvailable": true
+    },
+    {
+      "t": 29.72752853,
+      "vEgo": 0.0,
+      "vEgoRaw": 0.0,
+      "gearShifter": "reverse",
+      "standstill": true,
+      "gasPressed": false,
+      "brakePressed": true,
+      "canValid": true,
+      "accFaulted": false,
+      "cruiseEnabled": false,
+      "cruiseAvailable": true
+    },
+    {
+      "t": 34.167145924,
+      "vEgo": 0.0,
+      "vEgoRaw": 0.0,
+      "gearShifter": "reverse",
+      "standstill": true,
+      "gasPressed": false,
+      "brakePressed": false,
+      "canValid": true,
+      "accFaulted": false,
+      "cruiseEnabled": false,
+      "cruiseAvailable": true
+    },
+    {
+      "t": 35.542441705,
+      "vEgo": 0.0,
+      "vEgoRaw": 0.0,
+      "gearShifter": "reverse",
+      "standstill": true,
+      "gasPressed": true,
+      "brakePressed": false,
+      "canValid": true,
+      "accFaulted": false,
+      "cruiseEnabled": false,
+      "cruiseAvailable": true
+    },
+    {
+      "t": 36.044895455,
+      "vEgo": 0.0,
+      "vEgoRaw": 0.0,
+      "gearShifter": "reverse",
+      "standstill": true,
+      "gasPressed": false,
+      "brakePressed": false,
+      "canValid": true,
+      "accFaulted": false,
+      "cruiseEnabled": false,
+      "cruiseAvailable": true
+    },
+    {
+      "t": 36.528362746,
+      "vEgo": 0.011756551451981068,
+      "vEgoRaw": 0.0381944440305233,
+      "gearShifter": "reverse",
+      "standstill": false,
+      "gasPressed": false,
+      "brakePressed": true,
+      "canValid": true,
+      "accFaulted": false,
+      "cruiseEnabled": false,
+      "cruiseAvailable": true
+    },
+    {
+      "t": 36.657973059,
+      "vEgo": 0.083998903632164,
+      "vEgoRaw": 0.09097222238779068,
+      "gearShifter": "reverse",
+      "standstill": false,
+      "gasPressed": false,
+      "brakePressed": true,
+      "canValid": true,
+      "accFaulted": true,
+      "cruiseEnabled": false,
+      "cruiseAvailable": true
+    },
+    {
+      "t": 36.747922746,
+      "vEgo": 0.1526993364095688,
+      "vEgoRaw": 0.1631944477558136,
+      "gearShifter": "reverse",
+      "standstill": false,
+      "gasPressed": false,
+      "brakePressed": true,
+      "canValid": false,
+      "accFaulted": true,
+      "cruiseEnabled": false,
+      "cruiseAvailable": true
+    },
+    {
+      "t": 37.310417434,
+      "vEgo": 0.03630929812788963,
+      "vEgoRaw": 0.02500000037252903,
+      "gearShifter": "reverse",
+      "standstill": true,
+      "gasPressed": false,
+      "brakePressed": true,
+      "canValid": false,
+      "accFaulted": true,
+      "cruiseEnabled": false,
+      "cruiseAvailable": true
+    },
+    {
+      "t": 38.880033683,
+      "vEgo": -4.03971860407637e-08,
+      "vEgoRaw": 0.0,
+      "gearShifter": "drive",
+      "standstill": true,
+      "gasPressed": false,
+      "brakePressed": true,
+      "canValid": false,
+      "accFaulted": true,
+      "cruiseEnabled": false,
+      "cruiseAvailable": true
+    },
+    {
+      "t": 40.626400974,
+      "vEgo": -3.354381591827264e-14,
+      "vEgoRaw": 0.0,
+      "gearShifter": "drive",
+      "standstill": true,
+      "gasPressed": false,
+      "brakePressed": false,
+      "canValid": false,
+      "accFaulted": true,
+      "cruiseEnabled": false,
+      "cruiseAvailable": true
+    },
+    {
+      "t": 41.431157849,
+      "vEgo": 2.7392825484161134e-17,
+      "vEgoRaw": 0.0,
+      "gearShifter": "drive",
+      "standstill": true,
+      "gasPressed": false,
+      "brakePressed": false,
+      "canValid": true,
+      "accFaulted": true,
+      "cruiseEnabled": false,
+      "cruiseAvailable": true
+    },
+    {
+      "t": 41.800329828,
+      "vEgo": -1.5904683470263875e-18,
+      "vEgoRaw": 0.0,
+      "gearShifter": "drive",
+      "standstill": true,
+      "gasPressed": false,
+      "brakePressed": true,
+      "canValid": true,
+      "accFaulted": true,
+      "cruiseEnabled": false,
+      "cruiseAvailable": true
+    },
+    {
+      "t": 44.883735347,
+      "vEgo": -6.396871738304755e-30,
+      "vEgoRaw": 0.0,
+      "gearShifter": "drive",
+      "standstill": true,
+      "gasPressed": false,
+      "brakePressed": true,
+      "canValid": true,
+      "accFaulted": false,
+      "cruiseEnabled": false,
+      "cruiseAvailable": true
+    }
+  ],
+  "can_state_transitions": [
+    {
+      "t": -0.005591458,
+      "kind": "can",
+      "src": 1,
+      "addr": 694,
+      "data": "fe000001000000c2",
+      "values": {
+        "ACC_STATUS": 1.0,
+        "AUTO_BRAKING_STATUS": 0.0,
+        "POTENTIAL_WHEEL_TORQUE_REQUEST": 0.0,
+        "WHEEL_TORQUE_REQUEST": 0.0
+      }
+    },
+    {
+      "t": -0.005591458,
+      "kind": "can",
+      "src": 1,
+      "addr": 813,
+      "data": "80b00200800000e2",
+      "values": {
+        "ACC_ETAT_DECEL_OR_ESP_STATUS": 0.0,
+        "FA_ETAT_DECEL": 0.0,
+        "DEFAUT_ACC_FREIN": 0.0,
+        "VEHICLE_STANDSTILL": 0.0
+      }
+    },
+    {
+      "t": 0.005148281,
+      "kind": "can",
+      "src": 1,
+      "addr": 758,
+      "data": "00ff8000f800cf00",
+      "values": {
+        "ARC_STATUS": 0.0,
+        "AUTO_BRAKING_STATUS": 0.0
+      }
+    },
+    {
+      "t": 0.044511354,
+      "kind": "can",
+      "src": 1,
+      "addr": 758,
+      "data": "00ff8600f860e100",
+      "values": {
+        "ARC_STATUS": 6.0,
+        "AUTO_BRAKING_STATUS": 3.0
+      }
+    },
+    {
+      "t": 0.055259948,
+      "kind": "can",
+      "src": 1,
+      "addr": 694,
+      "data": "fe000002000043f7",
+      "values": {
+        "ACC_STATUS": 2.0,
+        "AUTO_BRAKING_STATUS": 3.0,
+        "POTENTIAL_WHEEL_TORQUE_REQUEST": 0.0,
+        "WHEEL_TORQUE_REQUEST": 0.0
+      }
+    },
+    {
+      "t": 1.882781457,
+      "kind": "can",
+      "src": 1,
+      "addr": 813,
+      "data": "80840200800000c3",
+      "values": {
+        "ACC_ETAT_DECEL_OR_ESP_STATUS": 0.0,
+        "FA_ETAT_DECEL": 1.0,
+        "DEFAUT_ACC_FREIN": 0.0,
+        "VEHICLE_STANDSTILL": 0.0
+      }
+    },
+    {
+      "t": 17.221701191,
+      "kind": "sendcan",
+      "src": 1,
+      "addr": 694,
+      "data": "fe0000020000030a",
+      "values": {
+        "ACC_STATUS": 2.0,
+        "AUTO_BRAKING_STATUS": 3.0,
+        "POTENTIAL_WHEEL_TORQUE_REQUEST": 0.0,
+        "WHEEL_TORQUE_REQUEST": 0.0
+      }
+    },
+    {
+      "t": 17.221701191,
+      "kind": "sendcan",
+      "src": 1,
+      "addr": 758,
+      "data": "00ff8600f8600f00",
+      "values": {
+        "ARC_STATUS": 6.0,
+        "AUTO_BRAKING_STATUS": 3.0
+      }
+    },
+    {
+      "t": 17.240213327,
+      "kind": "can",
+      "src": 129,
+      "addr": 694,
+      "data": "fe0000020000030a",
+      "values": {
+        "ACC_STATUS": 2.0,
+        "AUTO_BRAKING_STATUS": 3.0,
+        "POTENTIAL_WHEEL_TORQUE_REQUEST": 0.0,
+        "WHEEL_TORQUE_REQUEST": 0.0
+      }
+    },
+    {
+      "t": 17.240213327,
+      "kind": "can",
+      "src": 129,
+      "addr": 758,
+      "data": "00ff8600f8600f00",
+      "values": {
+        "ARC_STATUS": 6.0,
+        "AUTO_BRAKING_STATUS": 3.0
+      }
+    },
+    {
+      "t": 34.195849778,
+      "kind": "can",
+      "src": 1,
+      "addr": 813,
+      "data": "80540900800000cf",
+      "values": {
+        "ACC_ETAT_DECEL_OR_ESP_STATUS": 1.0,
+        "FA_ETAT_DECEL": 1.0,
+        "DEFAUT_ACC_FREIN": 0.0,
+        "VEHICLE_STANDSTILL": 0.0
+      }
+    },
+    {
+      "t": 36.495907278,
+      "kind": "can",
+      "src": 1,
+      "addr": 813,
+      "data": "7e9401007fe000f7",
+      "values": {
+        "ACC_ETAT_DECEL_OR_ESP_STATUS": 0.0,
+        "FA_ETAT_DECEL": 1.0,
+        "DEFAUT_ACC_FREIN": 0.0,
+        "VEHICLE_STANDSTILL": 0.0
+      }
+    },
+    {
+      "t": 36.656348528,
+      "kind": "can",
+      "src": 1,
+      "addr": 813,
+      "data": "845c1a0080200074",
+      "values": {
+        "ACC_ETAT_DECEL_OR_ESP_STATUS": 3.0,
+        "FA_ETAT_DECEL": 3.0,
+        "DEFAUT_ACC_FREIN": 0.0,
+        "VEHICLE_STANDSTILL": 0.0
+      }
+    },
+    {
+      "t": 41.429160505,
+      "kind": "can",
+      "src": 1,
+      "addr": 694,
+      "data": "fe0000000000000f",
+      "values": {
+        "ACC_STATUS": 0.0,
+        "AUTO_BRAKING_STATUS": 0.0,
+        "POTENTIAL_WHEEL_TORQUE_REQUEST": 0.0,
+        "WHEEL_TORQUE_REQUEST": 0.0
+      }
+    },
+    {
+      "t": 41.429160505,
+      "kind": "can",
+      "src": 1,
+      "addr": 758,
+      "data": "00ff8000f8000b00",
+      "values": {
+        "ARC_STATUS": 0.0,
+        "AUTO_BRAKING_STATUS": 0.0
+      }
+    },
+    {
+      "t": 41.488257797,
+      "kind": "can",
+      "src": 1,
+      "addr": 694,
+      "data": "fe00000f00004039",
+      "values": {
+        "ACC_STATUS": 15.0,
+        "AUTO_BRAKING_STATUS": 0.0,
+        "POTENTIAL_WHEEL_TORQUE_REQUEST": 0.0,
+        "WHEEL_TORQUE_REQUEST": 0.0
+      }
+    },
+    {
+      "t": 41.950656963,
+      "kind": "can",
+      "src": 1,
+      "addr": 758,
+      "data": "00ff8600f8e0ad00",
+      "values": {
+        "ARC_STATUS": 6.0,
+        "AUTO_BRAKING_STATUS": 7.0
+      }
+    },
+    {
+      "t": 41.970352848,
+      "kind": "can",
+      "src": 1,
+      "addr": 694,
+      "data": "fe00000f000047ba",
+      "values": {
+        "ACC_STATUS": 15.0,
+        "AUTO_BRAKING_STATUS": 7.0,
+        "POTENTIAL_WHEEL_TORQUE_REQUEST": 0.0,
+        "WHEEL_TORQUE_REQUEST": 0.0
+      }
+    },
+    {
+      "t": 44.881521389,
+      "kind": "can",
+      "src": 1,
+      "addr": 813,
+      "data": "8070020080000022",
+      "values": {
+        "ACC_ETAT_DECEL_OR_ESP_STATUS": 0.0,
+        "FA_ETAT_DECEL": 0.0,
+        "DEFAUT_ACC_FREIN": 0.0,
+        "VEHICLE_STANDSTILL": 0.0
+      }
+    }
+  ],
+  "files": [
+    {
+      "file": "00000040--fa1066f2c5--0/rlog.zst",
+      "bytes": 6471804,
+      "sha256": "8358cc829f029904210f82e4bccc9356128cfada10c0fcfcdfb97f31fd21a8ae",
+      "events": {
+        "initData": 1,
+        "sentinel": 2,
+        "can": 4466,
+        "deviceState": 90,
+        "logMessage": 435,
+        "pandaStates": 446,
+        "peripheralState": 90,
+        "uiDebug": 2688,
+        "soundPressure": 444,
+        "operatingSystemLog": 86,
+        "managerState": 81,
+        "liveMapDataSP": 45,
+        "clocks": 433,
+        "temperatureSensor": 89,
+        "accelerometer": 4635,
+        "gyroscope": 4572,
+        "wideRoadCameraState": 883,
+        "narrowRoadCameraState": 883,
+        "cabinCameraState": 882,
+        "wideRoadEncodeIdx": 880,
+        "qNarrowRoadEncodeIdx": 880,
+        "narrowRoadEncodeIdx": 880,
+        "cabinEncodeIdx": 880,
+        "procLog": 22,
+        "ubloxRaw": 906,
+        "ubloxGnss": 950,
+        "gpsLocationExternal": 431,
+        "errorLogMessage": 9,
+        "extrinsicsCalibration": 167,
+        "carOutput": 4224,
+        "carParams": 1,
+        "carParamsSP": 1,
+        "carState": 4224,
+        "carStateSP": 4224,
+        "radarTracks": 844,
+        "selfdriveState": 4220,
+        "onroadEvents": 57,
+        "selfdriveStateSP": 4220,
+        "onroadEventsSP": 44,
+        "controlsState": 4222,
+        "carControl": 4222,
+        "carControlSP": 4222,
+        "radarState": 832,
+        "lateralDelay": 167,
+        "lateralTorqueParameters": 166,
+        "modelV2": 815,
+        "cameraOdometry": 815,
+        "drivingModelData": 815,
+        "modelDataV2SP": 815,
+        "deviceMotion": 815,
+        "liveLocationKalman": 815,
+        "vehicleParameters": 815,
+        "driverAssistance": 815,
+        "longitudinalPlan": 815,
+        "longitudinalPlanSP": 815,
+        "thumbnail": 1,
+        "driverMonitoringState": 773,
+        "driverStateV2": 773,
+        "sendcan": 3764
+      }
+    }
+  ],
+  "longactive": 0,
+  "duration": 44.942703056,
+  "radar_metrics": {
+    "0x2b6": {
+      "tx": 961,
+      "echo": 961,
+      "refused": 0,
+      "echo_payload_counts_match_tx": true,
+      "first_tx": {
+        "t": 17.221701191,
+        "kind": "sendcan",
+        "src": 1,
+        "addr": 694,
+        "data": "fe0000020000030a"
+      },
+      "last_tx": {
+        "t": 36.519442017,
+        "kind": "sendcan",
+        "src": 1,
+        "addr": 694,
+        "data": "fe0000020000030a"
+      },
+      "first_echo": {
+        "t": 17.240213327,
+        "kind": "can",
+        "src": 129,
+        "addr": 694,
+        "data": "fe0000020000030a"
+      },
+      "max_tx_gap_ms": 24.05833300000282,
+      "last_native_before": {
+        "t": 17.15807041,
+        "kind": "can",
+        "src": 1,
+        "addr": 694,
+        "data": "fe00000200000364"
+      },
+      "first_native_after": {
+        "t": 41.429160505,
+        "kind": "can",
+        "src": 1,
+        "addr": 694,
+        "data": "fe0000000000000f"
+      },
+      "handover_gap_ms": 82.14291699999876,
+      "counter_errors": 0,
+      "checksum_errors": 0
+    },
+    "0x2f6": {
+      "tx": 961,
+      "echo": 961,
+      "refused": 0,
+      "echo_payload_counts_match_tx": true,
+      "first_tx": {
+        "t": 17.221701191,
+        "kind": "sendcan",
+        "src": 1,
+        "addr": 758,
+        "data": "00ff8600f8600f00"
+      },
+      "last_tx": {
+        "t": 36.519442017,
+        "kind": "sendcan",
+        "src": 1,
+        "addr": 758,
+        "data": "00ff8600f8600f00"
+      },
+      "first_echo": {
+        "t": 17.240213327,
+        "kind": "can",
+        "src": 129,
+        "addr": 758,
+        "data": "00ff8600f8600f00"
+      },
+      "max_tx_gap_ms": 24.05833300000282,
+      "last_native_before": {
+        "t": 17.138570202,
+        "kind": "can",
+        "src": 1,
+        "addr": 758,
+        "data": "00ff8600f8605a00"
+      },
+      "first_native_after": {
+        "t": 41.429160505,
+        "kind": "can",
+        "src": 1,
+        "addr": 758,
+        "data": "00ff8000f8000b00"
+      },
+      "handover_gap_ms": 101.64312499999895,
+      "counter_errors": 0,
+      "checksum_errors": 0
+    },
+    "0x4f6": {
+      "tx": 193,
+      "echo": 193,
+      "refused": 0,
+      "echo_payload_counts_match_tx": true,
+      "first_tx": {
+        "t": 17.221701191,
+        "kind": "sendcan",
+        "src": 1,
+        "addr": 1270,
+        "data": "fffe5ffe00"
+      },
+      "last_tx": {
+        "t": 36.519442017,
+        "kind": "sendcan",
+        "src": 1,
+        "addr": 1270,
+        "data": "fffe5ffe00"
+      },
+      "first_echo": {
+        "t": 17.240213327,
+        "kind": "can",
+        "src": 129,
+        "addr": 1270,
+        "data": "fffe5ffe00"
+      },
+      "max_tx_gap_ms": 104.57458300000155,
+      "last_native_before": {
+        "t": 17.148320306,
+        "kind": "can",
+        "src": 1,
+        "addr": 1270,
+        "data": "fffe5ffe00"
+      },
+      "first_native_after": {
+        "t": 41.43890889,
+        "kind": "can",
+        "src": 1,
+        "addr": 1270,
+        "data": "fffe1ffec0"
+      },
+      "handover_gap_ms": 91.89302100000063
+    },
+    "0x796": {
+      "tx": 20,
+      "echo": 20,
+      "refused": 0,
+      "echo_payload_counts_match_tx": true,
+      "first_tx": {
+        "t": 17.221701191,
+        "kind": "sendcan",
+        "src": 1,
+        "addr": 1942,
+        "data": "0000000000000000"
+      },
+      "last_tx": {
+        "t": 36.31680483,
+        "kind": "sendcan",
+        "src": 1,
+        "addr": 1942,
+        "data": "0000000000000000"
+      },
+      "first_echo": {
+        "t": 17.240213327,
+        "kind": "can",
+        "src": 129,
+        "addr": 1942,
+        "data": "0000000000000000"
+      },
+      "max_tx_gap_ms": 1008.76375,
+      "last_native_before": {
+        "t": 16.452800462,
+        "kind": "can",
+        "src": 1,
+        "addr": 1942,
+        "data": "0000000000000000"
+      },
+      "first_native_after": {
+        "t": 41.43890889,
+        "kind": "can",
+        "src": 1,
+        "addr": 1942,
+        "data": "0000000000000000"
+      },
+      "handover_gap_ms": 787.4128650000002
+    }
+  },
+  "diagnostic_frames": [
+    {
+      "t": 17.151464993,
+      "kind": "sendcan",
+      "src": 1,
+      "addr": 1718,
+      "data": "021002"
+    },
+    {
+      "t": 17.15807041,
+      "kind": "can",
+      "src": 129,
+      "addr": 1718,
+      "data": "021002"
+    },
+    {
+      "t": 17.218445827,
+      "kind": "can",
+      "src": 1,
+      "addr": 1686,
+      "data": "06500200c80014"
+    },
+    {
+      "t": 18.230464941,
+      "kind": "sendcan",
+      "src": 1,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 18.250798795,
+      "kind": "can",
+      "src": 129,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 18.261556451,
+      "kind": "can",
+      "src": 1,
+      "addr": 1686,
+      "data": "027e00"
+    },
+    {
+      "t": 19.23886692,
+      "kind": "sendcan",
+      "src": 1,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 19.259270878,
+      "kind": "can",
+      "src": 129,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 19.259270878,
+      "kind": "can",
+      "src": 1,
+      "addr": 1686,
+      "data": "027e00"
+    },
+    {
+      "t": 20.246553273,
+      "kind": "sendcan",
+      "src": 1,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 20.265367805,
+      "kind": "can",
+      "src": 129,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 20.265367805,
+      "kind": "can",
+      "src": 1,
+      "addr": 1686,
+      "data": "027e00"
+    },
+    {
+      "t": 21.251024731,
+      "kind": "sendcan",
+      "src": 1,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 21.270512648,
+      "kind": "can",
+      "src": 129,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 21.270512648,
+      "kind": "can",
+      "src": 1,
+      "addr": 1686,
+      "data": "027e00"
+    },
+    {
+      "t": 22.255021137,
+      "kind": "sendcan",
+      "src": 1,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 22.274076137,
+      "kind": "can",
+      "src": 129,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 22.284825773,
+      "kind": "can",
+      "src": 1,
+      "addr": 1686,
+      "data": "027e00"
+    },
+    {
+      "t": 23.259241293,
+      "kind": "sendcan",
+      "src": 1,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 23.279109731,
+      "kind": "can",
+      "src": 129,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 23.288872387,
+      "kind": "can",
+      "src": 1,
+      "addr": 1686,
+      "data": "027e00"
+    },
+    {
+      "t": 24.264450928,
+      "kind": "sendcan",
+      "src": 1,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 24.283512751,
+      "kind": "can",
+      "src": 129,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 24.293257543,
+      "kind": "can",
+      "src": 1,
+      "addr": 1686,
+      "data": "027e00"
+    },
+    {
+      "t": 25.268402751,
+      "kind": "sendcan",
+      "src": 1,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 25.287224938,
+      "kind": "can",
+      "src": 129,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 25.298058688,
+      "kind": "can",
+      "src": 1,
+      "addr": 1686,
+      "data": "027e00"
+    },
+    {
+      "t": 26.272540667,
+      "kind": "sendcan",
+      "src": 1,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 26.292444469,
+      "kind": "can",
+      "src": 129,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 26.292444469,
+      "kind": "can",
+      "src": 1,
+      "addr": 1686,
+      "data": "027e00"
+    },
+    {
+      "t": 27.277155562,
+      "kind": "sendcan",
+      "src": 1,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 27.296315406,
+      "kind": "can",
+      "src": 129,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 27.307155198,
+      "kind": "can",
+      "src": 1,
+      "addr": 1686,
+      "data": "027e00"
+    },
+    {
+      "t": 28.282675822,
+      "kind": "sendcan",
+      "src": 1,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 28.30242452,
+      "kind": "can",
+      "src": 129,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 28.30242452,
+      "kind": "can",
+      "src": 1,
+      "addr": 1686,
+      "data": "027e00"
+    },
+    {
+      "t": 29.28681676,
+      "kind": "sendcan",
+      "src": 1,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 29.305604103,
+      "kind": "can",
+      "src": 129,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 29.316441864,
+      "kind": "can",
+      "src": 1,
+      "addr": 1686,
+      "data": "027e00"
+    },
+    {
+      "t": 30.291329676,
+      "kind": "sendcan",
+      "src": 1,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 30.311176238,
+      "kind": "can",
+      "src": 129,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 30.320939884,
+      "kind": "can",
+      "src": 1,
+      "addr": 1686,
+      "data": "027e00"
+    },
+    {
+      "t": 31.296541134,
+      "kind": "sendcan",
+      "src": 1,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 31.315218582,
+      "kind": "can",
+      "src": 129,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 31.315218582,
+      "kind": "can",
+      "src": 1,
+      "addr": 1686,
+      "data": "027e00"
+    },
+    {
+      "t": 32.300465717,
+      "kind": "sendcan",
+      "src": 1,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 32.319021915,
+      "kind": "can",
+      "src": 129,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 32.329845092,
+      "kind": "can",
+      "src": 1,
+      "addr": 1686,
+      "data": "027e00"
+    },
+    {
+      "t": 33.303834831,
+      "kind": "sendcan",
+      "src": 1,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 33.322858737,
+      "kind": "can",
+      "src": 129,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 33.333666758,
+      "kind": "can",
+      "src": 1,
+      "addr": 1686,
+      "data": "027e00"
+    },
+    {
+      "t": 34.307441133,
+      "kind": "sendcan",
+      "src": 1,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 34.32671457,
+      "kind": "can",
+      "src": 129,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 34.32671457,
+      "kind": "can",
+      "src": 1,
+      "addr": 1686,
+      "data": "027e00"
+    },
+    {
+      "t": 35.311732695,
+      "kind": "sendcan",
+      "src": 1,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 35.330433111,
+      "kind": "can",
+      "src": 129,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 35.341188945,
+      "kind": "can",
+      "src": 1,
+      "addr": 1686,
+      "data": "027e00"
+    },
+    {
+      "t": 36.31680483,
+      "kind": "sendcan",
+      "src": 1,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 36.335777538,
+      "kind": "can",
+      "src": 129,
+      "addr": 1718,
+      "data": "023e00"
+    },
+    {
+      "t": 36.34557884,
+      "kind": "can",
+      "src": 1,
+      "addr": 1686,
+      "data": "027e00"
+    }
+  ]
+}

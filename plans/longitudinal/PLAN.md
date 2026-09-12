@@ -1,5 +1,26 @@
 # Longitudinale PSA Peugeot 3008 — findings e piano di implementazione
 
+## Prova test2 — 12 settembre 2026
+
+[Log test2 e diagnosi del fault al primo movimento](findings-test2-20260912.md). Route `00000040--fa1066f2c5`, openpilot `81854c4da`, opendbc `fd64d7e9`: avvio della sostituzione e inserimento retro senza fault. Il primo movimento fa scattare `stopped (vehicle moved)`, interrompe sostituti/TesterPresent ed è seguito dal fault nel `32D`. La patch riduce risposta positiva → primo invio da 42,641 a 3,255 ms. Lo stop al movimento è stato successivamente corretto nel checkout locale, come descritto sotto; l’analisi dei log resta riferita alla versione registrata.
+
+<!-- [neutral motion] - START -->
+## Correzione dopo test2 — continuità neutra in movimento
+
+**Autorizzata e applicata localmente:** `CarController` crea `NeutralRadar(stationary_only=False)` anche nel profilo neutro. L’avvio richiede ancora vettura ferma, CAN valido, `50 02` e assenza di originali successivi alla conferma; dopo l’avvio, retro e movimento non interrompono sostituti o TesterPresent. Il profilo neutro continua a inviare richieste coppia/frenata a zero, senza set speed. Restano gli stop per ritorno radar e timeout/CAN invalido.
+
+**Verifica:** 26 test mirati passati e lint passato; riprodotto lo stop prima della patch e verificata la continuità dopo, anche con comandi openpilot valorizzati. [Dettagli e limiti nei findings test2](findings-test2-20260912.md#correzione-locale-autorizzata--continuità-in-movimento). Validazione sul veicolo ancora aperta, prossima registrazione `test3`. Nessun aggiornamento del comma eseguito.
+<!-- [neutral motion] - END -->
+
+## Aggiornamento findings — 12 settembre 2026
+
+[Prova neutra 3d: confronto con la bibbia, inventario CAN e registro guasti ARTIV](findings-neutral-20260912.md).
+Il fault rimane aperto nonostante payload neutri e TX verificati. I valori 3/6 sono confermati da fermo; le differenze del profilo attivo restano da calibrare.
+L’inventario storico include anche `116` e `776` a evento. Nessun ID/DLC della bibbia presente dopo l’avvio risulta assente durante l’emulazione. L’approfondimento dei journal trova `U1162:87` nel `76D` a +16,908 s, durante il passaggio con gap 111,623 ms; una fonte diagnostica Peugeot lo associa alla perdita di informazioni del sistema di distanza. L’allineamento BSI colloca invece `B12A7/B12A8/B12A9` del radar vicino alla ripartenza, a circa +227,9 s. Il timeout al passaggio è l’ipotesi prioritaria, senza una soglia ECU o una correzione ancora validate.
+**Patch locale autorizzata e applicata:** `NeutralRadar.update()` può avviare i sostituti al primo ciclo dopo `50 02`, senza attesa fissa di 100 ms, purché non siano presenti originali con timestamp uguale o successivo alla conferma. I 18 test del radar neutro e il lint passano; la suite più ampia conserva due problemi preesistenti documentati nei [findings](findings-neutral-20260912.md#patch-locale-autorizzata--transizione-radar). La successiva prova sul veicolo è ora documentata come test2 sopra: nessun fault all’avvio; osservato lo stop del profilo neutro al movimento, oggetto della correzione locale successiva sopra.
+I risultati del 12 settembre distinguono la configurazione registrata (`dashcamOnly=false`, `openpilotLongitudinalControl=false`) dallo stato storico dell’implementazione riportato sotto. Vedere [estratti, script e provenienza](findings-neutral-20260912/).
+
+
 > Per l’esecuzione: usare `superpowers:executing-plans` e TDD, un passo alla volta nella sessione corrente. Questo documento pianifica il lavoro; non abilita il controllo sul veicolo.
 
 **Data:** 11 settembre 2026. **Stato:** passi 1–4 verificati offline; abilitazione alpha_long del passo 6 collegata su richiesta di Cristian; calibrazione ancora aperta.
@@ -369,10 +390,12 @@ self.assertEqual(encoded[2], 1)
 
 **File:** `opendbc/car/psa/neutral_radar.py`, `carcontroller.py`, `interface.py`, nuovi test `test_longitudinal_session.py`; conservare `test_neutral_radar.py`.
 
-**Interfaccia proposta:** estendere il gestore esistente con `stationary_only: bool = True`; `update(frame, now_nanos, stationary, can_valid=True)` e `process_can(can_packets)` conservano il contratto. Il controller imposta `stationary_only=False` esclusivamente per il profilo longitudinale sperimentale. Il nome può essere generalizzato solo se necessario, aggiornando tutti i riferimenti e i test nello stesso passo.
+**Interfaccia proposta:** estendere il gestore esistente con `stationary_only: bool = True`; `update(frame, now_nanos, stationary, can_valid=True)` e `process_can(can_packets)` conservano il contratto. Aggiornamento dopo test2: il controller imposta `stationary_only=False` anche per il profilo neutro, mantenendo separata l’abilitazione delle richieste fisiche. Il nome può essere generalizzato solo se necessario, aggiornando tutti i riferimenti e i test nello stesso passo.
 
-- [x] Conservare l’avvio a vettura ferma e CAN valido, risposta `50 02` e almeno 100 ms senza i quattro ID originali.
-- [x] Consentire il movimento dopo la conferma solo nel profilo attivo; la prova neutra deve continuare a interrompersi quando l’auto si muove.
+<!-- [neutral motion] - START -->
+- [x] Conservare l’avvio a vettura ferma e CAN valido, risposta `50 02` e assenza di originali con timestamp uguale o successivo alla conferma. L’attesa fissa di 100 ms è stata rimossa dalla patch di transizione verificata in test2.
+- [x] Consentire il movimento dopo l’attivazione anche nel profilo neutro; il movimento prima dell’attivazione continua a bloccare la sessione. Le richieste fisiche restano subordinate al profilo longitudinale, indipendentemente da questa politica.
+<!-- [neutral motion] - END -->
 - [x] Conservare timeout di bus, echi e diagnostica, e blocco immediato della sovrapposizione con il radar originale.
 - [x] Separare disattivazione del cruise da perdita della sessione: nel primo caso mantenere messaggi senza richieste; nel secondo interrompere la sostituzione ed esporre l’indisponibilità.
 - [x] Esporre il guasto attraverso il percorso `CarState`/eventi compatibile con Sunnypilot, verificando il segnale letto da `selfdrived`. Non usare soltanto un messaggio di log.

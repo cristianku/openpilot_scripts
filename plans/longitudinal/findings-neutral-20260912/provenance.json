@@ -1,0 +1,194 @@
+{
+  "date": "2026-09-12",
+  "artifacts": [
+    {
+      "file": "compare_radar_logs.py",
+      "sha256": "e97b77ea7eaa3091a4650b86bdc244d7fe24ea52c8d5e799e29e264d48a3e013",
+      "source_sha256": "968d14e3a0d843c54f87cfc5f16778554c321a1e04185dbc886508dfa102e4bf",
+      "bytes": 2800,
+      "adapted_paths": true
+    },
+    {
+      "file": "radar_fault_detail.py",
+      "sha256": "8a0e4bb2e143d95992e658add9b5462da183b6219b132548259240ae557c193b",
+      "source_sha256": "0d1ef5ddddbf711de5a4836fb35961c9f0d515aa303ff67b119a2720f7524210",
+      "bytes": 1846,
+      "adapted_paths": true
+    },
+    {
+      "file": "radar_full_inventory.py",
+      "sha256": "94e821b28bacb9944960a373c33f81cae286b31f22d70d014c35cd8113b8dab2",
+      "source_sha256": "a1736295f42e76c4d0e4ede74462e8074d573cc05e9056e7b402e1b7c4ab181e",
+      "bytes": 2861,
+      "adapted_paths": true
+    },
+    {
+      "file": "radar_jdd.py",
+      "sha256": "dc673b4f65f40d5383fc0613a6e34a91f960f2a049925f5c003e422f9e968507",
+      "source_sha256": "9b93116a97dccf1d5c6e6ff89f254ad8643d591f859c362b14982e2a292de956",
+      "bytes": 1061,
+      "adapted_paths": true
+    },
+    {
+      "file": "radar_test.json",
+      "sha256": "5ab7894c9fdc37edfdaa53db3e32068502719960044fe33ee57dc6ab9449714c",
+      "source_sha256": "5ab7894c9fdc37edfdaa53db3e32068502719960044fe33ee57dc6ab9449714c",
+      "bytes": 4266892,
+      "adapted_paths": false
+    },
+    {
+      "file": "radar_stock.json",
+      "sha256": "66b85ca4be901c24d0a24dc8854841f1e14467e524ae975810909392bacc7052",
+      "source_sha256": "66b85ca4be901c24d0a24dc8854841f1e14467e524ae975810909392bacc7052",
+      "bytes": 5112040,
+      "adapted_paths": false
+    },
+    {
+      "file": "radar_full_inventory.json",
+      "sha256": "faadcf380be51dc1f7910ce02d8af3f359f072592ac2dfd41a739da7b7293b76",
+      "source_sha256": "faadcf380be51dc1f7910ce02d8af3f359f072592ac2dfd41a739da7b7293b76",
+      "bytes": 6404324,
+      "adapted_paths": false
+    },
+    {
+      "file": "radar_jdd.json",
+      "sha256": "52b33ab15162dd047734c5a12728a256b58ab46b96b1df501f579ef7c07ac427",
+      "source_sha256": "52b33ab15162dd047734c5a12728a256b58ab46b96b1df501f579ef7c07ac427",
+      "bytes": 6625,
+      "adapted_paths": false
+    },
+    {
+      "file": "radar_comparison_summary.txt",
+      "sha256": "bbe03f540510c95658aa471c504092cb6c06a8e308d93d2b1bc25a457422eef1",
+      "source_sha256": "bbe03f540510c95658aa471c504092cb6c06a8e308d93d2b1bc25a457422eef1",
+      "bytes": 2477789,
+      "adapted_paths": false
+    },
+    {
+      "file": "radar_fault_detail.txt",
+      "sha256": "b0eb6709ac6c9e3bcb0090e873e4a9700bbabd478cf40b76e97220011527abc5",
+      "source_sha256": "b0eb6709ac6c9e3bcb0090e873e4a9700bbabd478cf40b76e97220011527abc5",
+      "bytes": 5126,
+      "adapted_paths": false
+    },
+    {
+      "file": "radar_full_inventory_summary.txt",
+      "sha256": "da15e4225a78746a836aef27ab710c4373f36179455461892c6ceb60d4c79404",
+      "source_sha256": "da15e4225a78746a836aef27ab710c4373f36179455461892c6ceb60d4c79404",
+      "bytes": 30750,
+      "adapted_paths": false
+    },
+    {
+      "file": "diagnostic_timeline.json",
+      "sha256": "784a95561a3de55ecef82b0a4f37f549f3bbf524667bc6400383bf8fdb1e39e7",
+      "bytes": 4832243,
+      "generated_in_final_directory": true
+    },
+    {
+      "file": "diagnostic_timeline.py",
+      "sha256": "b455e031237bef4a1519bd021c0d017ff27408721275fe71685a53b4a33ee344",
+      "bytes": 3965,
+      "generated_in_final_directory": true
+    },
+    {
+      "file": "diagnostic_timeline_summary.txt",
+      "sha256": "94e0b27804d6919a002d6de30111dbfaecca281db35d2c616f7dc7e329ec94e7",
+      "bytes": 4069,
+      "generated_in_final_directory": true
+    }
+  ],
+  "rlog_sources": [
+    {
+      "route": "test",
+      "file": "log_analysis/logitudinal_tests/test1/0000003d--3e125c1bb1/0000003d--3e125c1bb1--0/rlog.zst",
+      "bytes": 8963377,
+      "sha256": "373e445c60bd71054525b8ed578a10392edf32d992e8bc2ac792e1269900c54d"
+    },
+    {
+      "route": "test",
+      "file": "log_analysis/logitudinal_tests/test1/0000003d--3e125c1bb1/0000003d--3e125c1bb1--1/rlog.zst",
+      "bytes": 9257958,
+      "sha256": "b177d4d1d7a95ee43b228cb229493e16cebe3dbdd5d5c246627f6b4897f70072"
+    },
+    {
+      "route": "test",
+      "file": "log_analysis/logitudinal_tests/test1/0000003d--3e125c1bb1/0000003d--3e125c1bb1--2/rlog.zst",
+      "bytes": 9233991,
+      "sha256": "e3ec994f2fd31430dec08c5afc6c4e399598ea12508900c44c7c8b78525a4bb3"
+    },
+    {
+      "route": "test",
+      "file": "log_analysis/logitudinal_tests/test1/0000003d--3e125c1bb1/0000003d--3e125c1bb1--3/rlog.zst",
+      "bytes": 9514216,
+      "sha256": "ed8b29c14a498543c0737a24df9924b29f5a4526fd9d7100059a303fa27462cf"
+    },
+    {
+      "route": "test",
+      "file": "log_analysis/logitudinal_tests/test1/0000003d--3e125c1bb1/0000003d--3e125c1bb1--4/rlog.zst",
+      "bytes": 3046184,
+      "sha256": "f1cffb2e59b66137856a7ec11fe8dac4d49cd0eea1ef8de2f189205c085f9d5d"
+    },
+    {
+      "route": "stock",
+      "file": "log_analysis/dashcam_mode_bibbia_longitudinale/0000003a--e445e79563/0000003a--e445e79563--0/rlog.zst",
+      "bytes": 8534278,
+      "sha256": "929786a9573bebacda0d5fa2cf388f1b1e7de54a5fbac12815af00162f998466"
+    },
+    {
+      "route": "stock",
+      "file": "log_analysis/dashcam_mode_bibbia_longitudinale/0000003a--e445e79563/0000003a--e445e79563--1/rlog.zst",
+      "bytes": 10003090,
+      "sha256": "dd8654d993cc3c2a8fdbf75026c8d66273f229e712480b827e0ee7cfbecb4c03"
+    },
+    {
+      "route": "stock",
+      "file": "log_analysis/dashcam_mode_bibbia_longitudinale/0000003a--e445e79563/0000003a--e445e79563--2/rlog.zst",
+      "bytes": 10230704,
+      "sha256": "a532c64f5a4a65df0b5fae0ea071807555dc6a392c9ac99f6c71a64bca730031"
+    },
+    {
+      "route": "stock",
+      "file": "log_analysis/dashcam_mode_bibbia_longitudinale/0000003a--e445e79563/0000003a--e445e79563--3/rlog.zst",
+      "bytes": 10633514,
+      "sha256": "d74f412767275a5be2614207d6b2d5b7f8c7cd1ea76cefdbfbc208a2fab89ecf"
+    },
+    {
+      "route": "stock",
+      "file": "log_analysis/dashcam_mode_bibbia_longitudinale/0000003a--e445e79563/0000003a--e445e79563--4/rlog.zst",
+      "bytes": 10598844,
+      "sha256": "1501e3c52a0aa75f0a81badd1b234d481eba7c26a752fd7067af365a8c73905b"
+    },
+    {
+      "route": "stock",
+      "file": "log_analysis/dashcam_mode_bibbia_longitudinale/0000003a--e445e79563/0000003a--e445e79563--5/rlog.zst",
+      "bytes": 10602881,
+      "sha256": "ba805098f52a36f226b43e6c1f3911b85a5277ec415cecbf1607c0f8f9d18a23"
+    },
+    {
+      "route": "stock",
+      "file": "log_analysis/dashcam_mode_bibbia_longitudinale/0000003a--e445e79563/0000003a--e445e79563--6/rlog.zst",
+      "bytes": 10386012,
+      "sha256": "430d7c270b8bfc7bbd3b31badd087679c201448e21e1bb8ad7312a9ec8e12c17"
+    },
+    {
+      "route": "stock",
+      "file": "log_analysis/dashcam_mode_bibbia_longitudinale/0000003a--e445e79563/0000003a--e445e79563--7/rlog.zst",
+      "bytes": 2203677,
+      "sha256": "fb3beb2c25de159ca1cc783682bf7f07bb9a887c9dbaa9f9b4fbd7e8f901b1af"
+    }
+  ],
+  "diagnostic_followup": {
+    "date": "2026-09-12",
+    "scope": "Offline reread of all five test rlogs; selected JDD and BSI clock frames only.",
+    "decoder": "opendbc/car/uds.py:get_dtc_num_as_str at opendbc 6bd6cd7008583805d983c2cac9d410518821b3d8",
+    "jdd_layout_caveat": "76D and 768 use the common JDD layout by inference from payload structure and temporal consistency; 76D sender not confirmed.",
+    "timing_caveat": "100 ms timestamp resolution; common BSI base assumed, with indicative quantization margin. 775 reference not aligned.",
+    "external_source": {
+      "url": "https://gateway-prodeu.autel.com/api/pdf-report-manage/pdf-report/download/c4263c2268214bbfa06785f52b65a0f1",
+      "report": "MAXIA20260105091959",
+      "page": 3,
+      "vehicle": "Peugeot 2008 2020 / ESP90",
+      "claim": "U1162:87 denotes lost information from distance warning or multifunction camera ECU. Does not establish the receiver, threshold or repair for this 3008."
+    }
+  }
+}

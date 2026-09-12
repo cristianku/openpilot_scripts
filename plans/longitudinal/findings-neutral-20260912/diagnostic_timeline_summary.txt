@@ -1,0 +1,143 @@
+{
+  "clock_model": {
+    "samples": 263,
+    "offset_median": 6279531.088988962,
+    "offset_min": 6279531.082672782,
+    "offset_max": 6279531.105871771,
+    "reset_counters": [
+      254
+    ],
+    "reference_resolution_s": 0.1,
+    "timing_caveat": "Indicative alignment assumes a common BSI clock and allows +/-0.1 s for quantization. ECU synchronization and transmission latency are not independently bounded.",
+    "excluded_from_alignment": {
+      "0x775": "Reference 51.7 s is not established on the BSI clock; do not assign an event time."
+    }
+  },
+  "jdd_summary": [
+    {
+      "addr": "0x768",
+      "raw_dtc": "D16287",
+      "status": 0,
+      "reference_s": 6279759.0,
+      "n": 9,
+      "first_rx": 228.662892621,
+      "last_rx": 232.059381734,
+      "dtc": "U1162:87",
+      "bsi_clock_alignment": "compatible with this route; common clock assumed",
+      "event_t_estimate": 227.91101103834808,
+      "event_t_range_with_quantization": [
+        227.79412822853774,
+        228.0173272177577
+      ]
+    },
+    {
+      "addr": "0x768",
+      "raw_dtc": "D16287",
+      "status": 1,
+      "reference_s": 6279754.9,
+      "n": 9,
+      "first_rx": 224.163838508,
+      "last_rx": 227.568975121,
+      "dtc": "U1162:87",
+      "bsi_clock_alignment": "compatible with this route; common clock assumed",
+      "event_t_estimate": 223.8110110387206,
+      "event_t_range_with_quantization": [
+        223.69412822891027,
+        223.91732721813023
+      ]
+    },
+    {
+      "addr": "0x76d",
+      "raw_dtc": "D16287",
+      "status": 1,
+      "reference_s": 6279547.9,
+      "n": 9,
+      "first_rx": 16.907891295,
+      "last_rx": 20.504916763,
+      "dtc": "U1162:87",
+      "bsi_clock_alignment": "compatible with this route; common clock assumed",
+      "event_t_estimate": 16.811011038720608,
+      "event_t_range_with_quantization": [
+        16.694128228910266,
+        16.917327218130232
+      ]
+    },
+    {
+      "addr": "0x775",
+      "raw_dtc": "540600",
+      "status": 1,
+      "reference_s": 51.7,
+      "n": 6,
+      "first_rx": 0.93733203,
+      "last_rx": 2.845057759,
+      "dtc": "C1406:00",
+      "bsi_clock_alignment": "not established",
+      "event_t_estimate": null,
+      "event_t_range_with_quantization": null
+    },
+    {
+      "addr": "0x776",
+      "raw_dtc": "92A700",
+      "status": 1,
+      "reference_s": 6279759.0,
+      "n": 1,
+      "first_rx": 227.920863142,
+      "last_rx": 227.920863142,
+      "dtc": "B12A7:00",
+      "bsi_clock_alignment": "compatible with this route; common clock assumed",
+      "event_t_estimate": 227.91101103834808,
+      "event_t_range_with_quantization": [
+        227.79412822853774,
+        228.0173272177577
+      ]
+    },
+    {
+      "addr": "0x776",
+      "raw_dtc": "92A800",
+      "status": 1,
+      "reference_s": 6279759.0,
+      "n": 9,
+      "first_rx": 231.928665901,
+      "last_rx": 235.523364441,
+      "dtc": "B12A8:00",
+      "bsi_clock_alignment": "compatible with this route; common clock assumed",
+      "event_t_estimate": 227.91101103834808,
+      "event_t_range_with_quantization": [
+        227.79412822853774,
+        228.0173272177577
+      ]
+    },
+    {
+      "addr": "0x776",
+      "raw_dtc": "92A900",
+      "status": 1,
+      "reference_s": 6279759.0,
+      "n": 9,
+      "first_rx": 228.120708506,
+      "last_rx": 231.726584703,
+      "dtc": "B12A9:00",
+      "bsi_clock_alignment": "compatible with this route; common clock assumed",
+      "event_t_estimate": 227.91101103834808,
+      "event_t_range_with_quantization": [
+        227.79412822853774,
+        228.0173272177577
+      ]
+    },
+    {
+      "addr": "0x776",
+      "raw_dtc": "C14687",
+      "status": 0,
+      "reference_s": 6279530.7,
+      "n": 7,
+      "first_rx": 0.003499791,
+      "last_rx": 3.20843505,
+      "dtc": "U0146:87",
+      "bsi_clock_alignment": "compatible with this route; common clock assumed",
+      "event_t_estimate": -0.38898896146565676,
+      "event_t_range_with_quantization": [
+        -0.5058717712759971,
+        -0.28267278205603363
+      ]
+    }
+  ]
+}
