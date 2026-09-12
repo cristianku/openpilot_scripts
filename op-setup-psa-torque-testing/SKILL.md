@@ -25,6 +25,10 @@ Examples: `scripts/setup_psa_torque.sh sunny`, `scripts/setup_psa_torque.sh sunn
 3. Run the bundled wrapper by absolute path: `scripts/setup_psa_torque.sh <variant> [master|master=<commit>|release]`.
 4. Report the source mode, resolved upstream source commit and release tag when applicable, opendbc pointer commit, Sunny neural-network-data pointer when applicable, and whether the workflow pushed the openpilot testing branch.
 
+<!-- [branch display] - START -->
+Start the final report with `Branch da controllare sul comma: **psa-torque-sunny-testing**` for Sunny, or `Branch da controllare sul comma: **psa-torque-testing**` for comma.ai. Always render the exact target branch name in bold Markdown, so Cristian can easily compare it with the branch displayed on the device. This identifies the prepared branch; it does not claim the device has been updated.
+<!-- [branch display] - END -->
+
 The wrapper recreates the mapped local openpilot folder every time. For `sunny` only, it points the existing `sunnypilot/neural_network_data` submodule to `cristianku/neural-network-data:master`, which exposes the custom `neural_network_lateral_control/` data to Sunnypilot. This data pointer is the only Sunny NNLC customization: the wrapper does not alter the NNLC loader or controller runtime files and does not copy model files. It does not commit inside opendbc and does not clone, update, stage, or commit panda.
 
 After cloning the selected upstream source, the wrapper edits `selfdrive/locationd/torqued.py` to add `'psa'` to the `ALLOWED_CARS` gate, so torqued (live `latAccelFactor`/friction learning) runs for the Peugeot 3008. The upstream source ships this list without PSA and the clone is recreated every run, so this patch is reapplied each time. The edit is idempotent (skipped if `psa` is already present) and is staged so it lands in the pushed testing branch commit.
