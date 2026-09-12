@@ -1,0 +1,42 @@
+[
+  {
+    "path": "log_analysis/dashcam_mode_bibbia_longitudinale/00000049--a95dde6809/00000049--a95dde6809--0/rlog.zst",
+    "sha256": "94265ec4af35aa842e341d85e408d463e928ab789f634ce913093229ea709186"
+  },
+  {
+    "path": "log_analysis/dashcam_mode_bibbia_longitudinale/00000049--a95dde6809/00000049--a95dde6809--1/rlog.zst",
+    "sha256": "9e210ede21b86e6be4d1578134184296b0c64057a114d16b5749a44c726d86e4"
+  },
+  {
+    "path": "log_analysis/dashcam_mode_bibbia_longitudinale/00000049--a95dde6809/00000049--a95dde6809--2/rlog.zst",
+    "sha256": "aca80a787b04a3fe43f893a9f84081e0dd102f18c7f5b315195dcd9f7087d0e9"
+  },
+  {
+    "path": "log_analysis/dashcam_mode_bibbia_longitudinale/00000049--a95dde6809/00000049--a95dde6809--3/rlog.zst",
+    "sha256": "b11b0abe675e49bec17f04c52717c967c6734d9d435a5ed14ea09ef34a40ca38"
+  },
+  {
+    "path": "log_analysis/dashcam_mode_bibbia_longitudinale/00000049--a95dde6809/00000049--a95dde6809--4/rlog.zst",
+    "sha256": "b6baa403457e3438a3c7c0e7a792dd6ba65cbae6f5503c2e06640c9021abe761"
+  },
+  {
+    "path": "log_analysis/dashcam_mode_bibbia_longitudinale/00000049--a95dde6809/00000049--a95dde6809--5/rlog.zst",
+    "sha256": "460d5ce5743c27205a1fb6c5ceaf321687bc7424bd8bd5f9426c84d398921ca6"
+  },
+  {
+    "path": "log_analysis/dashcam_mode_bibbia_longitudinale/00000049--a95dde6809/00000049--a95dde6809--6/rlog.zst",
+    "sha256": "fa7f1fffd42f91fd43bb32fd9fa8039210b2f567c4bf03cf503d3a80da0424af"
+  },
+  {
+    "path": "log_analysis/dashcam_mode_bibbia_longitudinale/00000049--a95dde6809/00000049--a95dde6809--7/rlog.zst",
+    "sha256": "9dee0b67f35611a2d03f5f484e6656108c45eaa20de81293581cd5b080056343"
+  },
+  {
+    "path": "log_analysis/dashcam_mode_bibbia_longitudinale/00000049--a95dde6809/00000049--a95dde6809--8/rlog.zst",
+    "sha256": "28d813b0ea91059a6fb09dbca918c44b68f7e5ac247e1ce0ac08b32c4cd785b3"
+  },
+  {
+    "path": "log_analysis/dashcam_mode_bibbia_longitudinale/00000049--a95dde6809/00000049--a95dde6809--9/rlog.zst",
+    "sha256": "a74d8b1aa5c5885fe890b7cb70f07d2a95cbe3279ffe01df85b190c065c844b4"
+  }
+]

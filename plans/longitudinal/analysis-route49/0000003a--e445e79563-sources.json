@@ -1,0 +1,34 @@
+[
+  {
+    "path": "log_analysis/dashcam_mode_bibbia_longitudinale/0000003a--e445e79563/0000003a--e445e79563--0/rlog.zst",
+    "sha256": "929786a9573bebacda0d5fa2cf388f1b1e7de54a5fbac12815af00162f998466"
+  },
+  {
+    "path": "log_analysis/dashcam_mode_bibbia_longitudinale/0000003a--e445e79563/0000003a--e445e79563--1/rlog.zst",
+    "sha256": "dd8654d993cc3c2a8fdbf75026c8d66273f229e712480b827e0ee7cfbecb4c03"
+  },
+  {
+    "path": "log_analysis/dashcam_mode_bibbia_longitudinale/0000003a--e445e79563/0000003a--e445e79563--2/rlog.zst",
+    "sha256": "a532c64f5a4a65df0b5fae0ea071807555dc6a392c9ac99f6c71a64bca730031"
+  },
+  {
+    "path": "log_analysis/dashcam_mode_bibbia_longitudinale/0000003a--e445e79563/0000003a--e445e79563--3/rlog.zst",
+    "sha256": "d74f412767275a5be2614207d6b2d5b7f8c7cd1ea76cefdbfbc208a2fab89ecf"
+  },
+  {
+    "path": "log_analysis/dashcam_mode_bibbia_longitudinale/0000003a--e445e79563/0000003a--e445e79563--4/rlog.zst",
+    "sha256": "1501e3c52a0aa75f0a81badd1b234d481eba7c26a752fd7067af365a8c73905b"
+  },
+  {
+    "path": "log_analysis/dashcam_mode_bibbia_longitudinale/0000003a--e445e79563/0000003a--e445e79563--5/rlog.zst",
+    "sha256": "ba805098f52a36f226b43e6c1f3911b85a5277ec415cecbf1607c0f8f9d18a23"
+  },
+  {
+    "path": "log_analysis/dashcam_mode_bibbia_longitudinale/0000003a--e445e79563/0000003a--e445e79563--6/rlog.zst",
+    "sha256": "430d7c270b8bfc7bbd3b31badd087679c201448e21e1bb8ad7312a9ec8e12c17"
+  },
+  {
+    "path": "log_analysis/dashcam_mode_bibbia_longitudinale/0000003a--e445e79563/0000003a--e445e79563--7/rlog.zst",
+    "sha256": "fb3beb2c25de159ca1cc783682bf7f07bb9a887c9dbaa9f9b4fbd7e8f901b1af"
+  }
+]

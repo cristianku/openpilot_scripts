@@ -1,0 +1,9 @@
+{
+  "dbc_sha256": "a201b4cf57fee02e6ea7719d85b4c7fab46eba0015bb1cee18e60ae5905ffcc0",
+  "opendbc_head": "a6cc8c82ff798e03e82cbe749e6d6774ba8d992f",
+  "schema_source_head": "42024c6f4ead8e3f0b9d8f817e963c35b2055907",
+  "scripts_sha256": {
+    "analyze.py": "07152077c18d923093ef40b9c4e560b76927ddb6e2c21c5ff8c45600abdc0e7e",
+    "report.py": "baca71096c9e4f804523d797d74d4d8a3d029f302812332969cd42cf0e15d7a9"
+  }
+}
