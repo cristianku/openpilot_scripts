@@ -1,0 +1,78 @@
+[
+  {
+    "route": "00000053--c7fe48e14d",
+    "engage_s": 140.69032249900002,
+    "duration_s": 269.614585337,
+    "status_first_250ms": [
+      3.0,
+      4.0
+    ],
+    "pedal_percent": 26.5
+  },
+  {
+    "route": "00000054--bd2570a037",
+    "engage_s": 42.108851291000065,
+    "duration_s": 0.36313983999991706,
+    "status_first_250ms": [
+      3.0
+    ],
+    "pedal_percent": 48.5
+  },
+  {
+    "route": "00000055--9f9b1d209f",
+    "engage_s": 46.91304801600006,
+    "duration_s": 13.058744857999955,
+    "status_first_250ms": [
+      3.0,
+      4.0
+    ],
+    "pedal_percent": 2.5
+  },
+  {
+    "route": "00000056--be50d375dd",
+    "engage_s": 349.133111039,
+    "duration_s": 0.35265159999994466,
+    "status_first_250ms": [
+      3.0
+    ],
+    "pedal_percent": 36.0
+  },
+  {
+    "route": "00000056--be50d375dd",
+    "engage_s": 395.4183725469999,
+    "duration_s": 177.11230179300014,
+    "status_first_250ms": [
+      3.0,
+      4.0
+    ],
+    "pedal_percent": 13.5
+  },
+  {
+    "route": "00000056--be50d375dd",
+    "engage_s": 612.595564288,
+    "duration_s": 0.3525148399999125,
+    "status_first_250ms": [
+      3.0
+    ],
+    "pedal_percent": 40.0
+  },
+  {
+    "route": "00000057--b3465c5577",
+    "engage_s": 16.36015407800005,
+    "duration_s": 32.258867176999956,
+    "status_first_250ms": [
+      3.0,
+      4.0
+    ],
+    "pedal_percent": 1.5
+  },
+  {
+    "route": "00000057--b3465c5577",
+    "engage_s": 115.67634782899995,
+    "duration_s": 0.35151151200011554,
+    "status_first_250ms": [
+      3.0
+    ],
+    "pedal_percent": 43.0
+  }
+]

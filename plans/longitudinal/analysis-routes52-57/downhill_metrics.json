@@ -1,0 +1,552 @@
+{
+  "carState/vEgoRaw": [
+    17.63194,
+    17.73889,
+    17.84236
+  ],
+  "carState/aEgo": [
+    -0.5632,
+    0.11865,
+    0.44621
+  ],
+  "carState/setSpeed": [
+    17.22222,
+    17.22222,
+    17.22222
+  ],
+  "carState/gas": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "carState/brake": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "carState/canValid": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "carState/cruiseEnabled": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "carState/accFaulted": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "carControl/enabled": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "carControl/longActive": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "carControl/accel": [
+    -0.66621,
+    -0.51894,
+    -0.40094
+  ],
+  "carControl/pitch": [
+    -0.09228,
+    -0.08505,
+    -0.07256
+  ],
+  "panda0/controlsAllowed": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "panda0/txBlocked": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "panda0/rxInvalid": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "sendcan_1_0x2b6/ACC_STATUS": [
+    4.0,
+    4.0,
+    4.0
+  ],
+  "sendcan_1_0x2b6/MDD_DESIRED_DECELERATION": [
+    -0.65,
+    -0.5,
+    2.05
+  ],
+  "sendcan_1_0x2b6/MDD_DECEL_CONTROL_REQ": [
+    0.0,
+    1.0,
+    1.0
+  ],
+  "sendcan_1_0x2b6/GMP_WHEEL_TORQUE": [
+    -4000.0,
+    -4000.0,
+    -400.0
+  ],
+  "pulses": [
+    {
+      "t": 557.739,
+      "duration": 0.764,
+      "decel_min": -0.6,
+      "decel_max": -0.5,
+      "before": {
+        "v": 17.714,
+        "a": 0.289,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.496,
+        "pitch": -0.088,
+        "pressure": 0.0
+      },
+      "after": {
+        "v": 17.69,
+        "a": -0.481,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.497,
+        "pitch": -0.091,
+        "pressure": 1.0
+      }
+    },
+    {
+      "t": 559.145,
+      "duration": 0.703,
+      "decel_min": -0.55,
+      "decel_max": -0.5,
+      "before": {
+        "v": 17.719,
+        "a": 0.231,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.489,
+        "pitch": -0.09,
+        "pressure": 0.0
+      },
+      "after": {
+        "v": 17.719,
+        "a": -0.256,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.499,
+        "pitch": -0.089,
+        "pressure": 1.0
+      }
+    },
+    {
+      "t": 560.15,
+      "duration": 0.502,
+      "decel_min": -0.6,
+      "decel_max": -0.5,
+      "before": {
+        "v": 17.719,
+        "a": 0.201,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.484,
+        "pitch": -0.087,
+        "pressure": 0.0
+      },
+      "after": {
+        "v": 17.699,
+        "a": -0.449,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.491,
+        "pitch": -0.087,
+        "pressure": 1.0
+      }
+    },
+    {
+      "t": 561.054,
+      "duration": 0.642,
+      "decel_min": -0.6,
+      "decel_max": -0.5,
+      "before": {
+        "v": 17.742,
+        "a": 0.278,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.49,
+        "pitch": -0.087,
+        "pressure": 0.0
+      },
+      "after": {
+        "v": 17.701,
+        "a": -0.338,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.496,
+        "pitch": -0.082,
+        "pressure": 1.0
+      }
+    },
+    {
+      "t": 562.098,
+      "duration": 0.642,
+      "decel_min": -0.6,
+      "decel_max": -0.5,
+      "before": {
+        "v": 17.742,
+        "a": 0.334,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.495,
+        "pitch": -0.084,
+        "pressure": 0.0
+      },
+      "after": {
+        "v": 17.727,
+        "a": -0.332,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.498,
+        "pitch": -0.083,
+        "pressure": 1.0
+      }
+    },
+    {
+      "t": 563.142,
+      "duration": 0.548,
+      "decel_min": -0.6,
+      "decel_max": -0.5,
+      "before": {
+        "v": 17.735,
+        "a": 0.235,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.496,
+        "pitch": -0.081,
+        "pressure": 0.0
+      },
+      "after": {
+        "v": 17.699,
+        "a": -0.462,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.487,
+        "pitch": -0.081,
+        "pressure": 1.0
+      }
+    },
+    {
+      "t": 564.165,
+      "duration": 0.683,
+      "decel_min": -0.6,
+      "decel_max": -0.5,
+      "before": {
+        "v": 17.749,
+        "a": 0.266,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.494,
+        "pitch": -0.077,
+        "pressure": 0.0
+      },
+      "after": {
+        "v": 17.715,
+        "a": -0.378,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.475,
+        "pitch": -0.077,
+        "pressure": 1.0
+      }
+    },
+    {
+      "t": 565.396,
+      "duration": 0.704,
+      "decel_min": -0.6,
+      "decel_max": -0.5,
+      "before": {
+        "v": 17.742,
+        "a": 0.312,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.513,
+        "pitch": -0.078,
+        "pressure": 0.0
+      },
+      "after": {
+        "v": 17.699,
+        "a": -0.318,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.479,
+        "pitch": -0.078,
+        "pressure": 1.0
+      }
+    },
+    {
+      "t": 566.597,
+      "duration": 0.708,
+      "decel_min": -0.6,
+      "decel_max": -0.5,
+      "before": {
+        "v": 17.734,
+        "a": 0.308,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.476,
+        "pitch": -0.073,
+        "pressure": 0.0
+      },
+      "after": {
+        "v": 17.691,
+        "a": -0.351,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.477,
+        "pitch": -0.079,
+        "pressure": 1.0
+      }
+    },
+    {
+      "t": 567.84,
+      "duration": 0.605,
+      "decel_min": -0.6,
+      "decel_max": -0.5,
+      "before": {
+        "v": 17.723,
+        "a": 0.301,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.484,
+        "pitch": -0.078,
+        "pressure": 0.0
+      },
+      "after": {
+        "v": 17.692,
+        "a": -0.334,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.484,
+        "pitch": -0.085,
+        "pressure": 1.0
+      }
+    },
+    {
+      "t": 568.909,
+      "duration": 0.641,
+      "decel_min": -0.6,
+      "decel_max": -0.5,
+      "before": {
+        "v": 17.744,
+        "a": 0.29,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.498,
+        "pitch": -0.085,
+        "pressure": 0.0
+      },
+      "after": {
+        "v": 17.682,
+        "a": -0.325,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.496,
+        "pitch": -0.09,
+        "pressure": 1.0
+      }
+    },
+    {
+      "t": 569.931,
+      "duration": 0.603,
+      "decel_min": -0.6,
+      "decel_max": -0.5,
+      "before": {
+        "v": 17.724,
+        "a": 0.259,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.484,
+        "pitch": -0.089,
+        "pressure": 0.0
+      },
+      "after": {
+        "v": 17.693,
+        "a": -0.42,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.496,
+        "pitch": -0.09,
+        "pressure": 1.0
+      }
+    },
+    {
+      "t": 570.894,
+      "duration": 0.544,
+      "decel_min": -0.55,
+      "decel_max": -0.5,
+      "before": {
+        "v": 17.736,
+        "a": 0.287,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.484,
+        "pitch": -0.089,
+        "pressure": 0.0
+      },
+      "after": {
+        "v": 17.712,
+        "a": -0.373,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.495,
+        "pitch": -0.09,
+        "pressure": 1.0
+      }
+    },
+    {
+      "t": 571.897,
+      "duration": 0.522,
+      "decel_min": -0.65,
+      "decel_max": -0.5,
+      "before": {
+        "v": 17.725,
+        "a": 0.303,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 1.0,
+        "long": 1.0,
+        "target": -0.5,
+        "pitch": -0.089,
+        "pressure": 0.0
+      },
+      "after": {
+        "v": 17.76,
+        "a": -0.402,
+        "set": 17.222,
+        "gas": 0.0,
+        "BSI": 1.0,
+        "fault": 0.0,
+        "enabled": 0.0,
+        "long": 0.0,
+        "target": 0.0,
+        "pitch": -0.089,
+        "pressure": 0.0
+      }
+    }
+  ],
+  "pulse_count": 14,
+  "sendcan_1_0x2b6/frames": 742,
+  "sendcan_1_0x2b6/max_gap": 0.02837532800003828,
+  "can_129_0x2b6/frames": 742,
+  "can_129_0x2b6/max_gap": 0.03263355700005377
+}

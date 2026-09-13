@@ -1,0 +1,42 @@
+[
+  {
+    "file": "00000050--eabf0e8324--0/qlog.zst",
+    "sha256": "37a1a07a66ea8047db4890327e89e7b8fce0b75418907431f42c1a874235ef0f",
+    "bytes": 493429
+  },
+  {
+    "file": "00000050--eabf0e8324--0/rlog.zst",
+    "sha256": "4428f4cff3df99bd9b6d391d49b0351d6955eea57e839273aed165107dffec41",
+    "bytes": 9121594
+  },
+  {
+    "file": "00000050--eabf0e8324--1/qlog.zst",
+    "sha256": "3cad67fedd9c73c20a7f43da9c2c9f71049ac14f4739f527708c4ec59a02fc17",
+    "bytes": 515856
+  },
+  {
+    "file": "00000050--eabf0e8324--1/rlog.zst",
+    "sha256": "004ad9fa3d3bde1e68ee1e3db71afd88e51abc6748fac391d07354a672f3da09",
+    "bytes": 10613127
+  },
+  {
+    "file": "00000050--eabf0e8324--2/qlog.zst",
+    "sha256": "efdf6f93ebe1d64db8031e82effd3ce37753b8acc13b45113b8977aa8cbb32cd",
+    "bytes": 512240
+  },
+  {
+    "file": "00000050--eabf0e8324--2/rlog.zst",
+    "sha256": "22992786586fd9540313f3c460fcc6d5254f4a91dfe24382591783e6d592e392",
+    "bytes": 10547923
+  },
+  {
+    "file": "00000050--eabf0e8324--3/qlog.zst",
+    "sha256": "f7489cf971e08887ab876d123d72909c6f201e4ee350b75bf200089c13522220",
+    "bytes": 62002
+  },
+  {
+    "file": "00000050--eabf0e8324--3/rlog.zst",
+    "sha256": "9f8e27fd07390c3b3f0704e5961a5a7b3f6f347d354a0c0854fb72f008b0be78",
+    "bytes": 296815
+  }
+]
