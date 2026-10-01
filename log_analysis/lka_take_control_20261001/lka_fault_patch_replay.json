@@ -1,0 +1,122 @@
+{
+  "route": "000000bb--2d3dbf3a70",
+  "scope": "Controller replay of recorded EPS/carState/carControl, original fault flags kept false; model prediction and longitudinal disabled, not a vehicle simulation.",
+  "counts": {
+    "before": {
+      "control_ticks": 36285,
+      "fault_control_ticks": 570,
+      "activation_or_torque_lka": 20,
+      "fault_hold_messages": 10,
+      "neutral_lka": 94
+    },
+    "after": {
+      "control_ticks": 36285,
+      "fault_control_ticks": 570,
+      "neutral_lka": 114
+    }
+  },
+  "episodes": [
+    {
+      "start": 35.17156029099999,
+      "end": 35.67363357499994,
+      "before": {
+        "activation_or_torque_lka": 10,
+        "fault_hold_messages": 5
+      },
+      "after": {
+        "neutral_lka": 10
+      }
+    },
+    {
+      "start": 65.068793476,
+      "end": 65.87238491599999,
+      "before": {
+        "neutral_lka": 16
+      },
+      "after": {
+        "neutral_lka": 16
+      }
+    },
+    {
+      "start": 120.663350552,
+      "end": 121.16638957800001,
+      "before": {
+        "fault_hold_messages": 5,
+        "activation_or_torque_lka": 10
+      },
+      "after": {
+        "neutral_lka": 10
+      }
+    },
+    {
+      "start": 144.26502961100005,
+      "end": 144.767434116,
+      "before": {
+        "neutral_lka": 10
+      },
+      "after": {
+        "neutral_lka": 10
+      }
+    },
+    {
+      "start": 154.76227138599995,
+      "end": 155.264530112,
+      "before": {
+        "neutral_lka": 10
+      },
+      "after": {
+        "neutral_lka": 10
+      }
+    },
+    {
+      "start": 246.45483854999998,
+      "end": 247.15885513500007,
+      "before": {
+        "neutral_lka": 14
+      },
+      "after": {
+        "neutral_lka": 14
+      }
+    },
+    {
+      "start": 270.2559419270001,
+      "end": 270.75831511699994,
+      "before": {
+        "neutral_lka": 10
+      },
+      "after": {
+        "neutral_lka": 10
+      }
+    },
+    {
+      "start": 305.456140046,
+      "end": 305.957972058,
+      "before": {
+        "neutral_lka": 10
+      },
+      "after": {
+        "neutral_lka": 10
+      }
+    },
+    {
+      "start": 340.95328892399993,
+      "end": 341.5574018320001,
+      "before": {
+        "neutral_lka": 12
+      },
+      "after": {
+        "neutral_lka": 12
+      }
+    },
+    {
+      "start": 364.552703649,
+      "end": 365.15788855000005,
+      "before": {
+        "neutral_lka": 12
+      },
+      "after": {
+        "neutral_lka": 12
+      }
+    }
+  ]
+}

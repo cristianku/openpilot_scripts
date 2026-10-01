@@ -1,0 +1,11 @@
+{
+  "sha256_verified_files": 24,
+  "independent_raw_bit_verification": true,
+  "eps_defect_episodes": 10,
+  "inactive_lateral_at_fault": 8,
+  "takeover_pulses": 9,
+  "takeover_frames": 18,
+  "takeover_echoes_matched": 18,
+  "takeover_frames_rejected": 0,
+  "faults_with_takeover_in_previous_3s": 0
+}

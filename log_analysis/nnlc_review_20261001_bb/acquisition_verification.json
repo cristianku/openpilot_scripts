@@ -1,0 +1,32 @@
+{
+  "host": "comma@192.168.88.29",
+  "read_only_device": true,
+  "sha256_verified": true,
+  "total_files": 14,
+  "fresh_downloads": [
+    "000000bb--2d3dbf3a70--0/qlog.zst",
+    "000000bb--2d3dbf3a70--0/rlog.zst",
+    "000000bb--2d3dbf3a70--1/qlog.zst",
+    "000000bb--2d3dbf3a70--1/rlog.zst",
+    "000000bb--2d3dbf3a70--2/qlog.zst",
+    "000000bb--2d3dbf3a70--2/rlog.zst",
+    "000000bb--2d3dbf3a70--3/qlog.zst",
+    "000000bb--2d3dbf3a70--3/rlog.zst",
+    "000000bb--2d3dbf3a70--4/qlog.zst",
+    "000000bb--2d3dbf3a70--4/rlog.zst",
+    "000000bb--2d3dbf3a70--5/qlog.zst",
+    "000000bb--2d3dbf3a70--5/rlog.zst",
+    "000000bb--2d3dbf3a70--6/qlog.zst",
+    "000000bb--2d3dbf3a70--6/rlog.zst"
+  ],
+  "reused_matched_current_remote": [],
+  "verified_rlogs": [
+    "000000bb--2d3dbf3a70--0/rlog.zst",
+    "000000bb--2d3dbf3a70--1/rlog.zst",
+    "000000bb--2d3dbf3a70--2/rlog.zst",
+    "000000bb--2d3dbf3a70--3/rlog.zst",
+    "000000bb--2d3dbf3a70--4/rlog.zst",
+    "000000bb--2d3dbf3a70--5/rlog.zst",
+    "000000bb--2d3dbf3a70--6/rlog.zst"
+  ]
+}

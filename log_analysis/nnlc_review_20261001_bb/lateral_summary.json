@@ -1,0 +1,149 @@
+{
+  "route": "000000bb--2d3dbf3a70",
+  "versions": [
+    "0023601793b4d32369a1b3066e8cbc2e4d1db816"
+  ],
+  "counts": {
+    "initData": 7,
+    "sentinel": 14,
+    "can": 37193,
+    "clocks": 243,
+    "deviceState": 746,
+    "liveMapDataSP": 374,
+    "logMessage": 1576,
+    "managerState": 736,
+    "operatingSystemLog": 1219,
+    "pandaStates": 3719,
+    "peripheralState": 743,
+    "uiDebug": 22024,
+    "accelerometer": 38915,
+    "gyroscope": 38217,
+    "soundPressure": 3726,
+    "narrowRoadCameraState": 7452,
+    "wideRoadCameraState": 7452,
+    "cabinCameraState": 7451,
+    "narrowRoadEncodeIdx": 7450,
+    "qNarrowRoadEncodeIdx": 7450,
+    "wideRoadEncodeIdx": 7450,
+    "temperatureSensor": 745,
+    "cabinEncodeIdx": 7449,
+    "procLog": 187,
+    "ubloxGnss": 7847,
+    "ubloxRaw": 7377,
+    "gpsLocationExternal": 3359,
+    "errorLogMessage": 26,
+    "extrinsicsCalibration": 1467,
+    "onroadEvents": 642,
+    "onroadEventsSP": 388,
+    "selfdriveState": 36885,
+    "selfdriveStateSP": 36885,
+    "carControl": 36893,
+    "carControlSP": 36893,
+    "controlsState": 36893,
+    "radarState": 7331,
+    "lateralDelay": 1466,
+    "carParams": 8,
+    "carOutput": 36877,
+    "carParamsSP": 8,
+    "carState": 36877,
+    "carStateSP": 36877,
+    "radarTracks": 7375,
+    "lateralTorqueParameters": 1466,
+    "driverStateV2": 7331,
+    "driverMonitoringState": 7331,
+    "thumbnail": 7,
+    "sendcan": 36283,
+    "cameraOdometry": 7249,
+    "deviceMotion": 7249,
+    "drivingModelData": 7249,
+    "liveLocationKalman": 7249,
+    "modelDataV2SP": 7249,
+    "modelV2": 7249,
+    "vehicleParameters": 7249,
+    "driverAssistance": 7248,
+    "longitudinalPlan": 7248,
+    "longitudinalPlanSP": 7248
+  },
+  "rows": 36893,
+  "duration_s": 370.631696561,
+  "t0": 851.950415534,
+  "carParams": [
+    {
+      "platform": "PSA_PEUGEOT_3008",
+      "steerControlType": "torque",
+      "torque": {
+        "deprecated": {
+          "useSteeringAngle": false,
+          "kp": 0.0,
+          "ki": 0.0,
+          "kf": 0.0,
+          "kd": 0.0
+        },
+        "friction": 0.21054799854755402,
+        "steeringAngleDeadzoneDeg": 0.0,
+        "latAccelFactor": 2.5382139682769775,
+        "latAccelOffset": 0.0
+      }
+    }
+  ],
+  "models": [
+    {
+      "model": {
+        "path": "/data/openpilot/openpilot/sunnypilot/neural_network_data/neural_network_lateral_control/PSA_PEUGEOT_3008.json",
+        "name": "PSA_PEUGEOT_3008"
+      },
+      "fuzzyFingerprint": false
+    }
+  ],
+  "logged_params": [],
+  "active_no_driver": 3123,
+  "desired_torque_nontrivial": 2617,
+  "desired_external_torque_same_sign": 2265,
+  "desired_feedforward_same_sign": 334,
+  "pid_error_vs_lat_error_corr": -0.7673451657153308,
+  "opposite_pid_error_count": 779,
+  "pid_error_nontrivial": 1674,
+  "torque_vs_desired_corr": 0.7009305086947986,
+  "external_torque_vs_can_corr": 0.6414005824257181,
+  "saturated_rows": 6,
+  "live_parameters_first": [
+    {
+      "t": 852.430712956,
+      "values": {
+        "valid": true,
+        "latAccelFactorRaw": 3.3982093334198,
+        "latAccelOffsetRaw": -0.061875879764556885,
+        "frictionCoefficientRaw": 0.14480435848236084,
+        "latAccelFactorFiltered": 3.269087314605713,
+        "latAccelOffsetFiltered": -0.0526764951646328,
+        "frictionCoefficientFiltered": 0.1393275409936905,
+        "totalBucketPoints": 10096.0,
+        "decay": 250.0,
+        "maxResets": 1.0,
+        "version": 1,
+        "useParams": true,
+        "calPerc": 100
+      }
+    }
+  ],
+  "live_parameters_last": [
+    {
+      "t": 1222.561381749,
+      "values": {
+        "valid": true,
+        "latAccelFactorRaw": 3.3642566204071045,
+        "latAccelOffsetRaw": -0.05931432172656059,
+        "frictionCoefficientRaw": 0.13998328149318695,
+        "latAccelFactorFiltered": 3.276879072189331,
+        "latAccelOffsetFiltered": -0.05369599536061287,
+        "frictionCoefficientFiltered": 0.13992029428482056,
+        "totalBucketPoints": 10100.0,
+        "decay": 250.0,
+        "maxResets": 1.0,
+        "version": 1,
+        "useParams": true,
+        "calPerc": 100
+      }
+    }
+  ]
+}

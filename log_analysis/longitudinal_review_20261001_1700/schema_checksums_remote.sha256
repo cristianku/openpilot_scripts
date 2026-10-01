@@ -1,0 +1,4 @@
+d439fdd23e665ec2d74039619c903219386ac6ce3ddadfbc279ae669b9dd1cd6  /data/openpilot/openpilot/cereal/custom.capnp
+b3aa5c13de40001ed7376cef858500fb003f7698f96131cd0db18d878fa1af0d  /data/openpilot/openpilot/cereal/deprecated.capnp
+0b1f601818dc8967b5131b1706a1db4fcae175baed83440ac51d0277cda4ff24  /data/openpilot/openpilot/cereal/log.capnp
+b971083a0cb3aed287ca9c54572d470fb798e633bc47611717f697b9e735f5a1  /data/openpilot/opendbc_repo/opendbc/car/car.capnp

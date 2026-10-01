@@ -1,0 +1,214 @@
+{
+  "route": "000000bb--2d3dbf3a70",
+  "t0_monotonic": 848.955823538,
+  "duration": 373.629249008,
+  "counts": {
+    "initData": 7,
+    "sentinel": 14,
+    "can": 37193,
+    "clocks": 243,
+    "deviceState": 746,
+    "liveMapDataSP": 374,
+    "logMessage": 1576,
+    "managerState": 736,
+    "operatingSystemLog": 1219,
+    "pandaStates": 3719,
+    "peripheralState": 743,
+    "uiDebug": 22024,
+    "accelerometer": 38915,
+    "gyroscope": 38217,
+    "soundPressure": 3726,
+    "narrowRoadCameraState": 7452,
+    "wideRoadCameraState": 7452,
+    "cabinCameraState": 7451,
+    "narrowRoadEncodeIdx": 7450,
+    "qNarrowRoadEncodeIdx": 7450,
+    "wideRoadEncodeIdx": 7450,
+    "temperatureSensor": 745,
+    "cabinEncodeIdx": 7449,
+    "procLog": 187,
+    "ubloxGnss": 7847,
+    "ubloxRaw": 7377,
+    "gpsLocationExternal": 3359,
+    "errorLogMessage": 26,
+    "extrinsicsCalibration": 1467,
+    "onroadEvents": 642,
+    "onroadEventsSP": 388,
+    "selfdriveState": 36885,
+    "selfdriveStateSP": 36885,
+    "carControl": 36893,
+    "carControlSP": 36893,
+    "controlsState": 36893,
+    "radarState": 7331,
+    "lateralDelay": 1466,
+    "carParams": 8,
+    "carOutput": 36877,
+    "carParamsSP": 8,
+    "carState": 36877,
+    "carStateSP": 36877,
+    "radarTracks": 7375,
+    "lateralTorqueParameters": 1466,
+    "driverStateV2": 7331,
+    "driverMonitoringState": 7331,
+    "thumbnail": 7,
+    "sendcan": 36283,
+    "cameraOdometry": 7249,
+    "deviceMotion": 7249,
+    "drivingModelData": 7249,
+    "liveLocationKalman": 7249,
+    "modelDataV2SP": 7249,
+    "modelV2": 7249,
+    "vehicleParameters": 7249,
+    "driverAssistance": 7248,
+    "longitudinalPlan": 7248,
+    "longitudinalPlanSP": 7248
+  },
+  "can_counts": [
+    {
+      "type": "can",
+      "addr": "0x2b6",
+      "src": 1,
+      "count": 508
+    },
+    {
+      "type": "can",
+      "addr": "0x2b6",
+      "src": 129,
+      "count": 13881
+    },
+    {
+      "type": "can",
+      "addr": "0x2b6",
+      "src": 193,
+      "count": 5
+    },
+    {
+      "type": "can",
+      "addr": "0x2f6",
+      "src": 1,
+      "count": 508
+    },
+    {
+      "type": "can",
+      "addr": "0x2f6",
+      "src": 129,
+      "count": 13881
+    },
+    {
+      "type": "can",
+      "addr": "0x2f6",
+      "src": 193,
+      "count": 5
+    },
+    {
+      "type": "can",
+      "addr": "0x3f2",
+      "src": 0,
+      "count": 188
+    },
+    {
+      "type": "can",
+      "addr": "0x3f2",
+      "src": 2,
+      "count": 7472
+    },
+    {
+      "type": "can",
+      "addr": "0x3f2",
+      "src": 128,
+      "count": 7251
+    },
+    {
+      "type": "can",
+      "addr": "0x3f2",
+      "src": 192,
+      "count": 6
+    },
+    {
+      "type": "can",
+      "addr": "0x495",
+      "src": 0,
+      "count": 3736
+    },
+    {
+      "type": "can",
+      "addr": "0x495",
+      "src": 2,
+      "count": 90
+    },
+    {
+      "type": "can",
+      "addr": "0x495",
+      "src": 130,
+      "count": 4137
+    },
+    {
+      "type": "sendcan",
+      "addr": "0x2b6",
+      "src": 1,
+      "count": 13886
+    },
+    {
+      "type": "sendcan",
+      "addr": "0x2f6",
+      "src": 1,
+      "count": 13886
+    },
+    {
+      "type": "sendcan",
+      "addr": "0x3f2",
+      "src": 0,
+      "count": 7257
+    },
+    {
+      "type": "sendcan",
+      "addr": "0x495",
+      "src": 2,
+      "count": 494
+    }
+  ],
+  "init": [
+    {
+      "gitCommit": "0023601793b4d32369a1b3066e8cbc2e4d1db816",
+      "gitBranch": "psa-torque-sunny-testing",
+      "version": "2026.003.000",
+      "wallTimeNanos": 1790876277785936432
+    },
+    {
+      "gitCommit": "0023601793b4d32369a1b3066e8cbc2e4d1db816",
+      "gitBranch": "psa-torque-sunny-testing",
+      "version": "2026.003.000",
+      "wallTimeNanos": 1790876277785936432
+    },
+    {
+      "gitCommit": "0023601793b4d32369a1b3066e8cbc2e4d1db816",
+      "gitBranch": "psa-torque-sunny-testing",
+      "version": "2026.003.000",
+      "wallTimeNanos": 1790876277785936432
+    },
+    {
+      "gitCommit": "0023601793b4d32369a1b3066e8cbc2e4d1db816",
+      "gitBranch": "psa-torque-sunny-testing",
+      "version": "2026.003.000",
+      "wallTimeNanos": 1790876277785936432
+    },
+    {
+      "gitCommit": "0023601793b4d32369a1b3066e8cbc2e4d1db816",
+      "gitBranch": "psa-torque-sunny-testing",
+      "version": "2026.003.000",
+      "wallTimeNanos": 1790876277785936432
+    },
+    {
+      "gitCommit": "0023601793b4d32369a1b3066e8cbc2e4d1db816",
+      "gitBranch": "psa-torque-sunny-testing",
+      "version": "2026.003.000",
+      "wallTimeNanos": 1790876277785936432
+    },
+    {
+      "gitCommit": "0023601793b4d32369a1b3066e8cbc2e4d1db816",
+      "gitBranch": "psa-torque-sunny-testing",
+      "version": "2026.003.000",
+      "wallTimeNanos": 1790876277785936432
+    }
+  ]
+}

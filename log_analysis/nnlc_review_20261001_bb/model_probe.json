@@ -1,0 +1,166 @@
+{
+  "model": "/Users/cristianku/GitHub/COMMA.AI/CRISTIANKU/neural-network-data/neural_network_lateral_control/PSA_PEUGEOT_3008.json",
+  "legacy_order": [
+    "v_ego",
+    "actual_lateral_accel",
+    "roll",
+    "actual_lateral_accel_tm03",
+    "actual_lateral_accel_tm02",
+    "actual_lateral_accel_tm01",
+    "actual_lateral_accel_tp03",
+    "actual_lateral_accel_tp06",
+    "actual_lateral_accel_tp10",
+    "actual_lateral_accel_tp15",
+    "roll_tm03",
+    "roll_tm02",
+    "roll_tm01",
+    "roll_tp03",
+    "roll_tp06",
+    "roll_tp10",
+    "roll_tp15",
+    "lateral_jerk"
+  ],
+  "runtime_order": [
+    "v_ego",
+    "actual_lateral_accel",
+    "lateral_jerk",
+    "roll",
+    "actual_lateral_accel_tm03",
+    "actual_lateral_accel_tm02",
+    "actual_lateral_accel_tm01",
+    "actual_lateral_accel_tp03",
+    "actual_lateral_accel_tp06",
+    "actual_lateral_accel_tp10",
+    "actual_lateral_accel_tp15",
+    "roll_tm03",
+    "roll_tm02",
+    "roll_tm01",
+    "roll_tp03",
+    "roll_tp06",
+    "roll_tp10",
+    "roll_tp15"
+  ],
+  "friction_override": true,
+  "results": [
+    {
+      "speed": 15.0,
+      "lateral_accel": -1.0,
+      "legacy_order": 0.3103429675102234,
+      "runtime_order": 1.3534642457962036
+    },
+    {
+      "speed": 15.0,
+      "lateral_accel": -0.5,
+      "legacy_order": 0.17144115269184113,
+      "runtime_order": 1.0950332880020142
+    },
+    {
+      "speed": 15.0,
+      "lateral_accel": 0.0,
+      "legacy_order": -0.004651172552257776,
+      "runtime_order": -0.004651172552257776
+    },
+    {
+      "speed": 15.0,
+      "lateral_accel": 0.5,
+      "legacy_order": -0.18013645708560944,
+      "runtime_order": -1.1621545553207397
+    },
+    {
+      "speed": 15.0,
+      "lateral_accel": 1.0,
+      "legacy_order": -0.31972840428352356,
+      "runtime_order": -1.4265527725219727
+    },
+    {
+      "speed": 20.0,
+      "lateral_accel": -1.0,
+      "legacy_order": 0.3154904842376709,
+      "runtime_order": 1.3594645261764526
+    },
+    {
+      "speed": 20.0,
+      "lateral_accel": -0.5,
+      "legacy_order": 0.17856644093990326,
+      "runtime_order": 1.1064822673797607
+    },
+    {
+      "speed": 20.0,
+      "lateral_accel": 0.0,
+      "legacy_order": 0.010165737941861153,
+      "runtime_order": 0.010165737941861153
+    },
+    {
+      "speed": 20.0,
+      "lateral_accel": 0.5,
+      "legacy_order": -0.15597617626190186,
+      "runtime_order": -1.1171671152114868
+    },
+    {
+      "speed": 20.0,
+      "lateral_accel": 1.0,
+      "legacy_order": -0.2859428822994232,
+      "runtime_order": -1.4182099103927612
+    },
+    {
+      "speed": 25.0,
+      "lateral_accel": -1.0,
+      "legacy_order": 0.30413809418678284,
+      "runtime_order": 1.3573594093322754
+    },
+    {
+      "speed": 25.0,
+      "lateral_accel": -0.5,
+      "legacy_order": 0.16566796600818634,
+      "runtime_order": 1.0394792556762695
+    },
+    {
+      "speed": 25.0,
+      "lateral_accel": 0.0,
+      "legacy_order": 0.001296208705753088,
+      "runtime_order": 0.001296208705753088
+    },
+    {
+      "speed": 25.0,
+      "lateral_accel": 0.5,
+      "legacy_order": -0.16390542685985565,
+      "runtime_order": -0.9713805913925171
+    },
+    {
+      "speed": 25.0,
+      "lateral_accel": 1.0,
+      "legacy_order": -0.2980586886405945,
+      "runtime_order": -1.3962697982788086
+    },
+    {
+      "speed": 30.0,
+      "lateral_accel": -1.0,
+      "legacy_order": 0.2959590256214142,
+      "runtime_order": 1.3436249494552612
+    },
+    {
+      "speed": 30.0,
+      "lateral_accel": -0.5,
+      "legacy_order": 0.16533370316028595,
+      "runtime_order": 0.8927117586135864
+    },
+    {
+      "speed": 30.0,
+      "lateral_accel": 0.0,
+      "legacy_order": 0.006566496100276709,
+      "runtime_order": 0.006566496100276709
+    },
+    {
+      "speed": 30.0,
+      "lateral_accel": 0.5,
+      "legacy_order": -0.162006214261055,
+      "runtime_order": -0.7382113337516785
+    },
+    {
+      "speed": 30.0,
+      "lateral_accel": 1.0,
+      "legacy_order": -0.30848971009254456,
+      "runtime_order": -1.346786618232727
+    }
+  ]
+}

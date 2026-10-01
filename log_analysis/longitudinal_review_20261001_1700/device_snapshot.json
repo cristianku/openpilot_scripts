@@ -1,0 +1,11 @@
+{
+  "host": "comma@192.168.88.29",
+  "read_only": true,
+  "openpilot": "4bfe6f87f5d9e6d8bd2b618cbcfa9b11c2d812d9",
+  "branch": "psa-torque-sunny-testing",
+  "opendbc": "d79cb27c85fb9f447cb0276858a6a51376a09198",
+  "BRAKE_ACCEL_GAIN": 1.55,
+  "brake_filter_installed": false,
+  "openpilot_worktree_clean": true,
+  "opendbc_worktree_clean": true
+}

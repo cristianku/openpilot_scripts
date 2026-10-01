@@ -1,0 +1,181 @@
+{
+  "route": "000000bb--2d3dbf3a70",
+  "segments": 7,
+  "files": [
+    {
+      "path": "000000bb--2d3dbf3a70--0/rlog.zst",
+      "remote": "/data/media/0/realdata/000000bb--2d3dbf3a70--0/rlog.zst",
+      "size": 9433231,
+      "mtime": 1790876339.0570529,
+      "sha256": "29e1d8c6e0373b315e6451b092c09ad9aa76a7d11a1124a650de37bc392ac21a"
+    },
+    {
+      "path": "000000bb--2d3dbf3a70--0/qlog.zst",
+      "remote": "/data/media/0/realdata/000000bb--2d3dbf3a70--0/qlog.zst",
+      "size": 503173,
+      "mtime": 1790876339.0870464,
+      "sha256": "1f0f29349583db6c2cd39aff0f60dabc5c514ac999b46490b391fe95c0ea8cd4"
+    },
+    {
+      "path": "000000bb--2d3dbf3a70--1/rlog.zst",
+      "remote": "/data/media/0/realdata/000000bb--2d3dbf3a70--1/rlog.zst",
+      "size": 10874716,
+      "mtime": 1790876399.035869,
+      "sha256": "cf8297610b21773e3259a154928410e718df7624e69582bc9cbe4f41859f2288"
+    },
+    {
+      "path": "000000bb--2d3dbf3a70--1/qlog.zst",
+      "remote": "/data/media/0/realdata/000000bb--2d3dbf3a70--1/qlog.zst",
+      "size": 536162,
+      "mtime": 1790876399.0658638,
+      "sha256": "a35eb7f566c148c7abc931e90eddd8bac27702bf10970bdaf3fb2f10598c189e"
+    },
+    {
+      "path": "000000bb--2d3dbf3a70--2/rlog.zst",
+      "remote": "/data/media/0/realdata/000000bb--2d3dbf3a70--2/rlog.zst",
+      "size": 10752413,
+      "mtime": 1790876459.027021,
+      "sha256": "686e0497505fb250438977d8d2df1cf7fb2787e51b4d73694c5778ac4bb2f74a"
+    },
+    {
+      "path": "000000bb--2d3dbf3a70--2/qlog.zst",
+      "remote": "/data/media/0/realdata/000000bb--2d3dbf3a70--2/qlog.zst",
+      "size": 499143,
+      "mtime": 1790876459.0570168,
+      "sha256": "a5683215213aadb431c30c03fdf9e18678c1fd2f689894374685765c8a0e970f"
+    },
+    {
+      "path": "000000bb--2d3dbf3a70--3/rlog.zst",
+      "remote": "/data/media/0/realdata/000000bb--2d3dbf3a70--3/rlog.zst",
+      "size": 10856983,
+      "mtime": 1790876519.0296326,
+      "sha256": "b04958318ff67bdc01d5f4f2dd02500a331b952320d33d9ef6ca94ec368f70c1"
+    },
+    {
+      "path": "000000bb--2d3dbf3a70--3/qlog.zst",
+      "remote": "/data/media/0/realdata/000000bb--2d3dbf3a70--3/qlog.zst",
+      "size": 518651,
+      "mtime": 1790876519.0496302,
+      "sha256": "ef65da77a1e93b5c279b24a8d37a31b4594f775e27f913c5efd667e270286633"
+    },
+    {
+      "path": "000000bb--2d3dbf3a70--4/rlog.zst",
+      "remote": "/data/media/0/realdata/000000bb--2d3dbf3a70--4/rlog.zst",
+      "size": 10764612,
+      "mtime": 1790876579.0031598,
+      "sha256": "ef3b50b93cd38aace5543bfd3044a6e35299b7bb6473bb3b89ae05b6876e0a8d"
+    },
+    {
+      "path": "000000bb--2d3dbf3a70--4/qlog.zst",
+      "remote": "/data/media/0/realdata/000000bb--2d3dbf3a70--4/qlog.zst",
+      "size": 496983,
+      "mtime": 1790876579.0231576,
+      "sha256": "391f92ad8b6f9a7786d586db9be303a07330d475b25da1354b49cf586aed1270"
+    },
+    {
+      "path": "000000bb--2d3dbf3a70--5/rlog.zst",
+      "remote": "/data/media/0/realdata/000000bb--2d3dbf3a70--5/rlog.zst",
+      "size": 10549156,
+      "mtime": 1790876638.9972548,
+      "sha256": "18d116b187e0bd0c93badd1d582c60c1916ddfb221af20cf1f8cd20735cd8799"
+    },
+    {
+      "path": "000000bb--2d3dbf3a70--5/qlog.zst",
+      "remote": "/data/media/0/realdata/000000bb--2d3dbf3a70--5/qlog.zst",
+      "size": 492915,
+      "mtime": 1790876639.027252,
+      "sha256": "87e129cdef3490eb85e67a74e39576f1b1750bef8428f7949259900408ccf9e6"
+    },
+    {
+      "path": "000000bb--2d3dbf3a70--6/rlog.zst",
+      "remote": "/data/media/0/realdata/000000bb--2d3dbf3a70--6/rlog.zst",
+      "size": 2208261,
+      "mtime": 1790876651.4960747,
+      "sha256": "f78f86ea7a868c167489bfa42b1c5d0d27953c2a3ba523b1a289650e07d212e7"
+    },
+    {
+      "path": "000000bb--2d3dbf3a70--6/qlog.zst",
+      "remote": "/data/media/0/realdata/000000bb--2d3dbf3a70--6/qlog.zst",
+      "size": 163317,
+      "mtime": 1790876651.4860756,
+      "sha256": "4d8fc40df6bd79780e4fd946f1668cd79c7e3385ae05b55610748c9760811998"
+    },
+    {
+      "path": "device/opendbc_repo/opendbc/car/psa/carcontroller.py",
+      "remote": "/data/openpilot/opendbc_repo/opendbc/car/psa/carcontroller.py",
+      "size": 43075,
+      "mtime": 1790874601.647695,
+      "sha256": "60feca693da1dd2707058697e96c78d955277926b5757c9061d485a79e93164d"
+    },
+    {
+      "path": "device/opendbc_repo/opendbc/car/psa/psacan.py",
+      "remote": "/data/openpilot/opendbc_repo/opendbc/car/psa/psacan.py",
+      "size": 8523,
+      "mtime": 1790874601.647695,
+      "sha256": "f8611fb4fa1d679d10d2ce202eb45d935e41fa67b916e9d8e0006f0c4fb8ab60"
+    },
+    {
+      "path": "device/opendbc_repo/opendbc/car/psa/carstate.py",
+      "remote": "/data/openpilot/opendbc_repo/opendbc/car/psa/carstate.py",
+      "size": 13067,
+      "mtime": 1790874601.647695,
+      "sha256": "cba1a54bd204439997d28f57d62a917376dfa46f8bb35df27bc8c10b69c25d41"
+    },
+    {
+      "path": "device/opendbc_repo/opendbc/car/psa/values.py",
+      "remote": "/data/openpilot/opendbc_repo/opendbc/car/psa/values.py",
+      "size": 7881,
+      "mtime": 1790874601.6676958,
+      "sha256": "3d8950411e3a4de9cc87f907a90393dc3dbc65d7ce8b03782c3faeeb38ce4170"
+    },
+    {
+      "path": "device/opendbc_repo/opendbc/car/car.capnp",
+      "remote": "/data/openpilot/opendbc_repo/opendbc/car/car.capnp",
+      "size": 21296,
+      "mtime": 1790874601.5976932,
+      "sha256": "b971083a0cb3aed287ca9c54572d470fb798e633bc47611717f697b9e735f5a1"
+    },
+    {
+      "path": "device/opendbc_repo/opendbc/dbc/psa_aee2010_r3.dbc",
+      "remote": "/data/openpilot/opendbc_repo/opendbc/dbc/psa_aee2010_r3.dbc",
+      "size": 58611,
+      "mtime": 1790874601.7776997,
+      "sha256": "a201b4cf57fee02e6ea7719d85b4c7fab46eba0015bb1cee18e60ae5905ffcc0"
+    },
+    {
+      "path": "device/opendbc_repo/opendbc/safety/modes/psa.h",
+      "remote": "/data/openpilot/opendbc_repo/opendbc/safety/modes/psa.h",
+      "size": 18484,
+      "mtime": 1790874601.8077006,
+      "sha256": "238e7b24cf4803a5e5a45f4320798d9280e4ec05e649d0c84e5ed5bfc60bed35"
+    },
+    {
+      "path": "device/openpilot/cereal/log.capnp",
+      "remote": "/data/openpilot/openpilot/cereal/log.capnp",
+      "size": 66407,
+      "mtime": 1789108823.2231965,
+      "sha256": "0b1f601818dc8967b5131b1706a1db4fcae175baed83440ac51d0277cda4ff24"
+    },
+    {
+      "path": "device/openpilot/cereal/custom.capnp",
+      "remote": "/data/openpilot/openpilot/cereal/custom.capnp",
+      "size": 11172,
+      "mtime": 1788508881.469713,
+      "sha256": "d439fdd23e665ec2d74039619c903219386ac6ce3ddadfbc279ae669b9dd1cd6"
+    },
+    {
+      "path": "device/openpilot/cereal/deprecated.capnp",
+      "remote": "/data/openpilot/openpilot/cereal/deprecated.capnp",
+      "size": 17593,
+      "mtime": 1788508881.469713,
+      "sha256": "b3aa5c13de40001ed7376cef858500fb003f7698f96131cd0db18d878fa1af0d"
+    }
+  ],
+  "device_snapshot": {
+    "openpilot": "0023601793b4d32369a1b3066e8cbc2e4d1db816",
+    "opendbc": "4d68f2632c32a72b8d31b63a6e6786abc2b34d05",
+    "branch": "psa-torque-sunny-testing",
+    "openpilot_status": "",
+    "opendbc_status": ""
+  }
+}
