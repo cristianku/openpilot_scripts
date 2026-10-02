@@ -1,0 +1,4 @@
+interface:
+  display_name: "OP · Scarica NNLC Peugeot 3008"
+  short_description: "Scarica il modello Peugeot 3008 da openpilot-nnlc"
+  default_prompt: "Usa $op-nnlc-fetch-peugeot per scaricare il modello NNLC del Peugeot 3008 in neural-network-data con il nome corretto."

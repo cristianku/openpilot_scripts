@@ -1,0 +1,577 @@
+{
+  "route": "000000c5--eeb1073747",
+  "t0": 38.754345035,
+  "reference": 49.491179406,
+  "verified_input": [
+    {
+      "path": "/Users/cristianku/GitHub/COMMA.AI/CRISTIANKU/openpilot_scripts/log_analysis/latest_comma_20261002/000000c5--eeb1073747/000000c5--eeb1073747--0/rlog.zst",
+      "sha256": "6b33dd2b484e36dfb974d95099fd24de5cad7b97e4ca7d083040e26809ea05e8"
+    },
+    {
+      "path": "/Users/cristianku/GitHub/COMMA.AI/CRISTIANKU/openpilot_scripts/log_analysis/latest_comma_20261002/000000c5--eeb1073747/000000c5--eeb1073747--1/rlog.zst",
+      "sha256": "16aa92f59596e04a10da358cee9d5b2a9823944b8ed63c233858cba5b588afb8"
+    }
+  ],
+  "handover": [
+    {
+      "address": "0x2b6",
+      "last_stock": {
+        "t": 49.497957,
+        "relative_route_s": 10.743612,
+        "relative_programming_s": 0.006778,
+        "data": "fe00000f000043be",
+        "decoded": {
+          "MDD_DESIRED_DECELERATION": 2.05,
+          "POTENTIAL_WHEEL_TORQUE_REQUEST": 0.0,
+          "MIN_TIME_FOR_DESIRED_GEAR": 0.0,
+          "GMP_POTENTIAL_WHEEL_TORQUE": -4000.0,
+          "ACC_STATUS": 15.0,
+          "GMP_WHEEL_TORQUE": -4000.0,
+          "WHEEL_TORQUE_REQUEST": 0.0,
+          "AUTO_BRAKING_STATUS": 3.0,
+          "MDD_DECEL_TYPE": 0.0,
+          "MDD_DECEL_CONTROL_REQ": 0.0,
+          "GEAR_TYPE": 1.0,
+          "PREFILL_REQUEST": 0.0,
+          "CHECKSUM": 14.0,
+          "COUNTER": 11.0
+        }
+      },
+      "first_tx_echo": {
+        "t": 49.528487,
+        "relative_route_s": 10.774142,
+        "relative_programming_s": 0.037308,
+        "data": "fe000002000003ce",
+        "decoded": {
+          "MDD_DESIRED_DECELERATION": 2.05,
+          "POTENTIAL_WHEEL_TORQUE_REQUEST": 0.0,
+          "MIN_TIME_FOR_DESIRED_GEAR": 0.0,
+          "GMP_POTENTIAL_WHEEL_TORQUE": -4000.0,
+          "ACC_STATUS": 2.0,
+          "GMP_WHEEL_TORQUE": -4000.0,
+          "WHEEL_TORQUE_REQUEST": 0.0,
+          "AUTO_BRAKING_STATUS": 3.0,
+          "MDD_DECEL_TYPE": 0.0,
+          "MDD_DECEL_CONTROL_REQ": 0.0,
+          "GEAR_TYPE": 0.0,
+          "PREFILL_REQUEST": 0.0,
+          "CHECKSUM": 14.0,
+          "COUNTER": 12.0
+        }
+      },
+      "gap_ms": 30.53
+    },
+    {
+      "address": "0x2f6",
+      "last_stock": {
+        "t": 49.478413,
+        "relative_route_s": 10.724068,
+        "relative_programming_s": -0.012766,
+        "data": "00ff8600f860a500",
+        "decoded": {
+          "TARGET_DETECTED": 0.0,
+          "REQUEST_TAKEOVER": 0.0,
+          "BLIND_SENSOR": 0.0,
+          "REQ_VISUAL_COLL_ALERT_ARC": 0.0,
+          "REQ_AUDIO_COLL_ALERT_ARC": 0.0,
+          "REQ_HAPTIC_COLL_ALERT_ARC": 0.0,
+          "INTER_VEHICLE_DISTANCE": 255.5,
+          "ARC_STATUS": 6.0,
+          "AUTO_BRAKING_IN_PROGRESS": 0.0,
+          "AEB_ENABLED": 0.0,
+          "DRIVE_AWAY_REQUEST": 0.0,
+          "DISPLAY_INTERVEHICLE_TIME": 6.2,
+          "MDD_DECEL_CONTROL_REQ": 0.0,
+          "AUTO_BRAKING_STATUS": 3.0,
+          "CHECKSUM": 5.0,
+          "COUNTER": 10.0,
+          "TARGET_POSITION": 0.0
+        }
+      },
+      "first_tx_echo": {
+        "t": 49.50789,
+        "relative_route_s": 10.753545,
+        "relative_programming_s": 0.016711,
+        "data": "00ff8600f860b400",
+        "decoded": {
+          "TARGET_DETECTED": 0.0,
+          "REQUEST_TAKEOVER": 0.0,
+          "BLIND_SENSOR": 0.0,
+          "REQ_VISUAL_COLL_ALERT_ARC": 0.0,
+          "REQ_AUDIO_COLL_ALERT_ARC": 0.0,
+          "REQ_HAPTIC_COLL_ALERT_ARC": 0.0,
+          "INTER_VEHICLE_DISTANCE": 255.5,
+          "ARC_STATUS": 6.0,
+          "AUTO_BRAKING_IN_PROGRESS": 0.0,
+          "AEB_ENABLED": 0.0,
+          "DRIVE_AWAY_REQUEST": 0.0,
+          "DISPLAY_INTERVEHICLE_TIME": 6.2,
+          "MDD_DECEL_CONTROL_REQ": 0.0,
+          "AUTO_BRAKING_STATUS": 3.0,
+          "CHECKSUM": 4.0,
+          "COUNTER": 11.0,
+          "TARGET_POSITION": 0.0
+        }
+      },
+      "gap_ms": 29.477
+    },
+    {
+      "address": "0x4f6",
+      "last_stock": {
+        "t": 49.447694,
+        "relative_route_s": 10.693349,
+        "relative_programming_s": -0.043486,
+        "data": "fffe5ffe00",
+        "decoded": {
+          "TIME_GAP": 25.5,
+          "DISTANCE_GAP": 254.0,
+          "RELATIVE_SPEED": 93.8,
+          "ARTIV_SENSOR_STATE": 2.0,
+          "TARGET_DETECTED": 0.0,
+          "ARTIV_TARGET_CHANGE_INFO": 0.0,
+          "TRAFFIC_DIRECTION": 0.0
+        }
+      },
+      "first_tx_echo": {
+        "t": 49.562679,
+        "relative_route_s": 10.808333,
+        "relative_programming_s": 0.071499,
+        "data": "fffe5ffe00",
+        "decoded": {
+          "TIME_GAP": 25.5,
+          "DISTANCE_GAP": 254.0,
+          "RELATIVE_SPEED": 93.8,
+          "ARTIV_SENSOR_STATE": 2.0,
+          "TARGET_DETECTED": 0.0,
+          "ARTIV_TARGET_CHANGE_INFO": 0.0,
+          "TRAFFIC_DIRECTION": 0.0
+        }
+      },
+      "gap_ms": 114.985
+    },
+    {
+      "address": "0x796",
+      "last_stock": {
+        "t": 49.246247,
+        "relative_route_s": 10.491902,
+        "relative_programming_s": -0.244932,
+        "data": "0000000000000000",
+        "decoded": {
+          "FAULT_CODE": 0.0,
+          "STATUS_NO_CONFIG": 0.0,
+          "STATUS_PARTIAL_WAKEUP_GMP": 0.0,
+          "UCE_ELECTR_STATE": 0.0
+        }
+      },
+      "first_tx_echo": {
+        "t": 50.261771,
+        "relative_route_s": 11.507426,
+        "relative_programming_s": 0.770592,
+        "data": "0000000000000000",
+        "decoded": {
+          "FAULT_CODE": 0.0,
+          "STATUS_NO_CONFIG": 0.0,
+          "STATUS_PARTIAL_WAKEUP_GMP": 0.0,
+          "UCE_ELECTR_STATE": 0.0
+        }
+      },
+      "gap_ms": 1015.524
+    }
+  ],
+  "diagnostics": [
+    {
+      "t": 43.17444,
+      "relative_route_s": 4.420095,
+      "relative_programming_s": -6.316739,
+      "kind": "sendcan",
+      "bus": 0,
+      "address": "0x6b6",
+      "data": "023e000000000000"
+    },
+    {
+      "t": 43.17444,
+      "relative_route_s": 4.420095,
+      "relative_programming_s": -6.316739,
+      "kind": "sendcan",
+      "bus": 2,
+      "address": "0x6b6",
+      "data": "023e000000000000"
+    },
+    {
+      "t": 43.17444,
+      "relative_route_s": 4.420095,
+      "relative_programming_s": -6.316739,
+      "kind": "sendcan",
+      "bus": 1,
+      "address": "0x6b6",
+      "data": "023e000000000000"
+    },
+    {
+      "t": 43.183801,
+      "relative_route_s": 4.429456,
+      "relative_programming_s": -6.307378,
+      "kind": "can",
+      "bus": 130,
+      "address": "0x6b6",
+      "data": "023e000000000000"
+    },
+    {
+      "t": 43.183801,
+      "relative_route_s": 4.429456,
+      "relative_programming_s": -6.307378,
+      "kind": "can",
+      "bus": 0,
+      "address": "0x6b6",
+      "data": "023e000000000000"
+    },
+    {
+      "t": 43.193863,
+      "relative_route_s": 4.439518,
+      "relative_programming_s": -6.297317,
+      "kind": "can",
+      "bus": 128,
+      "address": "0x6b6",
+      "data": "023e000000000000"
+    },
+    {
+      "t": 43.193863,
+      "relative_route_s": 4.439518,
+      "relative_programming_s": -6.297317,
+      "kind": "can",
+      "bus": 2,
+      "address": "0x6b6",
+      "data": "023e000000000000"
+    },
+    {
+      "t": 43.193863,
+      "relative_route_s": 4.439518,
+      "relative_programming_s": -6.297317,
+      "kind": "can",
+      "bus": 129,
+      "address": "0x6b6",
+      "data": "023e000000000000"
+    },
+    {
+      "t": 43.297697,
+      "relative_route_s": 4.543352,
+      "relative_programming_s": -6.193482,
+      "kind": "sendcan",
+      "bus": 0,
+      "address": "0x6b6",
+      "data": "0210010000000000"
+    },
+    {
+      "t": 43.308634,
+      "relative_route_s": 4.554289,
+      "relative_programming_s": -6.182545,
+      "kind": "can",
+      "bus": 128,
+      "address": "0x6b6",
+      "data": "0210010000000000"
+    },
+    {
+      "t": 43.308634,
+      "relative_route_s": 4.554289,
+      "relative_programming_s": -6.182545,
+      "kind": "can",
+      "bus": 2,
+      "address": "0x6b6",
+      "data": "0210010000000000"
+    },
+    {
+      "t": 43.40436,
+      "relative_route_s": 4.650015,
+      "relative_programming_s": -6.08682,
+      "kind": "sendcan",
+      "bus": 0,
+      "address": "0x6b6",
+      "data": "0210010000000000"
+    },
+    {
+      "t": 43.415587,
+      "relative_route_s": 4.661242,
+      "relative_programming_s": -6.075593,
+      "kind": "can",
+      "bus": 128,
+      "address": "0x6b6",
+      "data": "0210010000000000"
+    },
+    {
+      "t": 43.415587,
+      "relative_route_s": 4.661242,
+      "relative_programming_s": -6.075593,
+      "kind": "can",
+      "bus": 2,
+      "address": "0x6b6",
+      "data": "0210010000000000"
+    },
+    {
+      "t": 43.51725,
+      "relative_route_s": 4.762905,
+      "relative_programming_s": -5.97393,
+      "kind": "sendcan",
+      "bus": 1,
+      "address": "0x6b6",
+      "data": "0210010000000000"
+    },
+    {
+      "t": 43.528281,
+      "relative_route_s": 4.773936,
+      "relative_programming_s": -5.962898,
+      "kind": "can",
+      "bus": 129,
+      "address": "0x6b6",
+      "data": "0210010000000000"
+    },
+    {
+      "t": 43.627126,
+      "relative_route_s": 4.872781,
+      "relative_programming_s": -5.864053,
+      "kind": "sendcan",
+      "bus": 1,
+      "address": "0x6b6",
+      "data": "0210010000000000"
+    },
+    {
+      "t": 43.638737,
+      "relative_route_s": 4.884392,
+      "relative_programming_s": -5.852443,
+      "kind": "can",
+      "bus": 129,
+      "address": "0x6b6",
+      "data": "0210010000000000"
+    },
+    {
+      "t": 43.737488,
+      "relative_route_s": 4.983143,
+      "relative_programming_s": -5.753691,
+      "kind": "sendcan",
+      "bus": 2,
+      "address": "0x6b6",
+      "data": "0210010000000000"
+    },
+    {
+      "t": 43.748953,
+      "relative_route_s": 4.994608,
+      "relative_programming_s": -5.742226,
+      "kind": "can",
+      "bus": 130,
+      "address": "0x6b6",
+      "data": "0210010000000000"
+    },
+    {
+      "t": 43.748953,
+      "relative_route_s": 4.994608,
+      "relative_programming_s": -5.742226,
+      "kind": "can",
+      "bus": 0,
+      "address": "0x6b6",
+      "data": "0210010000000000"
+    },
+    {
+      "t": 43.847301,
+      "relative_route_s": 5.092956,
+      "relative_programming_s": -5.643879,
+      "kind": "sendcan",
+      "bus": 2,
+      "address": "0x6b6",
+      "data": "0210010000000000"
+    },
+    {
+      "t": 43.85863,
+      "relative_route_s": 5.104285,
+      "relative_programming_s": -5.632549,
+      "kind": "can",
+      "bus": 130,
+      "address": "0x6b6",
+      "data": "0210010000000000"
+    },
+    {
+      "t": 43.85863,
+      "relative_route_s": 5.104285,
+      "relative_programming_s": -5.632549,
+      "kind": "can",
+      "bus": 0,
+      "address": "0x6b6",
+      "data": "0210010000000000"
+    },
+    {
+      "t": 49.491179,
+      "relative_route_s": 10.736834,
+      "relative_programming_s": 0.0,
+      "kind": "sendcan",
+      "bus": 1,
+      "address": "0x6b6",
+      "data": "021002"
+    },
+    {
+      "t": 49.497957,
+      "relative_route_s": 10.743612,
+      "relative_programming_s": 0.006778,
+      "kind": "can",
+      "bus": 129,
+      "address": "0x6b6",
+      "data": "021002"
+    },
+    {
+      "t": 49.551849,
+      "relative_route_s": 10.797504,
+      "relative_programming_s": 0.060669,
+      "kind": "can",
+      "bus": 1,
+      "address": "0x696",
+      "data": "06500200c80014"
+    },
+    {
+      "t": 50.254827,
+      "relative_route_s": 11.500482,
+      "relative_programming_s": 0.763647,
+      "kind": "sendcan",
+      "bus": 1,
+      "address": "0x6b6",
+      "data": "023e00"
+    },
+    {
+      "t": 50.261771,
+      "relative_route_s": 11.507426,
+      "relative_programming_s": 0.770592,
+      "kind": "can",
+      "bus": 129,
+      "address": "0x6b6",
+      "data": "023e00"
+    },
+    {
+      "t": 50.271717,
+      "relative_route_s": 11.517372,
+      "relative_programming_s": 0.780537,
+      "kind": "can",
+      "bus": 1,
+      "address": "0x696",
+      "data": "027e00"
+    },
+    {
+      "t": 51.266859,
+      "relative_route_s": 12.512514,
+      "relative_programming_s": 1.775679,
+      "kind": "sendcan",
+      "bus": 1,
+      "address": "0x6b6",
+      "data": "023e00"
+    },
+    {
+      "t": 51.272379,
+      "relative_route_s": 12.518034,
+      "relative_programming_s": 1.7812,
+      "kind": "can",
+      "bus": 129,
+      "address": "0x6b6",
+      "data": "023e00"
+    },
+    {
+      "t": 51.283392,
+      "relative_route_s": 12.529047,
+      "relative_programming_s": 1.792212,
+      "kind": "can",
+      "bus": 1,
+      "address": "0x696",
+      "data": "027e00"
+    },
+    {
+      "t": 52.27683,
+      "relative_route_s": 13.522484,
+      "relative_programming_s": 2.78565,
+      "kind": "sendcan",
+      "bus": 1,
+      "address": "0x6b6",
+      "data": "023e00"
+    },
+    {
+      "t": 52.282995,
+      "relative_route_s": 13.52865,
+      "relative_programming_s": 2.791816,
+      "kind": "can",
+      "bus": 129,
+      "address": "0x6b6",
+      "data": "023e00"
+    },
+    {
+      "t": 52.293777,
+      "relative_route_s": 13.539432,
+      "relative_programming_s": 2.802597,
+      "kind": "can",
+      "bus": 1,
+      "address": "0x696",
+      "data": "027e00"
+    },
+    {
+      "t": 53.28944,
+      "relative_route_s": 14.535095,
+      "relative_programming_s": 3.798261,
+      "kind": "sendcan",
+      "bus": 1,
+      "address": "0x6b6",
+      "data": "023e00"
+    },
+    {
+      "t": 53.294914,
+      "relative_route_s": 14.540569,
+      "relative_programming_s": 3.803735,
+      "kind": "can",
+      "bus": 129,
+      "address": "0x6b6",
+      "data": "023e00"
+    },
+    {
+      "t": 53.304689,
+      "relative_route_s": 14.550344,
+      "relative_programming_s": 3.81351,
+      "kind": "can",
+      "bus": 1,
+      "address": "0x696",
+      "data": "027e00"
+    }
+  ],
+  "car_state_transitions": [
+    {
+      "t": 45.153643262,
+      "vEgo": 0.0,
+      "flags": {
+        "canValid": false,
+        "canTimeout": false,
+        "accFaulted": false,
+        "espDisabled": false,
+        "espActive": false,
+        "carFaultedNonCritical": false,
+        "carNotReady": false,
+        "steerFaultTemporary": false,
+        "steerFaultPermanent": false
+      },
+      "relative_route_s": 6.399298227000003
+    },
+    {
+      "t": 45.23805972,
+      "vEgo": 0.0,
+      "flags": {
+        "canValid": true,
+        "canTimeout": false,
+        "accFaulted": false,
+        "espDisabled": false,
+        "espActive": false,
+        "carFaultedNonCritical": false,
+        "carNotReady": false,
+        "steerFaultTemporary": false,
+        "steerFaultPermanent": false
+      },
+      "relative_route_s": 6.4837146850000025
+    }
+  ],
+  "acc_status_transition": {
+    "t": 43.333806557,
+    "relative_route_s": 4.579461522000003,
+    "source": "genuine radar RX bus 1",
+    "address": "0x2B6",
+    "before": 2,
+    "after": 15,
+    "dbc_label": "Fault"
+  }
+}
