@@ -1,6 +1,6 @@
 ---
 name: op-setup-psa-torque-testing
-description: Use when preparing Cristian's Peugeot 3008 testing workspace from the current upstream master, an exact commit in its history, or the latest GitHub Release, for either Sunnypilot or comma.ai.
+description: Use when preparing Cristian's Peugeot 3008 testing workspace from the current upstream master, an exact commit in its history, or the latest GitHub Release, for Sunnypilot, comma.ai, or nav-alpha from Cristian's navigation branch.
 ---
 
 # Setup Peugeot 3008 Testing
@@ -11,18 +11,39 @@ Use the bundled Peugeot 3008 testing setup workflow.
 
 - First parameter: `comma` / `openpilot` uses comma.ai and branch `psa-torque-testing`; `sunny` / `sunnypilot` uses Sunnypilot and branch `psa-torque-sunny-testing`. It defaults to `comma`.
 <!-- [pinned source] - START -->
-- Second parameter: `master` uses the current upstream master branch; `master=<commit>` uses that exact 7-40 character hexadecimal commit after verifying it belongs to the selected upstream master history; `release` resolves the latest published GitHub Release tag. It defaults to `master`.
+- Second parameter: `master` uses official upstream master; `nav-alpha` uses the navigation branch from Cristian's fork; `master=<commit>` uses that exact 7-40 character hexadecimal commit after verifying it belongs to the selected source branch history; `release` resolves the latest published GitHub Release tag. It defaults to `master`.
 <!-- [pinned source] - END -->
 
 Examples: `scripts/setup_psa_torque.sh sunny`, `scripts/setup_psa_torque.sh sunny master=de197ba6`, `scripts/setup_psa_torque.sh sunny release`, and `scripts/setup_psa_torque.sh openpilot master`. Use the separate `op-setup-psa-torque` skill for stable branches.
 
-`master=<commit>` always identifies an official upstream commit, not a generated commit from `cristianku/openpilot`. For example, custom commit `4b34316` was generated from upstream Sunnypilot commit `de197ba6`, so use `master=de197ba6`. Pinning the upstream source does not pin Sunny neural data: every Sunny run still points `sunnypilot/neural_network_data` to the latest commit currently published on `cristianku/neural-network-data:master`.
+`master=<commit>` identifies a commit from official upstream master, not a generated commit from `cristianku/openpilot`. For example, custom commit `4b34316` was generated from upstream Sunnypilot commit `de197ba6`, so use `master=de197ba6`. Pinning the upstream source does not pin Sunny neural data: every Sunny run still points `sunnypilot/neural_network_data` to the latest commit currently published on `cristianku/neural-network-data:master`.
+
+<!-- [help] - START -->
+## Help
+
+For a request such as `$op-setup-psa-torque-testing help`, or a request only asking for parameters/examples, run the bundled wrapper with `--help`, show its output, and stop. Do not run setup. The wrapper also accepts `help`, `-h`, and `<variant> --help`. Skill selection/autocomplete is controlled by the client; this help is displayed after submitting the request.
+<!-- [help] - END -->
+
+<!-- [nav source] - START -->
+## Source parameter
+
+The first parameter stays `comma` or `sunny`. The second parameter selects the source:
+
+- `sunny master` (or just `sunny`): official `sunnypilot/sunnypilot:master`.
+- `sunny nav-alpha`: `cristianku/sunnypilot:feature/nav-alpha`.
+- `sunny feature/nav-alpha`: equivalent full branch name.
+- `comma master` (or just `comma`): official `commaai/openpilot:master`.
+
+`nav-alpha` is accepted only with `sunny`. Keep the same target branch, local folder, opendbc and neural data as normal `sunny`. Do not use `sunny-nav` as the first parameter.
+
+Example request: `$op-setup-psa-torque-testing sunny nav-alpha`. Pass both positional parameters to the wrapper: `scripts/setup_psa_torque.sh sunny nav-alpha`.
+<!-- [nav source] - END -->
 
 ## Workflow
 
 1. Determine the requested variant: `comma` or `sunny`.
 2. Resolve the directory containing this `SKILL.md`.
-3. Run the bundled wrapper by absolute path: `scripts/setup_psa_torque.sh <variant> [master|master=<commit>|release]`.
+3. Run the bundled wrapper by absolute path: `scripts/setup_psa_torque.sh <variant> [master|master=<commit>|release|nav-alpha]`.
 4. Report the pushed openpilot testing-branch commit SHA first (it is the commit Cristian sees on the comma after an update), then the source mode, resolved upstream source commit and release tag when applicable, opendbc pointer commit, Sunny neural-network-data pointer when applicable, and whether the workflow pushed the openpilot testing branch.
 
 <!-- [branch display] - START -->
@@ -33,7 +54,7 @@ The wrapper recreates the mapped local openpilot folder every time. For `sunny` 
 
 After cloning the selected upstream source, the wrapper edits `selfdrive/locationd/torqued.py` to add `'psa'` to the `ALLOWED_CARS` gate, so torqued (live `latAccelFactor`/friction learning) runs for the Peugeot 3008. The upstream source ships this list without PSA and the clone is recreated every run, so this patch is reapplied each time. The edit is idempotent (skipped if `psa` is already present) and is staged so it lands in the pushed testing branch commit.
 
-For both variants, clone the configured upstream source directly, recreate the custom testing branch from its exact commit, update `.gitmodules` to `cristianku/opendbc`, set the `opendbc_repo` gitlink to Cristian's matching testing opendbc branch commit, and push with `--force-with-lease`. Default to current master; with `master=<commit>`, verify and check out that commit from the selected upstream master history; in release mode query GitHub's latest-release endpoint, verify the returned tag, and clone that tag. Do not copy opendbc files into openpilot.
+For all variants, clone the configured upstream source directly, recreate the custom testing branch from its exact commit, update `.gitmodules` to `cristianku/opendbc`, set the `opendbc_repo` gitlink to Cristian's matching testing opendbc branch commit, and push with `--force-with-lease`. Default to the current selected source branch; with `master=<commit>`, verify and check out that commit from the selected source branch history; in release mode query GitHub's latest-release endpoint, verify the returned tag, and clone that tag. Do not copy opendbc files into openpilot.
 
 ## Safety
 
@@ -44,7 +65,7 @@ For both variants, clone the configured upstream source directly, recreate the c
 - Always use neural-network-data branch `master` for both Sunny stable and Sunny testing; do not create a separate testing branch.
 - Stop and report an error if GitHub does not return a release tag or if that tag is unavailable from the selected upstream.
 <!-- [pinned source] - START -->
-- Stop and report an error if a `master=<commit>` value is malformed, unavailable from the selected upstream, or outside its master history. Never treat a generated `cristianku/openpilot` commit as an upstream source commit.
+- Stop and report an error if a `master=<commit>` value is malformed, unavailable from the selected upstream, or outside the selected source branch history. Never treat a generated `cristianku/openpilot` commit as an upstream source commit.
 <!-- [pinned source] - END -->
 - Stage only `.gitmodules`, `opendbc_repo`, `selfdrive/locationd/torqued.py` (the PSA `ALLOWED_CARS` patch), and `sunnypilot/neural_network_data` when applicable.
 - Override the neural data source only with `NEURAL_NETWORK_DATA_REPO` or `NEURAL_NETWORK_DATA_BRANCH` when explicitly required.

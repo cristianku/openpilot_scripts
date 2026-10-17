@@ -1,12 +1,41 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# [help] - START
+for arg in "$@"; do
+  case "${arg}" in
+    -h|--help|help)
+      cat <<'HELP'
+Uso: setup_psa_torque.sh [comma|sunny] [master|master=<commit>|release|nav-alpha]
+
+Primo parametro: comma oppure sunny (predefinito: comma).
+Secondo parametro: master (predefinito) oppure nav-alpha.
+  sunny master     -> sunnypilot/sunnypilot:master
+  sunny nav-alpha  -> cristianku/sunnypilot:feature/nav-alpha
+  comma master     -> commaai/openpilot:master
+Anche feature/nav-alpha e' accettato come secondo parametro per sunny.
+Destinazione Sunny: cristianku/openpilot:psa-torque-sunny-testing
+Alias: openpilot = comma; sunnypilot = sunny.
+Altre sorgenti: master=<commit> o release dall'upstream ufficiale.
+
+Esempio: setup_psa_torque.sh sunny nav-alpha
+Aiuto: setup_psa_torque.sh --help (oppure help, -h)
+Il setup ricrea la cartella locale e pubblica il branch; questo aiuto non esegue operazioni.
+HELP
+      exit 0
+      ;;
+  esac
+done
+# [help] - END
+
 variant="${1:-comma}"
 # [pinned source] - START
 source_arg="${2:-master}"
 source_mode="${source_arg}"
 pinned_source_commit=""
-usage="Usage: $0 [comma|openpilot|sunny|sunnypilot] [master|master=<upstream-commit>|release]"
+# [nav source] - START
+usage="Usage: $0 [comma|openpilot|sunny|sunnypilot] [master|master=<upstream-commit>|release|nav-alpha]"
+# [nav source] - END
 
 if [[ "${source_arg}" == master=* ]]; then
   source_mode="master"
@@ -39,6 +68,14 @@ esac
 case "${source_mode}" in
   master|release)
     ;;
+  # [nav source] - START
+  nav-alpha|feature/nav-alpha)
+    if [[ "${variant}" != "sunny" ]]; then
+      echo "ERROR: nav-alpha requires the sunny variant" >&2
+      exit 2
+    fi
+    ;;
+  # [nav source] - END
   *)
     echo "${usage}" >&2
     exit 2
@@ -83,6 +120,14 @@ if [[ "${variant}" == "sunny" ]]; then
   openpilot_source_branch="master"
   use_custom_neural_network_data="true"
 fi
+
+# [nav source] - START
+if [[ "${source_mode}" == "nav-alpha" || "${source_mode}" == "feature/nav-alpha" ]]; then
+  openpilot_source_repo="https://github.com/cristianku/sunnypilot.git"
+  openpilot_source_branch="feature/nav-alpha"
+  use_custom_neural_network_data="true"
+fi
+# [nav source] - END
 
 openpilot_source_repo="${OPENPILOT_SOURCE_REPO:-${openpilot_source_repo}}"
 if [[ "${source_mode}" == "release" ]]; then
