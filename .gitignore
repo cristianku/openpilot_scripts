@@ -2,3 +2,8 @@
 # (README.md is the only tracked file in there)
 comma_logs/*
 !comma_logs/README.md
+
+# [CLAUDE drive-logs] - START
+# rlog/qlog organized by drive date: log_analysis/drive_logs/<YYYY-MM-DD>/<route>--<seg>/
+log_analysis/drive_logs/
+# [CLAUDE drive-logs] - END

@@ -1,0 +1,9 @@
+{"case": "disengage", "stale_active_repeats": 4, "old": "0000180190820000", "next_steer_frame": "0000180008000000"}
+{"case": "eps_defect", "stale_active_repeats": 4, "old": "0000180190820000", "next_steer_frame": "0000180008000000"}
+{"case": "low_speed", "stale_active_repeats": 4, "old": "0000180190820000", "next_steer_frame": "0000180008000000"}
+{"case": "eps_inactive", "stale_active_repeats": 4, "old": "0000180190820000", "next_steer_frame": "0000180008960000"}
+{"case": "driver_override", "stale_active_repeats": 4, "old": "0000180190820000", "next_steer_frame": "0000180010000000"}
+{"compiled_safety_repeated_ramp_frames": 2400, "all_accepted": true}
+{"driver_raw": 18, "cached32_accepted": false}
+{"driver_raw": 0, "cached32_accepted": false}
+{"zero_then8_recovers": true}
