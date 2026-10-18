@@ -35,15 +35,15 @@ Lo SHA deve appartenere all'upstream ufficiale (`sunnypilot/sunnypilot` oppure `
 Il pin blocca soltanto il codice upstream. Con `sunny`, il submodule `sunnypilot/neural_network_data` continua a essere aggiornato al commit più recente pubblicato su `cristianku/neural-network-data:master`, quindi `neural_network_lateral_control/PSA_PEUGEOT_3008.json` resta fresco. Il workflow non modifica il codice del loader o del controller NNLC.
 <!-- [pinned source] - END -->
 
-## merge-psa-torque-testing / merge-psa-torque-sunny-testing (promote)
+## OP-merge-psa-torque-testing / OP-merge-psa-torque-sunny-testing (promote)
 
 <!-- [merge only] - START -->
-Promote opendbc testing → stable: recreate a dedicated opendbc merge workspace, merge `*-testing` into stable with a merge commit, require Peugeot 3008 interface tests + PSA safety tests to pass, and push stable with a lease protecting the previously observed remote SHA. The non-Sunny `OP-merge-psa-torque-testing` stops here: Cristian runs openpilot setup separately, choosing its source. The Sunny skill still invokes its matching stable setup to refresh the openpilot pointer. Neither merges openpilot branches into each other.
+Promote opendbc testing → stable: recreate a dedicated opendbc merge workspace, merge `*-testing` into stable with a merge commit, require Peugeot 3008 interface tests + PSA safety tests to pass, and push stable with a lease protecting the previously observed remote SHA. Both skills stop here: Cristian runs openpilot setup separately, choosing its source. Neither rebuilds openpilot or refreshes its submodule pointer.
 <!-- [merge only] - END -->
 
 ```bash
 ./OP-merge-psa-torque-testing/scripts/merge_psa_torque.sh
-./merge-psa-torque-sunny-testing/scripts/merge_psa_torque.sh
+./OP-merge-psa-torque-sunny-testing/scripts/merge_psa_torque.sh
 ```
 
 ## commit-push-opendbc
@@ -79,4 +79,4 @@ Aggiorna `/data/openpilot` sul dispositivo `comma` mantenendo branch e upstream 
 
 ## Common overrides
 
-`GITHUB_USER`, `WORKSPACE_ROOT`, `OPENPILOT_DIR`, `OPENPILOT_REPO`, `OPENPILOT_SOURCE_REPO`, `OPENPILOT_SOURCE_BRANCH`, `OPENDBC_REPO`, `OPENDBC_SOURCE_REPO`, `OPENDBC_SOURCE_BRANCH`, `NEURAL_NETWORK_DATA_REPO`, `NEURAL_NETWORK_DATA_BRANCH`, `COMMIT_MESSAGE`. Merge skills add `MERGE_DIR`, `MERGE_TEST_COMMAND`, and `SKIP_TESTS=true` (explicitly authorized emergency only). `SETUP_SCRIPT` applies only to the Sunny merge skill.
+`GITHUB_USER`, `WORKSPACE_ROOT`, `OPENPILOT_DIR`, `OPENPILOT_REPO`, `OPENPILOT_SOURCE_REPO`, `OPENPILOT_SOURCE_BRANCH`, `OPENDBC_REPO`, `OPENDBC_SOURCE_REPO`, `OPENDBC_SOURCE_BRANCH`, `NEURAL_NETWORK_DATA_REPO`, `NEURAL_NETWORK_DATA_BRANCH`, `COMMIT_MESSAGE`. Merge skills add `MERGE_DIR`, `MERGE_TEST_COMMAND`, and `SKIP_TESTS=true` (explicitly authorized emergency only).

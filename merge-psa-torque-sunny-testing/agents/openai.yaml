@@ -1,4 +1,0 @@
-interface:
-  display_name: "Merge PSA Torque Sunny Testing"
-  short_description: "Promote Sunny PSA testing safely"
-  default_prompt: "Use $merge-psa-torque-sunny-testing to merge the Sunny PSA torque opendbc testing branch into stable without modifying testing or either openpilot branch."

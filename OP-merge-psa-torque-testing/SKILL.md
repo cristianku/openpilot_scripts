@@ -3,7 +3,7 @@ name: OP-merge-psa-torque-testing
 description: Promote Cristian's non-Sunny Peugeot 3008 opendbc testing branch into psa-torque, validate the PSA port, and push stable safely. Use when testing changes are ready for stable; openpilot setup is a separate user-invoked operation.
 ---
 
-# Merge Peugeot 3008 Testing
+# OP Merge PSA Torque Testing
 
 <!-- [merge only] - START -->
 Promote only `cristianku/opendbc:psa-torque-testing` into `psa-torque`. Stop after validation and the stable push. Cristian runs openpilot setup separately and chooses its source there; this skill does not rebuild openpilot, refresh its submodule pointer, or invoke a setup wrapper.

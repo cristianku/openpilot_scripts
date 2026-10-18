@@ -1,9 +1,9 @@
 ---
-name: merge-psa-torque-sunny-testing
+name: OP-merge-psa-torque-sunny-testing
 description: Promote Cristian's Sunny PSA torque opendbc testing branch by merging psa-torque-sunny-testing into psa-torque-sunny, validating the PSA port, and pushing only the stable branch safely. Use when the Sunny PSA torque testing changes are ready for stable.
 ---
 
-# Merge PSA Torque Sunny Testing
+# OP Merge PSA Torque Sunny Testing
 
 Promote the Sunny PSA torque opendbc testing branch to stable. Never merge the generated openpilot branches into each other.
 

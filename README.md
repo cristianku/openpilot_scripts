@@ -6,8 +6,8 @@ These scripts prepare Cristian's Peugeot 3008 openpilot workspaces and update on
 
 - `setup-psa-torque/`: creates or refreshes the stable Peugeot branches.
 - `setup-psa-torque-testing/`: creates or refreshes the testing Peugeot branches.
-- `merge-psa-torque-testing/`: promotes `psa-torque-testing` into `psa-torque` in opendbc.
-- `merge-psa-torque-sunny-testing/`: promotes `psa-torque-sunny-testing` into `psa-torque-sunny` in opendbc.
+- `OP-merge-psa-torque-testing/`: promotes `psa-torque-testing` into `psa-torque` in opendbc.
+- `OP-merge-psa-torque-sunny-testing/`: promotes `psa-torque-sunny-testing` into `psa-torque-sunny` in opendbc.
 
 Each skill stores its wrapper and shared implementation under `scripts/`. Run the wrapper, not the `_common.sh` file directly.
 
@@ -31,8 +31,8 @@ Use this option to make both skills available in every repository opened with Co
 mkdir -p "$HOME/.agents/skills"
 ln -s "$PWD/setup-psa-torque" "$HOME/.agents/skills/setup-psa-torque"
 ln -s "$PWD/setup-psa-torque-testing" "$HOME/.agents/skills/setup-psa-torque-testing"
-ln -s "$PWD/merge-psa-torque-testing" "$HOME/.agents/skills/merge-psa-torque-testing"
-ln -s "$PWD/merge-psa-torque-sunny-testing" "$HOME/.agents/skills/merge-psa-torque-sunny-testing"
+ln -s "$PWD/OP-merge-psa-torque-testing" "$HOME/.agents/skills/OP-merge-psa-torque-testing"
+ln -s "$PWD/OP-merge-psa-torque-sunny-testing" "$HOME/.agents/skills/OP-merge-psa-torque-sunny-testing"
 ```
 
 The resulting layout is:
@@ -41,8 +41,8 @@ The resulting layout is:
 ~/.agents/skills/
 ├── setup-psa-torque -> /absolute/path/openpilot_scripts/setup-psa-torque
 ├── setup-psa-torque-testing -> /absolute/path/openpilot_scripts/setup-psa-torque-testing
-├── merge-psa-torque-testing -> /absolute/path/openpilot_scripts/merge-psa-torque-testing
-└── merge-psa-torque-sunny-testing -> /absolute/path/openpilot_scripts/merge-psa-torque-sunny-testing
+├── OP-merge-psa-torque-testing -> /absolute/path/openpilot_scripts/OP-merge-psa-torque-testing
+└── OP-merge-psa-torque-sunny-testing -> /absolute/path/openpilot_scripts/OP-merge-psa-torque-sunny-testing
 ```
 
 ### Install for one repository only
@@ -53,8 +53,8 @@ Use repository-scoped skills when they should only be available while working in
 mkdir -p .agents/skills
 ln -s /absolute/path/openpilot_scripts/setup-psa-torque .agents/skills/setup-psa-torque
 ln -s /absolute/path/openpilot_scripts/setup-psa-torque-testing .agents/skills/setup-psa-torque-testing
-ln -s /absolute/path/openpilot_scripts/merge-psa-torque-testing .agents/skills/merge-psa-torque-testing
-ln -s /absolute/path/openpilot_scripts/merge-psa-torque-sunny-testing .agents/skills/merge-psa-torque-sunny-testing
+ln -s /absolute/path/openpilot_scripts/OP-merge-psa-torque-testing .agents/skills/OP-merge-psa-torque-testing
+ln -s /absolute/path/openpilot_scripts/OP-merge-psa-torque-sunny-testing .agents/skills/OP-merge-psa-torque-sunny-testing
 ```
 
 Replace `/absolute/path/openpilot_scripts` with the actual clone location. Do not commit machine-specific absolute symlinks unless every contributor uses the same path.
@@ -63,8 +63,8 @@ Codex normally detects skill changes automatically. If they do not appear, resta
 
 - `$setup-psa-torque`
 - `$setup-psa-torque-testing`
-- `$merge-psa-torque-testing`
-- `$merge-psa-torque-sunny-testing`
+- `$OP-merge-psa-torque-testing`
+- `$OP-merge-psa-torque-sunny-testing`
 
 After installation, updating this repository with `git pull` also updates the symlinked skills.
 
@@ -92,8 +92,8 @@ Testing variants:
 Promote tested opendbc changes to stable and then refresh the matching openpilot submodule pointer:
 
 ```bash
-./merge-psa-torque-testing/scripts/merge_psa_torque.sh
-./merge-psa-torque-sunny-testing/scripts/merge_psa_torque.sh
+./OP-merge-psa-torque-testing/scripts/merge_psa_torque.sh
+./OP-merge-psa-torque-sunny-testing/scripts/merge_psa_torque.sh
 ```
 
 The merge skills operate only on `cristianku/opendbc`. They validate the Peugeot interface and PSA safety tests before pushing the stable opendbc branch, then invoke the corresponding stable setup skill. They never merge generated openpilot testing branches into stable openpilot branches.

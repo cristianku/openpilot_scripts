@@ -45,7 +45,7 @@ When intent is uncertain, stop after read-only analysis and ask Cristian before 
 
 1. Edit the port in `opendbc` on a testing branch → `commit-push-opendbc`.
 2. Refresh the openpilot testing checkout/pointer → `setup-psa-torque-testing <variant>`.
-3. When validated, promote testing → stable → `merge-psa-torque-testing` / `merge-psa-torque-sunny-testing` (runs PSA safety + interface tests, pushes stable with a lease, refreshes the openpilot stable pointer).
+3. When validated, promote testing → stable → `OP-merge-psa-torque-testing` / `OP-merge-psa-torque-sunny-testing` (runs PSA safety + interface tests and pushes stable with a lease). Cristian invokes openpilot setup separately.
 
 ## Docs index
 
