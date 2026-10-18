@@ -105,3 +105,7 @@ Every claim about how the code works must be grounded in the actual repos, not m
 
 Preferenza esplicita di Cristian: conservare la documentazione prodotta per il port esclusivamente in `openpilot_scripts`, non accanto al codice in `opendbc` o nei checkout openpilot. La documentazione del longitudinale PSA va in `plans/longitudinal/`, insieme al piano e ai findings.
 <!-- [documentation location] - END -->
+
+## Log C4 SpaceTourer (dashcam, ACC stock)
+
+Log dashcam di una CITROEN C4 SpaceTourer di un altro utente (dongle `378c9bf47606eb28`, route `00000009--dc7802815d`, seg 10–20, `dashcamOnly=True`, ACC stock guidato dall'uomo) in `log_analysis/dashcam_mode_c4_spacetourer/` (accanto alla bibbia 3008 `log_analysis/dashcam_mode_bibbia_longitudinale/`). Si riparte da `REPORT.md` lì dentro: come funziona l'ACC stock, mappa coppia→accel della C4, confronto campo per campo con quello che manda il port in 0x2B6/0x2F6, e verifiche aperte sul problema "con il longitudinale openpilot acceso la C4 non accelera" (giri col long acceso non ancora ricevuti). Script e parquet estratti in `analysis/` (`uv run -q <script>.py` da lì).
