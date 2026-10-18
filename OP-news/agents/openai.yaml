@@ -1,0 +1,4 @@
+interface:
+  display_name: "OP News"
+  short_description: "Novità e approfondimenti su openpilot e Sunny"
+  default_prompt: "Usa $OP-news per trovare novità importanti e discussioni anche vecchie che mi aiutino a capire openpilot. Leggi Discord comma/Sunnypilot, community Sunnypilot e le fonti ufficiali. Approfondisci modelli, controlli, safety, navigazione, porting e hardware; spiega in italiano con date e link, senza scrivere o reagire."

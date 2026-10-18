@@ -77,6 +77,14 @@ Aggiorna `/data/openpilot` sul dispositivo `comma` mantenendo branch e upstream 
 ```
 <!-- [comma update] - END -->
 
+<!-- [discord news] - START -->
+## OP-news (technical community news)
+
+Invoke `$OP-news` to discover important developments and learn about openpilot through the comma.ai/Sunnypilot Discord servers, Sunnypilot's community forum and original documentation/code. Read older discussions when useful; prioritize technical value over age. Topics include navigation, models, controls, safety, porting, NNLC and hardware. It explains findings in natural Italian with dated links, distinguishing current behavior, historical designs, proposals and user reports. It does not post, react, install updates or change device state.
+
+Examples: `$OP-news ultime 24 ore`, `$OP-news solo sunnypilot, modelli e NNLC`. Source: `OP-news/SKILL.md`; known server/channel entry points are in `OP-news/references/channels.md`.
+<!-- [discord news] - END -->
+
 ## Common overrides
 
 `GITHUB_USER`, `WORKSPACE_ROOT`, `OPENPILOT_DIR`, `OPENPILOT_REPO`, `OPENPILOT_SOURCE_REPO`, `OPENPILOT_SOURCE_BRANCH`, `OPENDBC_REPO`, `OPENDBC_SOURCE_REPO`, `OPENDBC_SOURCE_BRANCH`, `NEURAL_NETWORK_DATA_REPO`, `NEURAL_NETWORK_DATA_BRANCH`, `COMMIT_MESSAGE`. Merge skills add `MERGE_DIR`, `MERGE_TEST_COMMAND`, and `SKIP_TESTS=true` (explicitly authorized emergency only).
