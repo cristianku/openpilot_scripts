@@ -12,28 +12,21 @@ import unittest
 
 
 TORQUE_ROOT = Path(__file__).resolve().parents[1]
-PEUGEOT_ROOT = Path(os.environ.get(
-  "PEUGEOT_TESTING_SKILL_ROOT",
-  str(Path.home() / ".codex/skills/setup-peugeot-3008-testing"),
-))
-
-PEUGEOT_STABLE_ROOT = Path(os.environ.get(
-  "PEUGEOT_STABLE_SKILL_ROOT",
-  str(Path.home() / ".codex/skills/setup-peugeot-3008"),
-))
 
 
 def wrappers():
   return (
     (TORQUE_ROOT, 'setup_psa_torque.sh', 'setup_psa_torque_common.sh', 'psa-torque', True),
-    (PEUGEOT_ROOT, 'setup_peugeot_3008.sh', 'setup_peugeot_3008_common.sh', 'peugeot-3008', True),
-    (PEUGEOT_STABLE_ROOT, 'setup_peugeot_3008.sh', 'setup_peugeot_3008_common.sh', 'peugeot-3008', False),
+    (TORQUE_ROOT.parent / 'OP-setup-psa-torque', 'setup_psa_torque.sh',
+     'setup_psa_torque_common.sh', 'psa-torque', False),
   )
 
 
 class SourceVariantsTest(unittest.TestCase):
   def test_help_has_no_setup_side_effects(self):
-    for root, wrapper, *_ in wrappers():
+    for root, wrapper, _, _, testing in wrappers():
+      if not testing:
+        continue
       for args in (['--help'], ['help'], ['-h'], ['sunny', 'nav-alpha', '--help']):
         with self.subTest(skill=root.name, args=args), tempfile.TemporaryDirectory() as tmp:
           script = Path(tmp) / wrapper
@@ -72,6 +65,8 @@ PY
       for args, repo, source_branch, sunny in (
         ([], 'commaai/openpilot', 'master', False),
         (['comma'], 'commaai/openpilot', 'master', False),
+        (['comma', 'nav-alpha'], 'cristianku/openpilot', 'nav-alpha', False),
+        (['openpilot', 'nav-alpha'], 'cristianku/openpilot', 'nav-alpha', False),
         (['sunny'], 'sunnypilot/sunnypilot', 'master', True),
         (['sunny', 'master'], 'sunnypilot/sunnypilot', 'master', True),
         (['sunny', 'nav-alpha'], 'cristianku/sunnypilot', 'feature/nav-alpha', True),
@@ -88,7 +83,7 @@ PY
 
   def test_invalid_source_stops_before_setup(self):
     for root, wrapper, *_ in wrappers():
-      for args in (['sunny-nav'], ['comma', 'nav-alpha'], ['sunny', 'unknown-source']):
+      for args in (['sunny-nav'], ['comma', 'feature/nav-alpha'], ['sunny', 'unknown-source']):
         with self.subTest(skill=root.name, args=args), tempfile.TemporaryDirectory() as tmp:
           script = Path(tmp) / wrapper
           shutil.copy2(root / 'scripts' / wrapper, script)

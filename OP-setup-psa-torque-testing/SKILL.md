@@ -1,9 +1,9 @@
 ---
-name: op-setup-psa-torque-testing
+name: OP-setup-psa-torque-testing
 description: Use when preparing Cristian's Peugeot 3008 testing workspace from the current upstream master, an exact commit in its history, or the latest GitHub Release, for Sunnypilot, comma.ai, or nav-alpha from Cristian's navigation branch.
 ---
 
-# Setup Peugeot 3008 Testing
+# OP Setup PSA Torque Testing
 
 Use the bundled Peugeot 3008 testing setup workflow.
 
@@ -14,14 +14,14 @@ Use the bundled Peugeot 3008 testing setup workflow.
 - Second parameter: `master` uses official upstream master; `nav-alpha` uses the navigation branch from Cristian's fork; `master=<commit>` uses that exact 7-40 character hexadecimal commit after verifying it belongs to the selected source branch history; `release` resolves the latest published GitHub Release tag. It defaults to `master`.
 <!-- [pinned source] - END -->
 
-Examples: `scripts/setup_psa_torque.sh sunny`, `scripts/setup_psa_torque.sh sunny master=de197ba6`, `scripts/setup_psa_torque.sh sunny release`, and `scripts/setup_psa_torque.sh openpilot master`. Use the separate `op-setup-psa-torque` skill for stable branches.
+Examples: `scripts/setup_psa_torque.sh sunny`, `scripts/setup_psa_torque.sh sunny master=de197ba6`, `scripts/setup_psa_torque.sh sunny release`, and `scripts/setup_psa_torque.sh openpilot master`. Use the separate `OP-setup-psa-torque` skill for stable branches.
 
 `master=<commit>` identifies a commit from official upstream master, not a generated commit from `cristianku/openpilot`. For example, custom commit `4b34316` was generated from upstream Sunnypilot commit `de197ba6`, so use `master=de197ba6`. Pinning the upstream source does not pin Sunny neural data: every Sunny run still points `sunnypilot/neural_network_data` to the latest commit currently published on `cristianku/neural-network-data:master`.
 
 <!-- [help] - START -->
 ## Help
 
-For a request such as `$op-setup-psa-torque-testing help`, or a request only asking for parameters/examples, run the bundled wrapper with `--help`, show its output, and stop. Do not run setup. The wrapper also accepts `help`, `-h`, and `<variant> --help`. Skill selection/autocomplete is controlled by the client; this help is displayed after submitting the request.
+For a request such as `$OP-setup-psa-torque-testing help`, or a request only asking for parameters/examples, run the bundled wrapper with `--help`, show its output, and stop. Do not run setup. The wrapper also accepts `help`, `-h`, and `<variant> --help`. Skill selection/autocomplete is controlled by the client; this help is displayed after submitting the request.
 <!-- [help] - END -->
 
 <!-- [nav source] - START -->
@@ -33,10 +33,11 @@ The first parameter stays `comma` or `sunny`. The second parameter selects the s
 - `sunny nav-alpha`: `cristianku/sunnypilot:feature/nav-alpha`.
 - `sunny feature/nav-alpha`: equivalent full branch name.
 - `comma master` (or just `comma`): official `commaai/openpilot:master`.
+- `comma nav-alpha`: `cristianku/openpilot:nav-alpha`.
 
-`nav-alpha` is accepted only with `sunny`. Keep the same target branch, local folder, opendbc and neural data as normal `sunny`. Do not use `sunny-nav` as the first parameter.
+`nav-alpha` works with both `comma` and `sunny`, including aliases `openpilot` and `sunnypilot`. `feature/nav-alpha` is the full source branch name for Sunny only. Keep the same target branch, local folder and submodule rules as the selected variant: `psa-torque-testing` for comma, `psa-torque-sunny-testing` for Sunny, with custom neural data only for Sunny. `nav-alpha` is a source branch, never the publication target. Only committed changes published to the selected remote source are included; uncommitted or unpushed local changes are not copied. Do not use `sunny-nav` as the first parameter.
 
-Example request: `$op-setup-psa-torque-testing sunny nav-alpha`. Pass both positional parameters to the wrapper: `scripts/setup_psa_torque.sh sunny nav-alpha`.
+Example requests: `$OP-setup-psa-torque-testing comma nav-alpha` or `$OP-setup-psa-torque-testing sunny nav-alpha`. Pass both positional parameters to the wrapper: `bash scripts/setup_psa_torque.sh comma nav-alpha` or `bash scripts/setup_psa_torque.sh sunny nav-alpha`.
 <!-- [nav source] - END -->
 
 ## Workflow

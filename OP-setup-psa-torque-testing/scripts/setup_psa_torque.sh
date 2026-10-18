@@ -13,8 +13,10 @@ Secondo parametro: master (predefinito) oppure nav-alpha.
   sunny master     -> sunnypilot/sunnypilot:master
   sunny nav-alpha  -> cristianku/sunnypilot:feature/nav-alpha
   comma master     -> commaai/openpilot:master
+  comma nav-alpha  -> cristianku/openpilot:nav-alpha
 Anche feature/nav-alpha e' accettato come secondo parametro per sunny.
 Destinazione Sunny: cristianku/openpilot:psa-torque-sunny-testing
+Destinazione comma: cristianku/openpilot:psa-torque-testing
 Alias: openpilot = comma; sunnypilot = sunny.
 Altre sorgenti: master=<commit> o release dall'upstream ufficiale.
 
@@ -69,9 +71,11 @@ case "${source_mode}" in
   master|release)
     ;;
   # [nav source] - START
-  nav-alpha|feature/nav-alpha)
+  nav-alpha)
+    ;;
+  feature/nav-alpha)
     if [[ "${variant}" != "sunny" ]]; then
-      echo "ERROR: nav-alpha requires the sunny variant" >&2
+      echo "ERROR: feature/nav-alpha requires the sunny variant; use comma nav-alpha" >&2
       exit 2
     fi
     ;;
@@ -123,9 +127,13 @@ fi
 
 # [nav source] - START
 if [[ "${source_mode}" == "nav-alpha" || "${source_mode}" == "feature/nav-alpha" ]]; then
-  openpilot_source_repo="https://github.com/cristianku/sunnypilot.git"
-  openpilot_source_branch="feature/nav-alpha"
-  use_custom_neural_network_data="true"
+  if [[ "${variant}" == "sunny" ]]; then
+    openpilot_source_repo="https://github.com/cristianku/sunnypilot.git"
+    openpilot_source_branch="feature/nav-alpha"
+  else
+    openpilot_source_repo="https://github.com/cristianku/openpilot.git"
+    openpilot_source_branch="nav-alpha"
+  fi
 fi
 # [nav source] - END
 

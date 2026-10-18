@@ -16,7 +16,9 @@ case "${variant}" in
     source_branch="psa-torque-sunny-testing"
     ;;
   *)
-    echo "Usage: $0 [comma|openpilot|sunny|sunnypilot] [master|release]" >&2
+    # [nav source] - START
+    echo "Usage: $0 [comma|openpilot|sunny|sunnypilot] [master|release|nav-alpha]" >&2
+    # [nav source] - END
     exit 2
     ;;
 esac
@@ -24,8 +26,20 @@ esac
 case "${source_mode}" in
   master|release)
     ;;
+  # [nav source] - START
+  nav-alpha)
+    ;;
+  feature/nav-alpha)
+    if [[ "${variant}" != "sunny" ]]; then
+      echo "ERROR: feature/nav-alpha requires the sunny variant; use comma nav-alpha" >&2
+      exit 2
+    fi
+    ;;
+  # [nav source] - END
   *)
-    echo "Usage: $0 [comma|openpilot|sunny|sunnypilot] [master|release]" >&2
+    # [nav source] - START
+    echo "Usage: $0 [comma|openpilot|sunny|sunnypilot] [master|release|nav-alpha]" >&2
+    # [nav source] - END
     exit 2
     ;;
 esac
@@ -68,6 +82,18 @@ if [[ "${variant}" == "sunny" ]]; then
   openpilot_source_branch="master"
   use_custom_neural_network_data="true"
 fi
+
+# [nav source] - START
+if [[ "${source_mode}" == "nav-alpha" || "${source_mode}" == "feature/nav-alpha" ]]; then
+  if [[ "${variant}" == "sunny" ]]; then
+    openpilot_source_repo="https://github.com/cristianku/sunnypilot.git"
+    openpilot_source_branch="feature/nav-alpha"
+  else
+    openpilot_source_repo="https://github.com/cristianku/openpilot.git"
+    openpilot_source_branch="nav-alpha"
+  fi
+fi
+# [nav source] - END
 
 openpilot_source_repo="${OPENPILOT_SOURCE_REPO:-${openpilot_source_repo}}"
 if [[ "${source_mode}" == "release" ]]; then

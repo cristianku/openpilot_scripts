@@ -1,0 +1,1 @@
+- [PSA long findings 2026-10-17](psa-long-findings-2026-10-17.md) — routes 118/119: brake lag 0.6 s, 90% gain, overrides all planner-caused; shouldStop trap; qcam sync

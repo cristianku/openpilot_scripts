@@ -25,7 +25,7 @@ Same as above but for the **testing** branches (`psa-torque-testing` / `psa-torq
 Usa `master=<commit>` per generare la branch testing da uno specifico commit appartenente alla storia del `master` ufficiale selezionato:
 
 ```bash
-./op-setup-psa-torque-testing/scripts/setup_psa_torque.sh sunny master=de197ba6
+./OP-setup-psa-torque-testing/scripts/setup_psa_torque.sh sunny master=de197ba6
 ```
 
 Sono accettati SHA Git esadecimali da 7 a 40 caratteri. Lo script clona il master ufficiale, risolve lo SHA, verifica che sia un suo antenato e interrompe il workflow senza push se il controllo fallisce.
