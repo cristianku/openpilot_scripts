@@ -1,4 +1,6 @@
 interface:
   display_name: "Merge Peugeot 3008 Testing"
   short_description: "Promote Peugeot testing changes safely"
-  default_prompt: "Use $merge-psa-torque-testing to merge the Peugeot 3008 testing branch into stable and refresh openpilot."
+  # [merge only] - START
+  default_prompt: "Use $OP-merge-psa-torque-testing to merge opendbc psa-torque-testing into psa-torque, validate and push stable. Leave openpilot setup to Cristian."
+  # [merge only] - END

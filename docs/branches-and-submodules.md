@@ -9,7 +9,9 @@
 | Testing | `comma` | `commaai/openpilot:master` | `psa-torque-testing` | `psa-torque-testing` |
 | Testing | `sunny` | `sunnypilot/sunnypilot:master` | `psa-torque-sunny-testing` | `psa-torque-sunny-testing` |
 
-Testing branches are where changes are validated. Once ready, the merge skills promote testing → stable in opendbc, then refresh the matching openpilot pointer. `master`/`main` are protected — the commit/push skill refuses to act on them.
+<!-- [merge only] - START -->
+Testing branches are where changes are validated. Once ready, the merge skills promote testing → stable in opendbc. The non-Sunny merge stops after the stable push; Cristian runs openpilot setup separately. The Sunny merge still refreshes the matching openpilot pointer. `master`/`main` are protected — the commit/push skill refuses to act on them.
+<!-- [merge only] - END -->
 
 ## Submodule relationships
 
