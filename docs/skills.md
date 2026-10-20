@@ -85,6 +85,15 @@ Invoke `$OP-news` to discover important developments and learn about openpilot t
 Examples: `$OP-news ultime 24 ore`, `$OP-news solo sunnypilot, modelli e NNLC`. Source: `OP-news/SKILL.md`; known server/channel entry points are in `OP-news/references/channels.md`.
 <!-- [discord news] - END -->
 
+## OP-apply-nav-alpha (Nav2Pilot)
+
+Ricrea `nav-alpha` di `cristianku/sunnypilot` o `cristianku/openpilot` dall'ultimo master upstream e riapplica solo le modifiche Nav2Pilot (`setNavRoute` con waypoint, `setMapboxToken`), salvate come patch in `OP-apply-nav-alpha/patches/`. Un solo commit sopra master, backup locale `nav-alpha-prev`, push solo con l'ok di Cristian. Dettagli e risoluzione conflitti: [nav-alpha-nav2pilot.md](nav-alpha-nav2pilot.md).
+
+```bash
+./OP-apply-nav-alpha/scripts/apply_nav_alpha.sh sunny status   # oppure: comma
+./OP-apply-nav-alpha/scripts/apply_nav_alpha.sh sunny apply
+```
+
 ## Common overrides
 
 `GITHUB_USER`, `WORKSPACE_ROOT`, `OPENPILOT_DIR`, `OPENPILOT_REPO`, `OPENPILOT_SOURCE_REPO`, `OPENPILOT_SOURCE_BRANCH`, `OPENDBC_REPO`, `OPENDBC_SOURCE_REPO`, `OPENDBC_SOURCE_BRANCH`, `NEURAL_NETWORK_DATA_REPO`, `NEURAL_NETWORK_DATA_BRANCH`, `COMMIT_MESSAGE`. Merge skills add `MERGE_DIR`, `MERGE_TEST_COMMAND`, and `SKIP_TESTS=true` (explicitly authorized emergency only).

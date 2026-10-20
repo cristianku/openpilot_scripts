@@ -1,0 +1,677 @@
+diff --git a/openpilot/common/params_keys.h b/openpilot/common/params_keys.h
+index fa105de62c5d76b33b98c56bcfb2fb6aade27861..41415533b7be58b8a1bd4352164d85e9d927ee9f 100644
+--- a/openpilot/common/params_keys.h
++++ b/openpilot/common/params_keys.h
+@@ -87,6 +87,7 @@ inline static std::unordered_map<std::string, ParamKeyAttributes> keys = {
+     {"LateralManeuverMode", {CLEAR_ON_MANAGER_START | CLEAR_ON_OFFROAD_TRANSITION, BOOL}},
+     {"LongitudinalManeuverMode", {CLEAR_ON_MANAGER_START | CLEAR_ON_OFFROAD_TRANSITION, BOOL}},
+     {"LongitudinalPersonality", {PERSISTENT, INT, std::to_string(static_cast<int>(cereal::LongitudinalPersonality::STANDARD))}},
++    {"MapboxToken", {PERSISTENT | DONT_LOG, STRING}},
+     {"NavigationEnabled", {PERSISTENT, BOOL, "0"}},
+     {"NavDestination", {CLEAR_ON_MANAGER_START | CLEAR_ON_OFFROAD_TRANSITION, JSON}},
+     {"NetworkMetered", {PERSISTENT, BOOL}},
+diff --git a/openpilot/selfdrive/navigation/nav2pilot/__init__.py b/openpilot/selfdrive/navigation/nav2pilot/__init__.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+diff --git a/openpilot/selfdrive/navigation/nav2pilot/athena.py b/openpilot/selfdrive/navigation/nav2pilot/athena.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..9cb57b1ac69c786e138d90db580d4503b4665266
+--- /dev/null
++++ b/openpilot/selfdrive/navigation/nav2pilot/athena.py
+@@ -0,0 +1,41 @@
++"""
++setNavRoute: comma's setNavDestination with optional waypoints (see waypoints.py).
++setMapboxToken: the user's Mapbox public token for navd's route requests (see mapbox.py).
++They are what the Nav2Pilot phone apps send, registered on athena's dispatcher when athenad imports this module.
++"""
++from openpilot.common.params import Params
++from openpilot.selfdrive.navigation.nav2pilot.mapbox import MAPBOX_TOKEN_PARAM, valid_mapbox_token
++from openpilot.selfdrive.navigation.nav2pilot.waypoints import DESTINATION_PARAM, MAX_WAYPOINTS, parse_waypoints, valid_coordinate
++from openpilot.system.athena.rpc import dispatcher
++
++
++@dispatcher.add_method
++def setNavRoute(latitude: float, longitude: float, waypoints: list | None = None) -> dict[str, int | str]:
++  """Destination plus waypoints in driving order: [{"latitude": .., "longitude": .., "via": false}, ...]."""
++  if not valid_coordinate(latitude, longitude):
++    return {"success": 0, "error": "Invalid destination coordinates"}
++
++  parsed = parse_waypoints(waypoints)
++  if parsed is None:
++    return {"success": 0, "error": f"Invalid waypoints (at most {MAX_WAYPOINTS}, each with latitude, longitude and an optional via flag)"}
++
++  destination: dict = {"latitude": float(latitude), "longitude": float(longitude)}
++  if parsed:
++    destination["waypoints"] = parsed
++  Params().put(DESTINATION_PARAM, destination, block=True)
++  return {"success": 1}
++
++
++@dispatcher.add_method
++def setMapboxToken(token: str) -> dict[str, int | str]:
++  """Stores a Mapbox public token (pk.); an empty string removes it, and navd goes back to comma's proxy.
++  The phone sends it with every destination, so an unchanged token is not written again."""
++  params = Params()
++  if token == "":
++    params.remove(MAPBOX_TOKEN_PARAM)
++    return {"success": 1}
++  if not valid_mapbox_token(token):
++    return {"success": 0, "error": "Invalid Mapbox token: a public token starts with pk."}
++  if params.get(MAPBOX_TOKEN_PARAM) != token:
++    params.put(MAPBOX_TOKEN_PARAM, token, block=True)
++  return {"success": 1}
+diff --git a/openpilot/selfdrive/navigation/nav2pilot/mapbox.py b/openpilot/selfdrive/navigation/nav2pilot/mapbox.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..7e6311035351e24af54ec9d684b10ca60b78385b
+--- /dev/null
++++ b/openpilot/selfdrive/navigation/nav2pilot/mapbox.py
+@@ -0,0 +1,20 @@
++"""
++The user's own Mapbox public token, sent from the phone app with setMapboxToken and kept in the MapboxToken param.
++With it navd asks Mapbox for the route directly, instead of comma's /v1/nav proxy. No numpy here: athenad imports this.
++"""
++import re
++
++MAPBOX_TOKEN_PARAM = "MapboxToken"
++MAPBOX_HOST = "https://api.mapbox.com"
++
++# "pk." then the two base64url parts of a public token; secret (sk.) and temporary (tk.) tokens are refused
++PUBLIC_TOKEN_PATTERN = re.compile(r"pk\.[A-Za-z0-9_=-]+\.[A-Za-z0-9_=-]+")
++MAX_TOKEN_LENGTH = 512
++
++
++def valid_mapbox_token(token) -> bool:
++  if not isinstance(token, str):
++    return False
++  if len(token) > MAX_TOKEN_LENGTH:
++    return False
++  return PUBLIC_TOKEN_PATTERN.fullmatch(token) is not None
+diff --git a/openpilot/selfdrive/navigation/nav2pilot/navd.py b/openpilot/selfdrive/navigation/nav2pilot/navd.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..1b12239f768dc3c1392e8d029381f77026e7de2e
+--- /dev/null
++++ b/openpilot/selfdrive/navigation/nav2pilot/navd.py
+@@ -0,0 +1,181 @@
++#!/usr/bin/env python3
++"""
++comma's navd (openpilot/selfdrive/navigation/navd.py, kept as in upstream) plus the waypoints of the NavDestination
++param (see waypoints.py). Without waypoints it behaves exactly like upstream: the methods hand over to RouteEngine.
++
++With waypoints:
++- the Mapbox request goes ego -> waypoints -> destination, stops as waypoints and via points as silent via points
++- the steps of every leg are followed in order, without the "arrive" step that ends each intermediate leg
++- a waypoint closer than PASSED_DISTANCE is passed: it and those before it are dropped, also from the param,
++  so neither a reroute nor a restarted navd leads back to it
++
++With a Mapbox token sent from the phone (MapboxToken param, see mapbox.py) every route request goes straight to
++Mapbox with it; without one navd keeps upstream's choice: the MAPBOX_TOKEN variable, else comma's proxy.
++"""
++import numpy as np
++import requests
++
++import openpilot.cereal.messaging as messaging
++from openpilot.common.realtime import Ratekeeper
++from openpilot.common.swaglog import cloudlog
++from openpilot.selfdrive.navigation.navd import RECOMPUTE_HOLD, RouteEngine
++from openpilot.selfdrive.navigation.route import local_meters
++from openpilot.selfdrive.navigation.nav2pilot.mapbox import MAPBOX_HOST, MAPBOX_TOKEN_PARAM
++from openpilot.selfdrive.navigation.nav2pilot.waypoints import DESTINATION_PARAM, param_with_waypoints, waypoints_from_param
++
++PASSED_DISTANCE = 50  # meters; at 130 km/h and 1 Hz the ego is sampled every 36 m
++
++
++def leg_steps(legs) -> list:
++  """The steps of all legs in driving order, dropping the "arrive" step that ends each leg but the last."""
++  steps = []
++  for index, leg in enumerate(legs):
++    leg_steps = list(leg['steps'])
++    is_last_leg = index == len(legs) - 1
++    if not is_last_leg and leg_steps and leg_steps[-1].get('maneuver', {}).get('type') == 'arrive':
++      leg_steps = leg_steps[:-1]
++    steps.extend(leg_steps)
++  return steps
++
++
++class Nav2PilotRouteEngine(RouteEngine):
++  def __init__(self, sm, pm, params=None):
++    super().__init__(sm, pm, params)
++    self.nav_waypoints = ()  # the waypoints of the current route, (longitude, latitude, via)
++    # upstream's choice, used while no token is saved from the phone
++    self.upstream_mapbox_token = self.mapbox_token
++    self.upstream_mapbox_host = self.mapbox_host
++
++  def select_mapbox_token(self):
++    """Before each route request: the token saved from the phone, which can change while navd runs."""
++    saved_token = self.params.get(MAPBOX_TOKEN_PARAM)
++    if saved_token:
++      self.mapbox_token = saved_token
++      self.mapbox_host = MAPBOX_HOST
++    else:
++      self.mapbox_token = self.upstream_mapbox_token
++      self.mapbox_host = self.upstream_mapbox_host
++
++  def recompute_route(self, gps_ok: bool):
++    if self.last_position is None:
++      return
++
++    destination = self.params.get(DESTINATION_PARAM)
++    waypoints = self.drop_passed_waypoints(destination, waypoints_from_param(destination))
++    if not waypoints and not self.nav_waypoints:
++      super().recompute_route(gps_ok)
++      return
++    if destination is None:
++      super().recompute_route(gps_ok)  # clears the route
++      return
++    new_destination = (destination['longitude'], destination['latitude'])
++
++    # Same rules as upstream: no recompute while the GPS drifts in tunnels, and at most one every RECOMPUTE_HOLD
++    if not gps_ok and self.step_idx is not None:
++      return
++
++    self.recompute_hold -= 1
++    changed = new_destination != self.nav_destination or waypoints != self.nav_waypoints
++    if (self.should_recompute() or changed) and self.recompute_hold <= 0:
++      self.recompute_hold = RECOMPUTE_HOLD
++      self.calculate_route(new_destination, waypoints)
++      self.reroute_counter = 0
++
++  def drop_passed_waypoints(self, destination, waypoints):
++    """The waypoints still ahead: up to the last one within PASSED_DISTANCE they are dropped, here and in the param."""
++    if not waypoints or self.last_position is None:
++      return waypoints
++
++    passed = 0
++    for index, (longitude, latitude, _) in enumerate(waypoints):
++      if np.linalg.norm(local_meters((longitude, latitude), self.last_position)) < PASSED_DISTANCE:
++        passed = index + 1
++    if passed == 0:
++      return waypoints
++
++    remaining = waypoints[passed:]
++    cloudlog.warning(f"Passed {passed} waypoint(s), {len(remaining)} left")
++    # the route already goes past them: dropping them must not trigger a new route request
++    if self.nav_waypoints == waypoints:
++      self.nav_waypoints = remaining
++    self.params.put(DESTINATION_PARAM, param_with_waypoints(destination, remaining))
++    return remaining
++
++  def calculate_route(self, destination, waypoints=()):
++    self.select_mapbox_token()
++    if not waypoints:
++      self.nav_waypoints = ()
++      super().calculate_route(destination)
++      return
++
++    # upstream calculate_route with the waypoints added to the request
++    assert self.last_position is not None
++    cloudlog.warning(f"Calculating route {self.last_position} -> {len(waypoints)} waypoint(s) -> {destination}")
++    self.nav_destination = destination
++    self.nav_waypoints = tuple(waypoints)
++
++    lang = self.params.get('LanguageSetting')
++    if lang is not None:
++      lang = lang.replace('main_', '')
++
++    token = self.mapbox_token
++    if token is None:
++      token = self.api.get_token()
++
++    coordinates = [self.last_position] + [(longitude, latitude) for longitude, latitude, _ in waypoints] + [destination]
++    # Indices of the coordinates that start or end a leg: the ego, every stop and the destination
++    leg_indices = [0] + [index + 1 for index, (_, _, via) in enumerate(waypoints) if not via] + [len(coordinates) - 1]
++
++    params = {
++      'access_token': token,
++      'geometries': 'geojson',
++      'overview': 'full',
++      'steps': 'true',
++      'banner_instructions': 'true',
++      'alternatives': 'false',
++      'language': lang,
++      'waypoints': ';'.join(str(index) for index in leg_indices),
++    }
++    if self.last_bearing is not None:
++      # one entry per coordinate: the ego's bearing, then no constraint
++      params['bearings'] = f"{(self.last_bearing + 360) % 360:.0f},90" + ';' * (len(coordinates) - 1)
++
++    coords_str = ';'.join(f'{lon},{lat}' for lon, lat in coordinates)
++    url = self.mapbox_host + '/directions/v5/mapbox/driving-traffic/' + coords_str
++    try:
++      resp = requests.get(url, params=params, timeout=10)
++      if resp.status_code != 200:
++        cloudlog.event("API request failed", status_code=resp.status_code, text=resp.text, error=True)
++      resp.raise_for_status()
++
++      r = resp.json()
++      if len(r['routes']):
++        self.route = leg_steps(r['routes'][0]['legs'])
++        self.route_geometry = [np.array(step['geometry']['coordinates'], dtype=np.float64).reshape((-1, 2)) for step in self.route]
++        self.step_idx = 0
++      else:
++        cloudlog.warning("Got empty route response")
++        self.clear_route()
++
++    except requests.exceptions.RequestException:
++      cloudlog.exception("failed to get route")
++      self.clear_route()
++
++  def clear_route(self):
++    super().clear_route()
++    self.nav_waypoints = ()
++
++
++def main():
++  pm = messaging.PubMaster(['navInstruction', 'navRoute'])
++  sm = messaging.SubMaster(['gpsLocation', 'gpsLocationExternal'])
++
++  rk = Ratekeeper(1.0)
++  route_engine = Nav2PilotRouteEngine(sm, pm)
++  while True:
++    route_engine.update()
++    rk.keep_time()
++
++
++if __name__ == "__main__":
++  main()
+diff --git a/openpilot/selfdrive/navigation/nav2pilot/tests/test_navd_mapbox.py b/openpilot/selfdrive/navigation/nav2pilot/tests/test_navd_mapbox.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..0a89a83f1280242f8c10f729ad81c4037c016813
+--- /dev/null
++++ b/openpilot/selfdrive/navigation/nav2pilot/tests/test_navd_mapbox.py
+@@ -0,0 +1,94 @@
++"""
++The Mapbox token sent from the phone: setMapboxToken and where navd sends the route request with and without it.
++"""
++import unittest
++from unittest.mock import patch
++
++from openpilot.common.api import API_HOST
++from openpilot.common.params import Params
++from openpilot.common.test import OpenpilotTestCase
++from openpilot.selfdrive.navigation.nav2pilot.mapbox import MAPBOX_TOKEN_PARAM, valid_mapbox_token
++from openpilot.selfdrive.navigation.nav2pilot.tests.test_navd_waypoints import ONE_LEG, TWO_LEGS, mapbox_response, route_engine
++
++TOKEN = "pk.eyJ1IjoidGVzdCIsImEiOiJ0ZXN0In0.abc_DEF-123"
++DIRECTIONS = "/directions/v5/mapbox/driving-traffic/"
++
++
++class TestMapboxToken(unittest.TestCase):
++  def test_valid_mapbox_token(self):
++    self.assertTrue(valid_mapbox_token(TOKEN))
++    for invalid in ("", "pk.only-one-part", "sk.eyJ1Ijoi.abc", "tk.eyJ1Ijoi.abc", "pk.a.b c", "pk.a.b\n", None, 42,
++                    "pk.a." + "b" * 600):
++      self.assertFalse(valid_mapbox_token(invalid), invalid)
++
++
++class TestRouteEngineMapboxToken(unittest.TestCase):
++  def test_without_token_the_request_goes_to_comma(self):
++    engine = route_engine({'NavDestination': {'latitude': 0, 'longitude': 0.004}})
++    with patch('requests.get', return_value=mapbox_response(ONE_LEG)) as get:
++      engine.recompute_route(gps_ok=True)
++    self.assertTrue(get.call_args.args[0].startswith(API_HOST.rstrip('/') + '/v1/nav' + DIRECTIONS))
++    self.assertEqual(get.call_args.kwargs['params']['access_token'], 'test-token')
++
++  def test_saved_token_goes_straight_to_mapbox(self):
++    engine = route_engine({'NavDestination': {'latitude': 0, 'longitude': 0.004}, MAPBOX_TOKEN_PARAM: TOKEN})
++    with patch('requests.get', return_value=mapbox_response(ONE_LEG)) as get:
++      engine.recompute_route(gps_ok=True)
++    self.assertEqual(get.call_args.args[0], 'https://api.mapbox.com' + DIRECTIONS + '0,0;0.004,0')
++    self.assertEqual(get.call_args.kwargs['params']['access_token'], TOKEN)
++    self.assertEqual(engine.step_idx, 0)
++
++  def test_saved_token_with_waypoints(self):
++    values = {'NavDestination': {'latitude': 0, 'longitude': 0.004, 'waypoints': [{'latitude': 0, 'longitude': 0.002, 'via': False}]},
++              MAPBOX_TOKEN_PARAM: TOKEN}
++    engine = route_engine(values)
++    with patch('requests.get', return_value=mapbox_response(TWO_LEGS)) as get:
++      engine.recompute_route(gps_ok=True)
++    self.assertTrue(get.call_args.args[0].startswith('https://api.mapbox.com' + DIRECTIONS))
++    self.assertEqual(get.call_args.kwargs['params']['access_token'], TOKEN)
++
++  def test_token_read_again_for_every_request(self):
++    values = {'NavDestination': {'latitude': 0, 'longitude': 0.004}, MAPBOX_TOKEN_PARAM: TOKEN}
++    engine = route_engine(values)
++    with patch('requests.get', return_value=mapbox_response(ONE_LEG)) as get:
++      engine.calculate_route((0.004, 0))
++      self.assertTrue(get.call_args.args[0].startswith('https://api.mapbox.com'))
++
++      # removed from the phone while navd runs: back to comma's proxy without a restart
++      del values[MAPBOX_TOKEN_PARAM]
++      engine.calculate_route((0.004, 0))
++      self.assertTrue(get.call_args.args[0].startswith(API_HOST.rstrip('/') + '/v1/nav'))
++      self.assertEqual(get.call_args.kwargs['params']['access_token'], 'test-token')
++
++
++class TestSetMapboxToken(OpenpilotTestCase):
++  def test_registered_on_athena(self):
++    from openpilot.system.athena import athenad
++    assert "setMapboxToken" in athenad.dispatcher
++
++  def test_stores_and_removes_the_token(self):
++    from openpilot.system.athena.rpc import dispatcher
++    assert dispatcher["setMapboxToken"](TOKEN) == {"success": 1}
++    assert Params().get(MAPBOX_TOKEN_PARAM) == TOKEN
++
++    assert dispatcher["setMapboxToken"]("") == {"success": 1}
++    assert Params().get(MAPBOX_TOKEN_PARAM) is None
++
++  def test_same_token_is_not_written_again(self):
++    from openpilot.system.athena.rpc import dispatcher
++    assert dispatcher["setMapboxToken"](TOKEN) == {"success": 1}
++    with patch.object(Params, "put") as put:
++      assert dispatcher["setMapboxToken"](TOKEN) == {"success": 1}
++    put.assert_not_called()
++
++  def test_rejects_secret_and_malformed_tokens(self):
++    from openpilot.system.athena.rpc import dispatcher
++    Params().put(MAPBOX_TOKEN_PARAM, TOKEN)
++    for invalid in ("sk.eyJ1Ijoi.abc", "not a token", None, 12):
++      assert dispatcher["setMapboxToken"](invalid)["success"] == 0, invalid
++    # a refused token leaves the stored one in place
++    assert Params().get(MAPBOX_TOKEN_PARAM) == TOKEN
++
++
++if __name__ == "__main__":
++  unittest.main()
+diff --git a/openpilot/selfdrive/navigation/nav2pilot/tests/test_navd_waypoints.py b/openpilot/selfdrive/navigation/nav2pilot/tests/test_navd_waypoints.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..5c72650cf5da8f6deeea2f54f09cccfbf0ef6313
+--- /dev/null
++++ b/openpilot/selfdrive/navigation/nav2pilot/tests/test_navd_waypoints.py
+@@ -0,0 +1,200 @@
++"""
++Waypoints on top of comma's navd: setNavRoute, the Mapbox request, multi-leg routes and passed waypoints.
++"""
++import time
++import unittest
++from types import SimpleNamespace
++from unittest.mock import MagicMock, patch
++
++from openpilot.common.params import Params
++from openpilot.common.test import OpenpilotTestCase
++from openpilot.selfdrive.navigation.navd import RECOMPUTE_HOLD
++from openpilot.selfdrive.navigation.nav2pilot.navd import Nav2PilotRouteEngine, leg_steps
++from openpilot.selfdrive.navigation.nav2pilot.waypoints import MAX_WAYPOINTS, param_with_waypoints, parse_waypoints, waypoints_from_param
++
++DISTANCE = 111.195  # Mapbox's length of 0.001 degrees at the equator
++
++
++def step(start, end, maneuver='turn'):
++  return {'geometry': {'coordinates': [start, end]}, 'distance': DISTANCE, 'duration': 10, 'maneuver': {'type': maneuver},
++          'bannerInstructions': [{'distanceAlongGeometry': 100, 'primary': {'text': 'Go', 'type': maneuver, 'modifier': 'straight'}}]}
++
++
++def arrive(point):
++  return {'geometry': {'coordinates': [point, point]}, 'distance': 0, 'duration': 0, 'maneuver': {'type': 'arrive'}, 'bannerInstructions': []}
++
++
++def mapbox_response(legs):
++  response = MagicMock(status_code=200)
++  response.json.return_value = {'routes': [{'legs': [{'steps': steps} for steps in legs]}]}
++  return response
++
++
++# ego (0, 0) -> stop (0.002, 0) -> destination (0.004, 0), along the equator
++TWO_LEGS = [
++  [step([0, 0], [0.001, 0], 'depart'), step([0.001, 0], [0.002, 0]), arrive([0.002, 0])],
++  [step([0.002, 0], [0.003, 0], 'depart'), step([0.003, 0], [0.004, 0]), arrive([0.004, 0])],
++]
++ONE_LEG = [[step([0, 0], [0.002, 0], 'depart'), step([0.002, 0], [0.004, 0]), arrive([0.004, 0])]]
++
++
++def route_engine(values):
++  params = MagicMock()
++  params.get.side_effect = values.get
++  params.remove.side_effect = lambda key: values.pop(key, None)
++  params.put.side_effect = values.__setitem__
++  sm = MagicMock()
++  sm.valid = dict.fromkeys(('gpsLocation', 'gpsLocationExternal'), True)
++  sm.logMonoTime = dict.fromkeys(sm.valid, time.monotonic_ns())
++  sm.recv_time = dict.fromkeys(sm.valid, time.monotonic())
++  sm.__getitem__.return_value = SimpleNamespace(hasFix=True, latitude=0, longitude=0, bearingDeg=90)
++  with patch('openpilot.selfdrive.navigation.navd.Api') as api:
++    api.return_value.get_token.return_value = 'test-token'
++    engine = Nav2PilotRouteEngine(sm, MagicMock(), params=params)
++  engine.last_position, engine.last_bearing = (0, 0), 90
++  return engine
++
++
++class TestWaypointParam(unittest.TestCase):
++  def test_parse(self):
++    self.assertEqual(parse_waypoints(None), [])
++    self.assertEqual(parse_waypoints([{'latitude': 1, 'longitude': 2}]), [{'latitude': 1.0, 'longitude': 2.0, 'via': False}])
++    self.assertEqual(parse_waypoints([{'latitude': 1, 'longitude': 2, 'via': True}])[0]['via'], True)
++    for invalid in ('x', [1], [{'latitude': 91, 'longitude': 0}], [{'latitude': True, 'longitude': 0}],
++                    [{'latitude': float('nan'), 'longitude': 0}], [{'latitude': 0, 'longitude': 0, 'via': 'yes'}],
++                    [{'latitude': 0, 'longitude': 0}] * (MAX_WAYPOINTS + 1)):
++      self.assertIsNone(parse_waypoints(invalid), invalid)
++
++  def test_round_trip(self):
++    destination = {'latitude': 0, 'longitude': 0.004, 'waypoints': [{'latitude': 0, 'longitude': 0.002, 'via': True}]}
++    waypoints = waypoints_from_param(destination)
++    self.assertEqual(waypoints, ((0.002, 0.0, True),))
++    self.assertEqual(param_with_waypoints(destination, waypoints), destination)
++    self.assertEqual(param_with_waypoints(destination, ()), {'latitude': 0, 'longitude': 0.004})
++    self.assertEqual(waypoints_from_param({'latitude': 0, 'longitude': 0}), ())
++    self.assertEqual(waypoints_from_param(None), ())
++
++  def test_leg_steps_drop_intermediate_arrivals(self):
++    steps = leg_steps([{'steps': legs} for legs in TWO_LEGS])
++    self.assertEqual([s['maneuver']['type'] for s in steps], ['depart', 'turn', 'depart', 'turn', 'arrive'])
++
++
++class TestRouteEngineWaypoints(unittest.TestCase):
++  def test_without_waypoints_the_request_is_upstreams(self):
++    values = {'NavDestination': {'latitude': 0, 'longitude': 0.004}}
++    engine = route_engine(values)
++    with patch('requests.get', return_value=mapbox_response(ONE_LEG)) as get:
++      engine.recompute_route(gps_ok=True)
++    self.assertTrue(get.call_args.args[0].endswith('/driving-traffic/0,0;0.004,0'))
++    self.assertNotIn('waypoints', get.call_args.kwargs['params'])
++    self.assertEqual(get.call_args.kwargs['params']['bearings'], '90,90;')
++
++  def test_request_with_a_stop_and_a_via_point(self):
++    values = {'NavDestination': {'latitude': 0, 'longitude': 0.004, 'waypoints': [
++      {'latitude': 0, 'longitude': 0.001, 'via': True}, {'latitude': 0, 'longitude': 0.002, 'via': False}]}}
++    engine = route_engine(values)
++    with patch('requests.get', return_value=mapbox_response(TWO_LEGS)) as get:
++      engine.recompute_route(gps_ok=True)
++
++    self.assertTrue(get.call_args.args[0].endswith('/driving-traffic/0,0;0.001,0.0;0.002,0.0;0.004,0'))
++    options = get.call_args.kwargs['params']
++    self.assertEqual(options['waypoints'], '0;2;3')  # the via point (index 1) is not a leg boundary
++    self.assertEqual(options['bearings'], '90,90;;;')  # one entry per coordinate
++    self.assertEqual(len(engine.route), 5)
++
++  def test_follows_both_legs_through_the_stop(self):
++    values = {'NavDestination': {'latitude': 0, 'longitude': 0.004, 'waypoints': [{'latitude': 0, 'longitude': 0.002}]}}
++    engine = route_engine(values)
++    with patch('requests.get', return_value=mapbox_response(TWO_LEGS)):
++      engine.recompute_route(gps_ok=True)
++
++    for position, expected_step in [((0.0012, 0), 1), ((0.0022, 0), 2), ((0.0032, 0), 3)]:
++      engine.last_position = position
++      engine.send_instruction()
++      self.assertEqual(engine.step_idx, expected_step, position)
++    instruction = engine.pm.send.call_args.args[1].navInstruction
++    self.assertAlmostEqual(instruction.distanceRemaining, DISTANCE * 0.8, delta=1)
++
++  def test_passed_waypoint_is_dropped_without_a_new_request(self):
++    values = {'NavDestination': {'latitude': 0, 'longitude': 0.004, 'waypoints': [{'latitude': 0, 'longitude': 0.002}]}}
++    engine = route_engine(values)
++    with patch('requests.get', return_value=mapbox_response(TWO_LEGS)):
++      engine.recompute_route(gps_ok=True)
++
++    engine.last_position = (0.0021, 0)  # 11 m past the stop
++    engine.recompute_hold = 0
++    with patch('requests.get') as get:
++      engine.recompute_route(gps_ok=True)
++      get.assert_not_called()
++    self.assertEqual(values['NavDestination'], {'latitude': 0, 'longitude': 0.004})
++    self.assertEqual(engine.nav_waypoints, ())
++
++  def test_reroute_skips_passed_waypoints(self):
++    values = {'NavDestination': {'latitude': 0, 'longitude': 0.004, 'waypoints': [
++      {'latitude': 0, 'longitude': 0.001, 'via': True}, {'latitude': 0, 'longitude': 0.003, 'via': True}]}}
++    engine = route_engine(values)
++    with patch('requests.get', return_value=mapbox_response(ONE_LEG)):
++      engine.recompute_route(gps_ok=True)
++
++    engine.last_position = (0.001, 0)  # at the first via point: passed
++    engine.recompute_route(gps_ok=True)
++    engine.last_position = (0.0015, 0.001)  # then 111 m off route: reroute through the second via point only
++    engine.recompute_hold = 0
++    engine.reroute_counter = 10
++    with patch('requests.get', return_value=mapbox_response(ONE_LEG)) as get:
++      engine.recompute_route(gps_ok=True)
++    self.assertTrue(get.call_args.args[0].endswith('/driving-traffic/0.0015,0.001;0.003,0.0;0.004,0'))
++
++  def test_new_waypoints_for_the_same_destination_recompute(self):
++    values = {'NavDestination': {'latitude': 0, 'longitude': 0.004}}
++    engine = route_engine(values)
++    with patch('requests.get', return_value=mapbox_response(ONE_LEG)):
++      engine.recompute_route(gps_ok=True)
++
++    values['NavDestination'] = {'latitude': 0, 'longitude': 0.004, 'waypoints': [{'latitude': 0.001, 'longitude': 0.002}]}
++    engine.recompute_hold = 0
++    with patch('requests.get', return_value=mapbox_response(TWO_LEGS)) as get:
++      engine.recompute_route(gps_ok=True)
++    get.assert_called_once()
++    self.assertEqual(engine.recompute_hold, RECOMPUTE_HOLD)
++
++    values['NavDestination'] = {'latitude': 0, 'longitude': 0.004}  # and back without them (comma's setNavDestination)
++    engine.recompute_hold = 0
++    with patch('requests.get', return_value=mapbox_response(ONE_LEG)) as get:
++      engine.recompute_route(gps_ok=True)
++    get.assert_called_once()
++    self.assertEqual(engine.nav_waypoints, ())
++
++  def test_cleared_destination_clears_waypoints(self):
++    values = {'NavDestination': {'latitude': 0, 'longitude': 0.004, 'waypoints': [{'latitude': 0.001, 'longitude': 0.002}]}}
++    engine = route_engine(values)
++    with patch('requests.get', return_value=mapbox_response(TWO_LEGS)):
++      engine.recompute_route(gps_ok=True)
++    values.pop('NavDestination')
++    engine.recompute_route(gps_ok=True)
++    self.assertIsNone(engine.route)
++    self.assertEqual(engine.nav_waypoints, ())
++
++
++class TestSetNavRoute(OpenpilotTestCase):
++  def test_registered_on_athena(self):
++    from openpilot.system.athena import athenad
++    assert "setNavRoute" in athenad.dispatcher
++
++  def test_stores_destination_and_waypoints(self):
++    from openpilot.system.athena.rpc import dispatcher
++    result = dispatcher["setNavRoute"](45.47, 9.19, [{"latitude": 45.4, "longitude": 9.1, "via": True}])
++    assert result == {"success": 1}
++    assert Params().get("NavDestination") == {"latitude": 45.47, "longitude": 9.19,
++                                              "waypoints": [{"latitude": 45.4, "longitude": 9.1, "via": True}]}
++
++    assert dispatcher["setNavRoute"](45.47, 9.19) == {"success": 1}
++    assert Params().get("NavDestination") == {"latitude": 45.47, "longitude": 9.19}
++
++  def test_rejects_invalid_input(self):
++    from openpilot.system.athena.rpc import dispatcher
++    Params().remove("NavDestination")
++    assert dispatcher["setNavRoute"](95, 9.19)["success"] == 0
++    assert dispatcher["setNavRoute"](45.47, 9.19, [{"latitude": 45.4}])["success"] == 0
++    assert dispatcher["setNavRoute"](45.47, 9.19, "not a list")["success"] == 0
++    assert Params().get("NavDestination") is None
+diff --git a/openpilot/selfdrive/navigation/nav2pilot/waypoints.py b/openpilot/selfdrive/navigation/nav2pilot/waypoints.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..0f04ca6e64a774a6b5608da080718ae9757a271d
+--- /dev/null
++++ b/openpilot/selfdrive/navigation/nav2pilot/waypoints.py
+@@ -0,0 +1,65 @@
++"""
++Waypoints carried by the NavDestination param, next to comma's latitude and longitude:
++
++  {"latitude": 45.47, "longitude": 9.19, "waypoints": [{"latitude": 45.4, "longitude": 9.1, "via": false}, ...]}
++
++- a stop ("via": false) is a Mapbox waypoint: the route has one leg per stop and announces the arrival there
++- a via point ("via": true) only shapes the route, silently: it is how a route alternative picked on the phone is
++  followed, Mapbox recomputing the same road through a few of its points
++
++comma's navd reads only latitude and longitude, so the param stays valid for it. No numpy here: athenad imports this.
++"""
++import math
++
++DESTINATION_PARAM = "NavDestination"
++
++# Mapbox Directions takes up to 25 coordinates; the ego position and the destination are two of them
++MAX_WAYPOINTS = 20
++
++
++def valid_coordinate(latitude, longitude) -> bool:
++  """Same range rule as athena's setNavDestination, for numbers only (no bools, nan or inf)."""
++  for value in (latitude, longitude):
++    if isinstance(value, bool) or not isinstance(value, (int, float)):
++      return False
++    if not math.isfinite(value):
++      return False
++  return -90 <= latitude <= 90 and -180 <= longitude <= 180
++
++
++def parse_waypoints(waypoints) -> list[dict] | None:
++  """The waypoints to store, normalized to {"latitude", "longitude", "via"}; None when the list is not valid."""
++  if waypoints is None:
++    return []
++  if not isinstance(waypoints, list) or len(waypoints) > MAX_WAYPOINTS:
++    return None
++
++  parsed = []
++  for waypoint in waypoints:
++    if not isinstance(waypoint, dict):
++      return None
++    latitude = waypoint.get("latitude")
++    longitude = waypoint.get("longitude")
++    via = waypoint.get("via", False)
++    if not valid_coordinate(latitude, longitude) or not isinstance(via, bool):
++      return None
++    parsed.append({"latitude": float(latitude), "longitude": float(longitude), "via": via})
++  return parsed
++
++
++def waypoints_from_param(destination) -> tuple[tuple[float, float, bool], ...]:
++  """(longitude, latitude, via) of each waypoint in the NavDestination param; () without any or when malformed."""
++  if not isinstance(destination, dict):
++    return ()
++  parsed = parse_waypoints(destination.get("waypoints"))
++  if parsed is None:
++    return ()
++  return tuple((w["longitude"], w["latitude"], w["via"]) for w in parsed)
++
++
++def param_with_waypoints(destination: dict, waypoints) -> dict:
++  """A copy of the NavDestination param with `waypoints` ((longitude, latitude, via) tuples), without the key when empty."""
++  updated = {key: value for key, value in destination.items() if key != "waypoints"}
++  if waypoints:
++    updated["waypoints"] = [{"latitude": latitude, "longitude": longitude, "via": via} for longitude, latitude, via in waypoints]
++  return updated
+diff --git a/openpilot/system/athena/athenad.py b/openpilot/system/athena/athenad.py
+index cf390aa1cd7def44945b18207d9a371216be3147..b07d80969de8e1e0060f245b11c38624e8bd7b65 100755
+--- a/openpilot/system/athena/athenad.py
++++ b/openpilot/system/athena/athenad.py
+@@ -46,6 +46,7 @@ from openpilot.common.swaglog import cloudlog
+ from openpilot.common.version import get_build_metadata
+ from openpilot.common.hardware.hw import Paths
+ from openpilot.system.athena.rpc import dispatcher, dumps_call, handle, is_call, is_response, loads
++import openpilot.selfdrive.navigation.nav2pilot.athena  # noqa: F401  # nav2pilot: registers setNavRoute and setMapboxToken
+ 
+ 
+ ATHENA_HOST = os.getenv('ATHENA_HOST', 'wss://athena.comma.ai')
+diff --git a/openpilot/system/manager/process_config.py b/openpilot/system/manager/process_config.py
+index 82da166cd9e390b79a37a2c2a0dae8b9963ebd5c..10aaa29a1a5e3f1ce65c7e4496410775637a0d12 100644
+--- a/openpilot/system/manager/process_config.py
++++ b/openpilot/system/manager/process_config.py
+@@ -86,7 +86,7 @@ procs = [
+   PythonProcess("timed", "openpilot.system.timed", always_run, enabled=not PC),
+ 
+   PythonProcess("modeld", "openpilot.selfdrive.modeld.modeld", only_onroad),
+-  PythonProcess("navd", "openpilot.selfdrive.navigation.navd", navigation),
++  PythonProcess("navd", "openpilot.selfdrive.navigation.nav2pilot.navd", navigation),  # nav2pilot: upstream navd + waypoints and Mapbox token
+   PythonProcess("mapsd", "openpilot.selfdrive.navigation.mapsd", navigation),
+   PythonProcess("dmonitoringmodeld", "openpilot.selfdrive.modeld.dmonitoringmodeld", driverview, enabled=(WEBCAM or not PC)),
+ 
