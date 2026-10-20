@@ -3,8 +3,11 @@
 # Documentazione: openpilot_scripts/docs/nav-alpha-nav2pilot.md
 set -euo pipefail
 
-SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 PATCH_DIR="${SKILL_DIR}/patches"
+# publishes master + the saved patch on cristianku/openpilot (also used by the setup skills)
+UPDATE_SCRIPT="${SKILL_DIR}/../scripts/update_fork_branch.sh"
+FORK_URL="https://github.com/cristianku/openpilot.git"
 CRISTIANKU_DIR="/Users/cristianku/GitHub/COMMA.AI/CRISTIANKU"
 
 usage() {
@@ -18,9 +21,10 @@ Comandi:
   commit      controlli + commit delle modifiche in index (dopo una risoluzione manuale di conflitti)
   save-patch  rigenera patches/<variante>.patch dal branch (quando cambi il codice Nav2Pilot)
   sync-check  confronta il pacchetto Nav2Pilot di sunny con quello di comma (devono restare uguali)
-  push        push --force-with-lease del branch sul fork (SOLO con l'ok di Cristian)
+  push        salva la patch e pubblica master + patch su cristianku/openpilot
+              (nav-alpha per comma, sunny-nav-alpha per sunny) con scripts/update_fork_branch.sh
 
-Variabili: NAV_REPO (cartella del clone), NAV_BRANCH (default nav-alpha)
+Variabili: NAV_REPO (cartella del clone), NAV_BRANCH (branch locale, default nav-alpha)
 EOF
   exit 1
 }
@@ -38,6 +42,7 @@ if [[ "${VARIANT}" == "sunny" || "${VARIANT}" == "sunnypilot" ]]; then
   UPSTREAM_REMOTE="upstream"
   UPSTREAM_URL_PATTERN="sunnypilot/sunnypilot"
   PATCH_FILE="${PATCH_DIR}/sunnypilot.patch"
+  FORK_BRANCH="sunny-nav-alpha"
   BASE_FILE="${PATCH_DIR}/sunnypilot.base"
   NAV_PACKAGE="openpilot/sunnypilot/navd"
 elif [[ "${VARIANT}" == "comma" || "${VARIANT}" == "openpilot" ]]; then
@@ -46,6 +51,7 @@ elif [[ "${VARIANT}" == "comma" || "${VARIANT}" == "openpilot" ]]; then
   UPSTREAM_REMOTE="commaai"
   UPSTREAM_URL_PATTERN="commaai/openpilot"
   PATCH_FILE="${PATCH_DIR}/openpilot.patch"
+  FORK_BRANCH="nav-alpha"
   BASE_FILE="${PATCH_DIR}/openpilot.base"
   NAV_PACKAGE="openpilot/selfdrive/navigation/nav2pilot"
 else
@@ -54,7 +60,6 @@ fi
 
 REPO="${NAV_REPO:-${DEFAULT_REPO}}"
 BRANCH="${NAV_BRANCH:-nav-alpha}"
-FORK_REMOTE="origin"
 UPSTREAM_REF="${UPSTREAM_REMOTE}/master"
 # upstream file that our code subclasses or copies: every upstream change to it must be reviewed
 WATCHED_FILES="openpilot/selfdrive/navigation/navd.py openpilot/selfdrive/navigation/tiles.py openpilot/system/athena/rpc.py"
@@ -77,11 +82,6 @@ check_repo() {
   if [[ "${upstream_url}" != *"${UPSTREAM_URL_PATTERN}"* ]]; then
     die "il remote ${UPSTREAM_REMOTE} di ${REPO} non punta a ${UPSTREAM_URL_PATTERN} (trovato: '${upstream_url}')"
   fi
-  local fork_url
-  fork_url="$(g remote get-url "${FORK_REMOTE}" 2>/dev/null || true)"
-  if [[ "${fork_url}" != *"cristianku/"* ]]; then
-    die "il remote ${FORK_REMOTE} di ${REPO} non e' il fork cristianku (trovato: '${fork_url}')"
-  fi
 }
 
 check_clean() {
@@ -94,9 +94,10 @@ check_clean() {
 }
 
 fetch_upstream() {
-  echo "== fetch ${UPSTREAM_REF} e ${FORK_REMOTE}/${BRANCH}"
+  echo "== fetch ${UPSTREAM_REF} e cristianku/openpilot ${FORK_BRANCH}"
   g fetch "${UPSTREAM_REMOTE}" master
-  g fetch "${FORK_REMOTE}" "${BRANCH}" || echo "(il fork non ha ancora ${BRANCH})"
+  g fetch "${FORK_URL}" "+refs/heads/${FORK_BRANCH}:refs/remotes/fork/${FORK_BRANCH}" \
+    || echo "(cristianku/openpilot non ha ancora ${FORK_BRANCH})"
 }
 
 # the files the patch modifies or creates, one per line
@@ -144,10 +145,10 @@ cmd_status() {
   local current
   current="$(g rev-parse --abbrev-ref HEAD)"
   echo "== branch corrente: ${current}"
-  if g rev-parse --verify --quiet "${FORK_REMOTE}/${BRANCH}" >/dev/null; then
+  if g rev-parse --verify --quiet "fork/${FORK_BRANCH}" >/dev/null; then
     local counts
-    counts="$(g rev-list --left-right --count "${UPSTREAM_REF}...${FORK_REMOTE}/${BRANCH}")"
-    echo "   ${FORK_REMOTE}/${BRANCH}: indietro/avanti rispetto a ${UPSTREAM_REF} = ${counts}"
+    counts="$(g rev-list --left-right --count "${UPSTREAM_REF}...fork/${FORK_BRANCH}")"
+    echo "   cristianku/openpilot ${FORK_BRANCH}: indietro/avanti rispetto a ${UPSTREAM_REF} = ${counts}"
   fi
   echo "== la patch si applica pulita su ${UPSTREAM_REF}?"
   local index_file
@@ -178,7 +179,6 @@ cmd_apply() {
 
   echo "== ricreo ${BRANCH} da ${UPSTREAM_REF}"
   g checkout -q --no-track -B "${BRANCH}" "${UPSTREAM_REF}"
-  g branch -q --set-upstream-to="${FORK_REMOTE}/${BRANCH}" "${BRANCH}" 2>/dev/null || true
 
   echo "== applico $(basename "${PATCH_FILE}")"
   if ! g apply --3way --index --whitespace=nowarn "${PATCH_FILE}"; then
@@ -287,7 +287,7 @@ EOF
   rm -f "${message_file}"
   echo "== commit locale: $(g log -1 --oneline)"
   g diff --stat "${UPSTREAM_REF}" HEAD | tail -1
-  echo "   NON pushato: per pubblicarlo serve l'ok di Cristian, poi '$0 ${VARIANT} push'"
+  echo "   NON pubblicato: per pubblicarlo '$0 ${VARIANT} push'"
 }
 
 cmd_save_patch() {
@@ -349,9 +349,10 @@ cmd_push() {
     die "sei su ${current}, non su ${BRANCH}"
   fi
   cmd_check
-  echo "== push --force-with-lease di ${BRANCH} su ${FORK_REMOTE}"
-  # LFS lives on comma's/sunnypilot's own storage (.lfsconfig): nothing to upload from the fork, as in the setup skills
-  GIT_LFS_SKIP_PUSH=1 g push --force-with-lease="${BRANCH}" "${FORK_REMOTE}" "${BRANCH}"
+  # The published branch is always upstream master + the saved patch: the same thing the setup skills
+  # rebuild when master moves.
+  cmd_save_patch
+  bash "${UPDATE_SCRIPT}" "${FORK_BRANCH}"
 }
 
 if [[ "${COMMAND}" == "status" ]]; then

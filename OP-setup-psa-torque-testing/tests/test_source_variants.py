@@ -53,6 +53,8 @@ PY
 """)
       env = {key: value for key, value in os.environ.items()
              if not key.startswith(('OPENPILOT_', 'OPENDBC_', 'NEURAL_NETWORK_DATA_'))}
+      # No realignment of the Nav2Pilot branches from a test (it fetches and pushes).
+      env['SKIP_NAV_UPDATE'] = 'true'
       env.update(overrides or {})
       result = subprocess.run(
         ["bash", str(scripts / wrapper_name), *args],
@@ -63,14 +65,15 @@ PY
   def test_source_and_target_variants(self):
     for root, wrapper, common, prefix, testing in wrappers():
       for args, repo, source_branch, sunny in (
-        ([], 'commaai/openpilot', 'master', False),
-        (['comma'], 'commaai/openpilot', 'master', False),
+        ([], 'cristianku/openpilot', 'nav-alpha', False),
+        (['comma'], 'cristianku/openpilot', 'nav-alpha', False),
+        (['comma', 'master'], 'commaai/openpilot', 'master', False),
         (['comma', 'nav-alpha'], 'cristianku/openpilot', 'nav-alpha', False),
         (['openpilot', 'nav-alpha'], 'cristianku/openpilot', 'nav-alpha', False),
-        (['sunny'], 'sunnypilot/sunnypilot', 'master', True),
+        (['sunny'], 'cristianku/openpilot', 'sunny-nav-alpha', True),
         (['sunny', 'master'], 'sunnypilot/sunnypilot', 'master', True),
-        (['sunny', 'nav-alpha'], 'cristianku/sunnypilot', 'nav-alpha', True),
-        (['sunny', 'feature/nav-alpha'], 'cristianku/sunnypilot', 'nav-alpha', True),
+        (['sunny', 'nav-alpha'], 'cristianku/openpilot', 'sunny-nav-alpha', True),
+        (['sunny', 'feature/nav-alpha'], 'cristianku/openpilot', 'sunny-nav-alpha', True),
       ):
         with self.subTest(skill=root.name, args=args):
           actual = self.capture(root, wrapper, common, args)

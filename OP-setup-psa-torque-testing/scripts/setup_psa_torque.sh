@@ -6,14 +6,16 @@ for arg in "$@"; do
   case "${arg}" in
     -h|--help|help)
       cat <<'HELP'
-Uso: setup_psa_torque.sh [comma|sunny] [master|master=<commit>|release|nav-alpha]
+Uso: setup_psa_torque.sh [comma|sunny] [nav-alpha|master|master=<commit>|release]
 
 Primo parametro: comma oppure sunny (predefinito: comma).
-Secondo parametro: master (predefinito) oppure nav-alpha.
+Secondo parametro: nav-alpha (predefinito, con Nav2Pilot) oppure master.
+  sunny nav-alpha  -> cristianku/openpilot:sunny-nav-alpha (sunnypilot master + Nav2Pilot)
   sunny master     -> sunnypilot/sunnypilot:master
-  sunny nav-alpha  -> cristianku/sunnypilot:nav-alpha
+  comma nav-alpha  -> cristianku/openpilot:nav-alpha (comma master + Nav2Pilot)
   comma master     -> commaai/openpilot:master
-  comma nav-alpha  -> cristianku/openpilot:nav-alpha
+Con nav-alpha il branch Nav2Pilot viene prima riallineato all'ultimo master upstream
+(scripts/update_fork_branch.sh; SKIP_NAV_UPDATE=true per usarlo com'e').
 Anche feature/nav-alpha e' accettato come secondo parametro per sunny (vecchio nome, usa nav-alpha).
 Destinazione Sunny: cristianku/openpilot:psa-torque-sunny-testing
 Destinazione comma: cristianku/openpilot:psa-torque-testing
@@ -32,7 +34,7 @@ done
 
 variant="${1:-comma}"
 # [pinned source] - START
-source_arg="${2:-master}"
+source_arg="${2:-nav-alpha}"
 source_mode="${source_arg}"
 pinned_source_commit=""
 # [nav source] - START
@@ -126,14 +128,17 @@ if [[ "${variant}" == "sunny" ]]; then
 fi
 
 # [nav source] - START
+# Both Nav2Pilot branches live on cristianku/openpilot, so anyone can install them with
+# installer.comma.ai/cristianku/<branch>.
+nav_branch=""
 if [[ "${source_mode}" == "nav-alpha" || "${source_mode}" == "feature/nav-alpha" ]]; then
   if [[ "${variant}" == "sunny" ]]; then
-    openpilot_source_repo="https://github.com/cristianku/sunnypilot.git"
-    openpilot_source_branch="nav-alpha"
+    nav_branch="sunny-nav-alpha"
   else
-    openpilot_source_repo="https://github.com/cristianku/openpilot.git"
-    openpilot_source_branch="nav-alpha"
+    nav_branch="nav-alpha"
   fi
+  openpilot_source_repo="https://github.com/cristianku/openpilot.git"
+  openpilot_source_branch="${nav_branch}"
 fi
 # [nav source] - END
 
@@ -144,6 +149,19 @@ else
   openpilot_source_branch="${OPENPILOT_SOURCE_BRANCH:-${openpilot_source_branch}}"
 fi
 # [source] - END
+
+# The Nav2Pilot branch is first realigned to the latest upstream master; nothing is pushed when it
+# already is. Skipped when the source is overridden from the environment.
+if [[ -n "${nav_branch}" && -z "${OPENPILOT_SOURCE_REPO:-}" && -z "${OPENPILOT_SOURCE_BRANCH:-}" \
+      && "${SKIP_NAV_UPDATE:-false}" != "true" ]]; then
+  update_script="$(cd "${script_dir}" && pwd -P)/../../scripts/update_fork_branch.sh"
+  if ! bash "${update_script}" "${nav_branch}"; then
+    echo "ERROR: ${nav_branch} could not be realigned to upstream master (see above)." >&2
+    echo "Fix it with OP-apply-nav-alpha, or rerun with master (no Nav2Pilot)" >&2
+    echo "or with SKIP_NAV_UPDATE=true (uses ${nav_branch} as it is now)." >&2
+    exit 1
+  fi
+fi
 
 # [pinned source] - START
 BRANCH="${branch}" \

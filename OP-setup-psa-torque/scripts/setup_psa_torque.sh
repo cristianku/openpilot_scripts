@@ -2,7 +2,7 @@
 set -euo pipefail
 
 variant="${1:-comma}"
-source_mode="${2:-master}"
+source_mode="${2:-nav-alpha}"
 
 case "${variant}" in
   comma|openpilot)
@@ -84,14 +84,17 @@ if [[ "${variant}" == "sunny" ]]; then
 fi
 
 # [nav source] - START
+# Both Nav2Pilot branches live on cristianku/openpilot, so anyone can install them with
+# installer.comma.ai/cristianku/<branch>.
+nav_branch=""
 if [[ "${source_mode}" == "nav-alpha" || "${source_mode}" == "feature/nav-alpha" ]]; then
   if [[ "${variant}" == "sunny" ]]; then
-    openpilot_source_repo="https://github.com/cristianku/sunnypilot.git"
-    openpilot_source_branch="nav-alpha"
+    nav_branch="sunny-nav-alpha"
   else
-    openpilot_source_repo="https://github.com/cristianku/openpilot.git"
-    openpilot_source_branch="nav-alpha"
+    nav_branch="nav-alpha"
   fi
+  openpilot_source_repo="https://github.com/cristianku/openpilot.git"
+  openpilot_source_branch="${nav_branch}"
 fi
 # [nav source] - END
 
@@ -102,6 +105,19 @@ else
   openpilot_source_branch="${OPENPILOT_SOURCE_BRANCH:-${openpilot_source_branch}}"
 fi
 # [source] - END
+
+# The Nav2Pilot branch is first realigned to the latest upstream master; nothing is pushed when it
+# already is. Skipped when the source is overridden from the environment.
+if [[ -n "${nav_branch}" && -z "${OPENPILOT_SOURCE_REPO:-}" && -z "${OPENPILOT_SOURCE_BRANCH:-}" \
+      && "${SKIP_NAV_UPDATE:-false}" != "true" ]]; then
+  update_script="$(cd "${script_dir}" && pwd -P)/../../scripts/update_fork_branch.sh"
+  if ! bash "${update_script}" "${nav_branch}"; then
+    echo "ERROR: ${nav_branch} could not be realigned to upstream master (see above)." >&2
+    echo "Fix it with OP-apply-nav-alpha, or rerun with master (no Nav2Pilot)" >&2
+    echo "or with SKIP_NAV_UPDATE=true (uses ${nav_branch} as it is now)." >&2
+    exit 1
+  fi
+fi
 
 BRANCH="${branch}" \
   OPENPILOT_SOURCE_REPO="${openpilot_source_repo}" \

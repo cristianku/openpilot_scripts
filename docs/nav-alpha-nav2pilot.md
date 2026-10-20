@@ -3,12 +3,13 @@
 Le app Nav2Pilot (Android `nav2pilot`, iOS `nav2pilot-ios`) mandano al comma la destinazione con i waypoint e il
 token Mapbox dell'utente. Il Nav Alpha di comma (PR commaai/openpilot#39066) e' gia' nel master di commaai e di
 sunnypilot, ma conosce solo `setNavDestination(latitude, longitude)` e usa il proxy `/v1/nav` di comma, che rifiuta
-il JWT dell'utente. Per questo teniamo due branch `nav-alpha`:
+il JWT dell'utente. Per questo teniamo due branch Nav2Pilot, tutti e due su `cristianku/openpilot` (l'installer
+`installer.comma.ai/<utente>/<branch>` clona sempre `<utente>/openpilot`):
 
-| fork | clone locale | parte da | branch |
+| branch su cristianku/openpilot | clone locale | parte da | installazione |
 |---|---|---|---|
-| `cristianku/sunnypilot` | `CRISTIANKU/sunnypilot-nav-alpha` | `sunnypilot/sunnypilot:master` (remote `upstream`) | `nav-alpha` |
-| `cristianku/openpilot` | `CRISTIANKU/openpilot-nav-alpha` | `commaai/openpilot:master` (remote `commaai`) | `nav-alpha` |
+| `sunny-nav-alpha` | `CRISTIANKU/sunnypilot-nav-alpha` | `sunnypilot/sunnypilot:master` (remote `upstream`) | `installer.comma.ai/cristianku/sunny-nav-alpha` |
+| `nav-alpha` | `CRISTIANKU/openpilot-nav-alpha` | `commaai/openpilot:master` (remote `commaai`) | `installer.comma.ai/cristianku/nav-alpha` |
 
 Regola: ogni branch e' **master + un solo commit** con le nostre modifiche. Il codice nuovo vive in file nuovi; i
 file upstream si toccano il minimo indispensabile. Le modifiche sono salvate come patch in
@@ -101,16 +102,23 @@ openpilot/selfdrive/ui/mici/layouts/settings/developer.py   + NavDestinationButt
 Le due versioni del pacchetto devono restare uguali: `OP-apply-nav-alpha sunny sync-check` le confronta
 (differenze ammesse: solo le righe su sunnylink).
 
-## Riallineare al master (skill `OP-apply-nav-alpha`)
+## Riallineare al master
+
+Normalmente basta `OP-update-nav-alpha` / `OP-update-sunny-nav-alpha`
+(`scripts/update_fork_branch.sh nav-alpha|sunny-nav-alpha`): master fresco + patch salvata, push solo se il branch e'
+indietro. I setup PSA lo fanno da soli prima di clonare. Mai "Sync fork" di GitHub su `sunny-nav-alpha`:
+`cristianku/openpilot` e' un fork di commaai, unirebbe il master di comma dentro sunnypilot.
+
+Se lo script si ferma per conflitti, o se cambia il codice Nav2Pilot, si passa da `OP-apply-nav-alpha`:
 
 ```bash
 S=/Users/cristianku/GitHub/COMMA.AI/CRISTIANKU/openpilot_scripts/OP-apply-nav-alpha/scripts/apply_nav_alpha.sh
 $S sunny status      # cosa e' cambiato upstream, la patch si applica?
 $S sunny apply       # backup nav-alpha-prev, nav-alpha = master + patch, controlli, commit locale
-$S sunny push        # solo con l'ok di Cristian (--force-with-lease)
+$S sunny push        # solo con l'ok di Cristian: save-patch + update_fork_branch.sh
 ```
 
-Uguale con `comma`. Dopo il push la sorgente e' pronta per `OP-setup-psa-torque(-testing) <variante> nav-alpha`.
+Uguale con `comma`. Dopo il push la sorgente e' pronta per `OP-setup-psa-torque(-testing) <variante>`.
 
 ### Se ci sono conflitti
 

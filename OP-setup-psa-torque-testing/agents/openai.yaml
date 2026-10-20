@@ -1,4 +1,4 @@
 interface:
   display_name: "OP Setup PSA Torque Testing"
-  short_description: "comma|sunny; master|master=SHA|release|nav-alpha; help"
+  short_description: "comma|sunny; nav-alpha|master|master=SHA|release; help"
   default_prompt: "Usa $OP-setup-psa-torque-testing per preparare il workspace PSA torque di test nella variante richiesta."

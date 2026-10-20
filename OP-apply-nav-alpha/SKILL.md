@@ -1,6 +1,6 @@
 ---
 name: OP-apply-nav-alpha
-description: Rebuild Cristian's nav-alpha branches (cristianku/sunnypilot and cristianku/openpilot) from the latest upstream master and reapply ONLY the Nav2Pilot changes - setNavRoute with waypoints and setMapboxToken - stored as patches in openpilot_scripts. Use when sunnypilot/master or commaai/master moved and nav-alpha must be realigned for the Nav2Pilot apps, or to check whether it still applies. Pushes only with Cristian's explicit ok.
+description: Work on the Nav2Pilot patches (setNavRoute with waypoints and setMapboxToken) in Cristian's local nav-alpha clones - status, apply on a fresh upstream master, resolve conflicts, save the patch - and publish cristianku/openpilot nav-alpha (comma) or sunny-nav-alpha (sunnypilot). Use when OP-update-nav-alpha / OP-update-sunny-nav-alpha stop on conflicts, when upstream changed navd.py/tiles.py/rpc.py, or when the Nav2Pilot code itself must change. For a plain realignment use the OP-update skills. Pushes only with Cristian's explicit ok.
 ---
 
 # OP-apply-nav-alpha
@@ -14,10 +14,13 @@ and how to resolve conflicts: `openpilot_scripts/docs/nav-alpha-nav2pilot.md` (r
 
 | variant | clone | upstream remote | fork branch | patch |
 |---|---|---|---|---|
-| `sunny` | `CRISTIANKU/sunnypilot-nav-alpha` | `upstream` = sunnypilot/sunnypilot | `origin` = cristianku/sunnypilot `nav-alpha` | `patches/sunnypilot.patch` |
-| `comma` | `CRISTIANKU/openpilot-nav-alpha` | `commaai` = commaai/openpilot | `origin` = cristianku/openpilot `nav-alpha` | `patches/openpilot.patch` |
+| `sunny` | `CRISTIANKU/sunnypilot-nav-alpha` | `upstream` = sunnypilot/sunnypilot | cristianku/openpilot `sunny-nav-alpha` | `patches/sunnypilot.patch` |
+| `comma` | `CRISTIANKU/openpilot-nav-alpha` | `commaai` = commaai/openpilot | cristianku/openpilot `nav-alpha` | `patches/openpilot.patch` |
 
-Overrides: `NAV_REPO` (clone folder), `NAV_BRANCH` (default `nav-alpha`).
+Both published branches live on cristianku/openpilot: `installer.comma.ai/<user>/<branch>` always clones
+`<user>/openpilot`, so that is where people can install them from. The local branch in both clones is `nav-alpha`.
+
+Overrides: `NAV_REPO` (clone folder), `NAV_BRANCH` (local branch, default `nav-alpha`).
 
 ## Workflow
 
@@ -36,7 +39,8 @@ Script by absolute path: `scripts/apply_nav_alpha.sh <sunny|comma> <command>`. W
    `sync-check` so sunny and comma Nav2Pilot packages stay identical (only the sunnylink lines may differ).
    Mirror the same code change in the other fork's patch.
 5. Report to Cristian: master SHA, upstream changes reviewed, conflicts and how they were solved, check results.
-6. `push` (`--force-with-lease` on `origin nav-alpha`) **only after Cristian's explicit ok**.
+6. `push` **only after Cristian's explicit ok**: runs `save-patch`, then publishes upstream master + the saved patch
+   with `openpilot_scripts/scripts/update_fork_branch.sh` (the same script the OP-update skills and the setups use).
 
 ## Checks (`check`, also run by `commit` and `push`)
 
@@ -52,4 +56,4 @@ Unit tests are not run here (they need the openpilot build env): use the Docker 
 
 - Never pushes without Cristian's ok; never touches upstream remotes; never deploys to the device.
 - The old branch stays as local `nav-alpha-prev` until the next `apply`.
-- `nav-alpha` is a source branch for `OP-setup-psa-torque(-testing) <variant> nav-alpha`, never a PSA target.
+- `nav-alpha` / `sunny-nav-alpha` are the default sources of `OP-setup-psa-torque(-testing)`, never a PSA target.

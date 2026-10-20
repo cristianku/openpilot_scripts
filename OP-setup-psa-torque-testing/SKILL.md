@@ -1,6 +1,6 @@
 ---
 name: OP-setup-psa-torque-testing
-description: Use when preparing Cristian's Peugeot 3008 testing workspace from the current upstream master, an exact commit in its history, or the latest GitHub Release, for Sunnypilot, comma.ai, or nav-alpha from Cristian's navigation branch.
+description: Use when preparing Cristian's Peugeot 3008 testing workspace for Sunnypilot or comma.ai, by default from Cristian's Nav2Pilot branch (nav-alpha / sunny-nav-alpha, realigned to upstream master first), or from upstream master, an exact commit in its history, or the latest GitHub Release.
 ---
 
 # OP Setup PSA Torque Testing
@@ -11,7 +11,7 @@ Use the bundled Peugeot 3008 testing setup workflow.
 
 - First parameter: `comma` / `openpilot` uses comma.ai and branch `psa-torque-testing`; `sunny` / `sunnypilot` uses Sunnypilot and branch `psa-torque-sunny-testing`. It defaults to `comma`.
 <!-- [pinned source] - START -->
-- Second parameter: `master` uses official upstream master; `nav-alpha` uses the navigation branch from Cristian's fork; `master=<commit>` uses that exact 7-40 character hexadecimal commit after verifying it belongs to the selected source branch history; `release` resolves the latest published GitHub Release tag. It defaults to `master`.
+- Second parameter: `nav-alpha` (default) uses Cristian's Nav2Pilot branch for the variant (upstream master + Nav2Pilot, on cristianku/openpilot); `master` uses official upstream master without Nav2Pilot; `master=<commit>` uses that exact 7-40 character hexadecimal commit after verifying it belongs to the selected source branch history; `release` resolves the latest published GitHub Release tag. It defaults to `nav-alpha`.
 <!-- [pinned source] - END -->
 
 Examples: `scripts/setup_psa_torque.sh sunny`, `scripts/setup_psa_torque.sh sunny master=de197ba6`, `scripts/setup_psa_torque.sh sunny release`, and `scripts/setup_psa_torque.sh openpilot master`. Use the separate `OP-setup-psa-torque` skill for stable branches.
@@ -29,13 +29,15 @@ For a request such as `$OP-setup-psa-torque-testing help`, or a request only ask
 
 The first parameter stays `comma` or `sunny`. The second parameter selects the source:
 
-- `sunny master` (or just `sunny`): official `sunnypilot/sunnypilot:master`.
-- `sunny nav-alpha`: `cristianku/sunnypilot:nav-alpha`.
+- `sunny master`: official `sunnypilot/sunnypilot:master`.
+- `sunny nav-alpha` (or just `sunny`): `cristianku/openpilot:sunny-nav-alpha` (sunnypilot master + Nav2Pilot).
 - `sunny feature/nav-alpha`: old name, same source (`nav-alpha`).
-- `comma master` (or just `comma`): official `commaai/openpilot:master`.
-- `comma nav-alpha`: `cristianku/openpilot:nav-alpha`.
+- `comma master`: official `commaai/openpilot:master`.
+- `comma nav-alpha` (or just `comma`): `cristianku/openpilot:nav-alpha` (comma master + Nav2Pilot).
 
 `nav-alpha` works with both `comma` and `sunny`, including aliases `openpilot` and `sunnypilot`. `feature/nav-alpha` is accepted for Sunny only, as the old name of `nav-alpha`. Keep the same target branch, local folder and submodule rules as the selected variant: `psa-torque-testing` for comma, `psa-torque-sunny-testing` for Sunny, with custom neural data only for Sunny. `nav-alpha` is a source branch, never the publication target. Only committed changes published to the selected remote source are included; uncommitted or unpushed local changes are not copied. Do not use `sunny-nav` as the first parameter.
+
+With `nav-alpha` the wrapper first realigns the Nav2Pilot branch to the latest upstream master with `openpilot_scripts/scripts/update_fork_branch.sh` (the `OP-update-nav-alpha` / `OP-update-sunny-nav-alpha` skills): it pushes only when the branch is behind. If the Nav2Pilot patch no longer applies the setup stops: resolve with `OP-apply-nav-alpha`, or rerun with `master` (no Nav2Pilot) or `SKIP_NAV_UPDATE=true` (uses the branch as it is).
 
 Example requests: `$OP-setup-psa-torque-testing comma nav-alpha` or `$OP-setup-psa-torque-testing sunny nav-alpha`. Pass both positional parameters to the wrapper: `bash scripts/setup_psa_torque.sh comma nav-alpha` or `bash scripts/setup_psa_torque.sh sunny nav-alpha`.
 <!-- [nav source] - END -->

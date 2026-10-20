@@ -87,11 +87,22 @@ Examples: `$OP-news ultime 24 ore`, `$OP-news solo sunnypilot, modelli e NNLC`. 
 
 ## OP-apply-nav-alpha (Nav2Pilot)
 
-Ricrea `nav-alpha` di `cristianku/sunnypilot` o `cristianku/openpilot` dall'ultimo master upstream e riapplica solo le modifiche Nav2Pilot (`setNavRoute` con waypoint, `setMapboxToken`), salvate come patch in `OP-apply-nav-alpha/patches/`. Un solo commit sopra master, backup locale `nav-alpha-prev`, push solo con l'ok di Cristian. Dettagli e risoluzione conflitti: [nav-alpha-nav2pilot.md](nav-alpha-nav2pilot.md).
+Lavora sulle patch Nav2Pilot nei cloni locali (conflitti, modifiche al codice) e pubblica `cristianku/openpilot` `nav-alpha` (comma) o `sunny-nav-alpha` (sunnypilot) dall'ultimo master upstream, riapplicando solo le modifiche Nav2Pilot (`setNavRoute` con waypoint, `setMapboxToken`), salvate come patch in `OP-apply-nav-alpha/patches/`. Un solo commit sopra master, backup locale `nav-alpha-prev`, push solo con l'ok di Cristian. Dettagli e risoluzione conflitti: [nav-alpha-nav2pilot.md](nav-alpha-nav2pilot.md).
 
 ```bash
 ./OP-apply-nav-alpha/scripts/apply_nav_alpha.sh sunny status   # oppure: comma
 ./OP-apply-nav-alpha/scripts/apply_nav_alpha.sh sunny apply
+```
+
+## OP-update-nav-alpha, OP-update-sunny-nav-alpha, OP-update-distilled
+
+Un comando per riallineare al master upstream un branch di `cristianku/openpilot` e pubblicarlo (push solo se e' indietro):
+`nav-alpha` (comma + Nav2Pilot), `sunny-nav-alpha` (sunnypilot + Nav2Pilot), `distilled` (sunnypilot + modelli openpilot.distill
+nel menu Models). Si installano con `installer.comma.ai/cristianku/<branch>`. Se la patch non si applica piu' si ferma
+senza pubblicare. I setup PSA chiamano lo stesso script per il loro nav-alpha.
+
+```bash
+./scripts/update_fork_branch.sh sunny-nav-alpha   # oppure: nav-alpha, distilled; NO_PUSH=true per provare
 ```
 
 ## Common overrides
