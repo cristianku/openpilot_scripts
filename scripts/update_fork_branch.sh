@@ -196,8 +196,6 @@ ${TITLE}
 
 Rebuilt by openpilot_scripts/scripts/update_fork_branch.sh on ${SOURCE_NAME} master
 ${master:0:10} plus $(basename "${PATCH_FILE}").
-
-Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
 EOF
 commit="$(g commit-tree "${tree}" -p "${master}" -F "${message_file}")"
 echo "== commit ${commit:0:10} (prima su GitHub: ${current:-nessuno})"

@@ -280,8 +280,6 @@ nav alpha: Nav2Pilot setNavRoute waypoints and setMapboxToken
 Reapplied with OP-apply-nav-alpha on ${UPSTREAM_REF} ${master}.
 New code in ${NAV_PACKAGE}/; upstream touches: one import in athenad,
 the navd module in process_config, the MapboxToken param key.
-
-Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
 EOF
   g commit -q -F "${message_file}"
   rm -f "${message_file}"
