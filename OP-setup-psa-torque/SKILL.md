@@ -24,7 +24,7 @@ Examples: `scripts/setup_psa_torque.sh sunny`, `scripts/setup_psa_torque.sh sunn
 - `comma master` (or just `comma`): official `commaai/openpilot:master`.
 - `comma nav-alpha`: `cristianku/openpilot:nav-alpha`.
 - `sunny master` (or just `sunny`): official `sunnypilot/sunnypilot:master`.
-- `sunny nav-alpha` (or `sunny feature/nav-alpha`): `cristianku/sunnypilot:feature/nav-alpha`.
+- `sunny nav-alpha` (or the old name `sunny feature/nav-alpha`): `cristianku/sunnypilot:nav-alpha`.
 
 Aliases: `openpilot` = `comma`; `sunnypilot` = `sunny`. The source selection keeps the mapped target branch, local folder and submodule rules: `psa-torque` for comma, `psa-torque-sunny` for Sunny. `nav-alpha` is a source branch, never the publication target. Only committed changes published to the selected remote source are included; uncommitted or unpushed local changes are not copied.
 

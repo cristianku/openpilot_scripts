@@ -11,10 +11,10 @@ Uso: setup_psa_torque.sh [comma|sunny] [master|master=<commit>|release|nav-alpha
 Primo parametro: comma oppure sunny (predefinito: comma).
 Secondo parametro: master (predefinito) oppure nav-alpha.
   sunny master     -> sunnypilot/sunnypilot:master
-  sunny nav-alpha  -> cristianku/sunnypilot:feature/nav-alpha
+  sunny nav-alpha  -> cristianku/sunnypilot:nav-alpha
   comma master     -> commaai/openpilot:master
   comma nav-alpha  -> cristianku/openpilot:nav-alpha
-Anche feature/nav-alpha e' accettato come secondo parametro per sunny.
+Anche feature/nav-alpha e' accettato come secondo parametro per sunny (vecchio nome, usa nav-alpha).
 Destinazione Sunny: cristianku/openpilot:psa-torque-sunny-testing
 Destinazione comma: cristianku/openpilot:psa-torque-testing
 Alias: openpilot = comma; sunnypilot = sunny.
@@ -129,7 +129,7 @@ fi
 if [[ "${source_mode}" == "nav-alpha" || "${source_mode}" == "feature/nav-alpha" ]]; then
   if [[ "${variant}" == "sunny" ]]; then
     openpilot_source_repo="https://github.com/cristianku/sunnypilot.git"
-    openpilot_source_branch="feature/nav-alpha"
+    openpilot_source_branch="nav-alpha"
   else
     openpilot_source_repo="https://github.com/cristianku/openpilot.git"
     openpilot_source_branch="nav-alpha"

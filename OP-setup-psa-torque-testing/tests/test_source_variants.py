@@ -69,8 +69,8 @@ PY
         (['openpilot', 'nav-alpha'], 'cristianku/openpilot', 'nav-alpha', False),
         (['sunny'], 'sunnypilot/sunnypilot', 'master', True),
         (['sunny', 'master'], 'sunnypilot/sunnypilot', 'master', True),
-        (['sunny', 'nav-alpha'], 'cristianku/sunnypilot', 'feature/nav-alpha', True),
-        (['sunny', 'feature/nav-alpha'], 'cristianku/sunnypilot', 'feature/nav-alpha', True),
+        (['sunny', 'nav-alpha'], 'cristianku/sunnypilot', 'nav-alpha', True),
+        (['sunny', 'feature/nav-alpha'], 'cristianku/sunnypilot', 'nav-alpha', True),
       ):
         with self.subTest(skill=root.name, args=args):
           actual = self.capture(root, wrapper, common, args)

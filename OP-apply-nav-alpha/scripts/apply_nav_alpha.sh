@@ -350,7 +350,8 @@ cmd_push() {
   fi
   cmd_check
   echo "== push --force-with-lease di ${BRANCH} su ${FORK_REMOTE}"
-  g push --force-with-lease="${BRANCH}" "${FORK_REMOTE}" "${BRANCH}"
+  # LFS lives on comma's/sunnypilot's own storage (.lfsconfig): nothing to upload from the fork, as in the setup skills
+  GIT_LFS_SKIP_PUSH=1 g push --force-with-lease="${BRANCH}" "${FORK_REMOTE}" "${BRANCH}"
 }
 
 if [[ "${COMMAND}" == "status" ]]; then

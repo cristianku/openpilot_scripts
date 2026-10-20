@@ -87,7 +87,7 @@ fi
 if [[ "${source_mode}" == "nav-alpha" || "${source_mode}" == "feature/nav-alpha" ]]; then
   if [[ "${variant}" == "sunny" ]]; then
     openpilot_source_repo="https://github.com/cristianku/sunnypilot.git"
-    openpilot_source_branch="feature/nav-alpha"
+    openpilot_source_branch="nav-alpha"
   else
     openpilot_source_repo="https://github.com/cristianku/openpilot.git"
     openpilot_source_branch="nav-alpha"

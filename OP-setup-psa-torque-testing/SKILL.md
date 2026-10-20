@@ -30,12 +30,12 @@ For a request such as `$OP-setup-psa-torque-testing help`, or a request only ask
 The first parameter stays `comma` or `sunny`. The second parameter selects the source:
 
 - `sunny master` (or just `sunny`): official `sunnypilot/sunnypilot:master`.
-- `sunny nav-alpha`: `cristianku/sunnypilot:feature/nav-alpha`.
-- `sunny feature/nav-alpha`: equivalent full branch name.
+- `sunny nav-alpha`: `cristianku/sunnypilot:nav-alpha`.
+- `sunny feature/nav-alpha`: old name, same source (`nav-alpha`).
 - `comma master` (or just `comma`): official `commaai/openpilot:master`.
 - `comma nav-alpha`: `cristianku/openpilot:nav-alpha`.
 
-`nav-alpha` works with both `comma` and `sunny`, including aliases `openpilot` and `sunnypilot`. `feature/nav-alpha` is the full source branch name for Sunny only. Keep the same target branch, local folder and submodule rules as the selected variant: `psa-torque-testing` for comma, `psa-torque-sunny-testing` for Sunny, with custom neural data only for Sunny. `nav-alpha` is a source branch, never the publication target. Only committed changes published to the selected remote source are included; uncommitted or unpushed local changes are not copied. Do not use `sunny-nav` as the first parameter.
+`nav-alpha` works with both `comma` and `sunny`, including aliases `openpilot` and `sunnypilot`. `feature/nav-alpha` is accepted for Sunny only, as the old name of `nav-alpha`. Keep the same target branch, local folder and submodule rules as the selected variant: `psa-torque-testing` for comma, `psa-torque-sunny-testing` for Sunny, with custom neural data only for Sunny. `nav-alpha` is a source branch, never the publication target. Only committed changes published to the selected remote source are included; uncommitted or unpushed local changes are not copied. Do not use `sunny-nav` as the first parameter.
 
 Example requests: `$OP-setup-psa-torque-testing comma nav-alpha` or `$OP-setup-psa-torque-testing sunny nav-alpha`. Pass both positional parameters to the wrapper: `bash scripts/setup_psa_torque.sh comma nav-alpha` or `bash scripts/setup_psa_torque.sh sunny nav-alpha`.
 <!-- [nav source] - END -->
