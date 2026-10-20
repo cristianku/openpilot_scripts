@@ -55,6 +55,11 @@ COMMIT_MESSAGE="${COMMIT_MESSAGE:-Update Peugeot 3008${title_suffix} repository 
 
 NEURAL_NETWORK_DATA_SHA=""
 
+# Read before main() changes directory.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+EXTRA_MODEL_CATALOG_PATCH="${SCRIPT_DIR}/../patches/sunnypilot-extra-model-catalog.patch"
+SKIP_EXTRA_MODEL_CATALOG="${SKIP_EXTRA_MODEL_CATALOG:-false}"   # true: leave the sunnypilot Models menu as upstream
+
 ensure_remote_branch() {
   local repo_url="$1"
   local branch="$2"
@@ -244,6 +249,43 @@ enable_psa_torqued_learning() {
   echo "Enabled PSA torque-param learning (added 'psa' to torqued ALLOWED_CARS)"
 }
 
+enable_extra_model_catalog() {
+  # sunnypilot only: the Models menu on the comma, and sunnylink, also list the openpilot.distill
+  # models published on Hugging Face (see the header of patches/sunnypilot-extra-model-catalog.patch).
+  # comma openpilot has no Models menu: nothing to do. The clone is recreated every run, so the patch
+  # is applied every time; when sunnypilot changes those files it no longer applies and the setup
+  # stops here: update the patch, or run with SKIP_EXTRA_MODEL_CATALOG=true.
+  local dest="$1"
+  if [[ "${SKIP_EXTRA_MODEL_CATALOG}" == "true" ]]; then
+    echo "SKIP_EXTRA_MODEL_CATALOG set: Models menu left as upstream"
+    return
+  fi
+
+  local fetcher_rel
+  # "|| true": grep finds nothing on comma openpilot, and pipefail would stop the whole setup.
+  fetcher_rel="$(git -C "${dest}" ls-files | grep -E '(^|/)sunnypilot/models/fetcher\.py$' | head -n1 || true)"
+  if [[ -z "${fetcher_rel}" ]]; then
+    echo "No sunnypilot Models menu in this source: extra model catalog not needed"
+    return
+  fi
+
+  local extra_rel
+  extra_rel="$(git -C "${dest}" ls-files | grep -E '(^|/)sunnypilot/models/extra_catalog\.py$' | head -n1 || true)"
+  if [[ -n "${extra_rel}" ]]; then
+    echo "Extra model catalog already in the source; nothing to do"
+    return
+  fi
+
+  if ! git -C "${dest}" apply --check "${EXTRA_MODEL_CATALOG_PATCH}"; then
+    echo "ERROR: ${EXTRA_MODEL_CATALOG_PATCH} no longer applies to ${fetcher_rel}:" >&2
+    echo "sunnypilot changed its Models code. Update the patch, or rerun with SKIP_EXTRA_MODEL_CATALOG=true" >&2
+    exit 1
+  fi
+
+  git -C "${dest}" apply --index "${EXTRA_MODEL_CATALOG_PATCH}"
+  echo "Applied the extra model catalog (Models menu + sunnylink list the openpilot.distill models)"
+}
+
 commit_and_push() {
   local dest="$1"
   local branch="$2"
@@ -285,6 +327,7 @@ main() {
   cd "${OPENPILOT_DIR}"
 
   enable_psa_torqued_learning "."
+  enable_extra_model_catalog "."
   set_opendbc_pointer "." "${OPENDBC_REPO}" "${BRANCH}" "${OPENDBC_SOURCE_REPO}" "${OPENDBC_SOURCE_BRANCH}"
   set_neural_network_data_pointer "."
   commit_and_push "." "${BRANCH}" "${COMMIT_MESSAGE}" "${expected_remote_sha}"

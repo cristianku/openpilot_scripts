@@ -47,6 +47,8 @@ The wrapper recreates the mapped local openpilot folder every time. For `sunny` 
 <!-- [skill] - START -->
 After cloning the selected upstream source, the wrapper edits `selfdrive/locationd/torqued.py` to add `'psa'` to the `ALLOWED_CARS` gate, so torqued (live `latAccelFactor`/friction learning) runs for the Peugeot 3008. The upstream source ships this list without PSA and the clone is recreated every run, so this patch is reapplied each time. The edit is idempotent (skipped if `psa` is already present) and is staged so it lands in the pushed branch commit.
 
+Sunny variant only: the wrapper also applies `patches/sunnypilot-extra-model-catalog.patch`, so the sunnypilot Models menu on the comma (and the sunnylink model list) also shows Cristian's openpilot.distill models published on Hugging Face (`cristianku/openpilot-distill-models`, folder "Distill cristianku"). It adds `openpilot/sunnypilot/models/extra_catalog.py`, merges that catalog into the qcom one in `fetcher.py`, and leaves only the chestnut url in `ModelManager_ActiveJson` so sunnylink reads the small models from the device cache. comma openpilot has no Models menu, so nothing is applied there. If sunnypilot changes `openpilot/sunnypilot/models` and the patch no longer applies, the setup stops with an error: update the patch, or rerun with `SKIP_EXTRA_MODEL_CATALOG=true`.
+
 For both variants, clone the configured upstream source directly, recreate the custom stable branch from its exact commit, update `.gitmodules` to `cristianku/opendbc`, set the `opendbc_repo` gitlink to Cristian's matching stable opendbc branch commit, and push with `--force-with-lease`. Default to master; `nav-alpha` selects Cristian's navigation branch for the variant; in release mode query GitHub's latest-release endpoint, verify the returned tag, and clone that tag. Do not copy opendbc files into openpilot.
 <!-- [skill] - END -->
 
@@ -58,6 +60,6 @@ For both variants, clone the configured upstream source directly, recreate the c
 - Keep `sunnypilot/neural_network_data` as a submodule pointer (`160000 commit`) and update it only for the `sunny` variant.
 - Always use neural-network-data branch `master` for both Sunny stable and Sunny testing; do not create a separate testing branch.
 - Stop and report an error if GitHub does not return a release tag or if that tag is unavailable from the selected upstream.
-- Stage only `.gitmodules`, `opendbc_repo`, `selfdrive/locationd/torqued.py` (the PSA `ALLOWED_CARS` patch), and `sunnypilot/neural_network_data` when applicable.
+- Stage only `.gitmodules`, `opendbc_repo`, `selfdrive/locationd/torqued.py` (the PSA `ALLOWED_CARS` patch), and `sunnypilot/neural_network_data` and the extra model catalog files (`sunnypilot/models/extra_catalog.py`, `fetcher.py`, its test) when applicable.
 - Override the neural data source only with `NEURAL_NETWORK_DATA_REPO` or `NEURAL_NETWORK_DATA_BRANCH` when explicitly required.
 - Stop and report the error if cloning, validation, or a protected push fails.
