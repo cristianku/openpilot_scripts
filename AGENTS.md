@@ -47,6 +47,14 @@ When intent is uncertain, stop after read-only analysis and ask Cristian before 
 2. Refresh the openpilot testing checkout/pointer → `setup-psa-torque-testing <variant>`.
 3. When validated, promote testing → stable → `OP-merge-psa-torque-testing` / `OP-merge-psa-torque-sunny-testing` (runs PSA safety + interface tests and pushes stable with a lease). Cristian invokes openpilot setup separately.
 
+<!-- [community publication] - START -->
+## Annunci alla community Sunnypilot — regola obbligatoria
+
+Quando Cristian autorizza la pubblicazione di una funzionalità, modello o release sulla community Sunnypilot, l'annuncio deve indicare **separatamente** il repository/branch **sorgente** (di norma `cristianku/sunnypilot:<branch>` per le modifiche a Sunnypilot) e quello **installabile** (`cristianku/openpilot:<branch>`, con l'eventuale URL dell'installer verificato). Citare `sunnypilot/sunnypilot` come upstream quando appropriato. Non indicare una branch o URL di installazione finché non esistono davvero. Verificare che distribuzione e sorgente coincidano; segnalare stato e compatibilità. I dettagli, il template inglese e il caso `distilled` sono in [docs/community-publication.md](docs/community-publication.md).
+
+Le branch generate in `cristianku/openpilot` non sono il posto in cui conservare questa regola, perché gli script possono sovrascriverle. Un annuncio resta soggetto ad autorizzazione esplicita: questa istruzione non autorizza di per sé pubblicazioni o deploy.
+<!-- [community publication] - END -->
+
 ## Docs index
 
 - [docs/repos-and-workspace.md](docs/repos-and-workspace.md) — the four repos, remotes, upstream sources, PSA file layout.
