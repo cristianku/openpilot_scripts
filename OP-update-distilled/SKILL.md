@@ -20,4 +20,10 @@ Run: `bash /Users/cristianku/GitHub/COMMA.AI/CRISTIANKU/openpilot_scripts/script
 - comma openpilot has no Models menu: there is no comma version of this branch.
 - Never use GitHub "Sync fork" on this branch (it would merge comma master into sunnypilot).
 
+<!-- [community publication] - START -->
+## Community publication note
+
+When reporting or announcing an **actually published** `distilled` version, identify both the verified maintained **source** branch in `cristianku/sunnypilot` and the **installation** branch in `cristianku/openpilot`, plus the installer URL *only when tested and live*. The desired source-first, upstream-merge-then-mirror workflow is documented as a **proposal** in [../docs/community-publication.md](../docs/community-publication.md); the current script still uses the extra-catalog patch. Do not claim that the desired two-stage workflow is already implemented or publish an installer URL for a missing branch.
+<!-- [community publication] - END -->
+
 Report: the published commit SHA (or "già aggiornato") and the sunnypilot master it is based on.
