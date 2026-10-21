@@ -5,8 +5,7 @@
 # Uso: update_fork_branch.sh <nav-alpha|sunny-nav-alpha|distilled>
 #   nav-alpha        commaai/openpilot master + Nav2Pilot (OP-apply-nav-alpha/patches/openpilot.patch)
 #   sunny-nav-alpha  sunnypilot/sunnypilot master + Nav2Pilot (OP-apply-nav-alpha/patches/sunnypilot.patch)
-#   distilled        sunnypilot/sunnypilot master + i modelli openpilot.distill nel menu Models
-#                    (OP-setup-psa-torque-testing/patches/sunnypilot-extra-model-catalog.patch)
+#   distilled        sync cristianku/sunnypilot:distilled with upstream master, then mirror to cristianku/openpilot:distilled
 #
 # Se il branch su GitHub e' gia' il master attuale piu' la stessa patch non fa niente.
 # Se la patch non si applica piu' (conflitti) si ferma con exit 2 e non pubblica niente: per nav-alpha e
@@ -45,6 +44,13 @@ if [[ $# -ne 1 ]]; then
 fi
 TARGET="$1"
 
+# [distill sync] - START
+# Distill is source-first: do not rebuild its code from a duplicated patch.
+if [[ "${TARGET}" == "distilled" ]]; then
+  exec bash "${OPENPILOT_SCRIPTS}/scripts/update_distilled.sh"
+fi
+# [distill sync] - END
+
 NAV_BASE_FILE=""
 if [[ "${TARGET}" == "nav-alpha" ]]; then
   SOURCE_NAME="commaai"
@@ -58,11 +64,6 @@ elif [[ "${TARGET}" == "sunny-nav-alpha" ]]; then
   PATCH_FILE="${OPENPILOT_SCRIPTS}/OP-apply-nav-alpha/patches/sunnypilot.patch"
   NAV_BASE_FILE="${OPENPILOT_SCRIPTS}/OP-apply-nav-alpha/patches/sunnypilot.base"
   TITLE="nav alpha: Nav2Pilot setNavRoute waypoints and setMapboxToken"
-elif [[ "${TARGET}" == "distilled" ]]; then
-  SOURCE_NAME="sunnypilot"
-  SOURCE_REPO="https://github.com/sunnypilot/sunnypilot.git"
-  PATCH_FILE="${OPENPILOT_SCRIPTS}/OP-setup-psa-torque-testing/patches/sunnypilot-extra-model-catalog.patch"
-  TITLE="distilled: openpilot.distill models in the Models menu"
 else
   usage
 fi
