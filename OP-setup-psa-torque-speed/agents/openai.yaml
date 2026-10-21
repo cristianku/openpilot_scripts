@@ -1,0 +1,4 @@
+interface:
+  display_name: "OP Setup PSA Torque Speed"
+  short_description: "sunny (obbligatorio); nav-alpha|master|master=SHA|release; help"
+  default_prompt: "Usa $OP-setup-psa-torque-speed per pubblicare il branch psa-torque-sunny-speed nella variante sunny."
