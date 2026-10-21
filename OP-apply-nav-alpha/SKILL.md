@@ -1,6 +1,6 @@
 ---
 name: OP-apply-nav-alpha
-description: Work on the Nav2Pilot patches (setNavRoute with waypoints and setMapboxToken) in Cristian's local nav-alpha clones - status, apply on a fresh upstream master, resolve conflicts, save the patch - and publish cristianku/openpilot nav-alpha (comma) or sunny-nav-alpha (sunnypilot). Use when OP-update-nav-alpha / OP-update-sunny-nav-alpha stop on conflicts, when upstream changed navd.py/tiles.py/rpc.py, or when the Nav2Pilot code itself must change. For a plain realignment use the OP-update skills. Pushes only with Cristian's explicit ok.
+description: Work on the Nav2Pilot patches (setNavRoute with waypoints and setMapboxToken) in Cristian's local nav-alpha clones - status, apply on a fresh upstream master, resolve conflicts, save the patch - and publish cristianku/openpilot nav-alpha (comma) or sunny-nav-alpha (sunnypilot). Use when OP-update-nav-alpha / OP-update-sunny-nav-alpha stop on conflicts, when upstream changed navd.py/tiles.py/rpc.py, or when the Nav2Pilot code itself must change. For a plain realignment use the OP-update skills. Runs everything automatically, push included, without asking.
 ---
 
 # OP-apply-nav-alpha
@@ -26,21 +26,29 @@ Overrides: `NAV_REPO` (clone folder), `NAV_BRANCH` (local branch, default `nav-a
 
 Script by absolute path: `scripts/apply_nav_alpha.sh <sunny|comma> <command>`. With no variant given, do both.
 
+**Everything is automatic: never ask Cristian for confirmation at any step, push included.** Stop only if the
+checks fail or a conflict cannot be resolved with the doc, and then report why.
+
 1. `status` — fetches master, lists upstream commits since the patch base that touch the patched files or the
    watched upstream files (`navd.py`, `tiles.py`, `rpc.py`), and says whether the patch applies cleanly. Read-only.
 2. If upstream changed `openpilot/selfdrive/navigation/navd.py`: review it against our subclass
    (`calculate_route` is a copy of upstream's with waypoints added; see the doc). A change there can apply cleanly
    and still be lost in our override.
 3. `apply` — refuses a dirty tree, saves the old branch as local `nav-alpha-prev`, recreates `nav-alpha` from
-   master, `git apply --3way` the patch, runs the checks and makes the local commit. **Does not push.**
+   master, `git apply --3way` the patch, runs the checks and makes the local commit. Skip it when `status` says
+   master has not moved and the fork branch is not behind (nothing to do).
    - exit 2 = conflicts: resolve them using the doc (keep upstream's new code, re-add only our lines),
      `git add` the files, then `scripts/apply_nav_alpha.sh <variant> commit` (re-runs the checks first).
 4. If the resolution or a navd review changed our code: `save-patch` to store the new patch (+ base), and
    `sync-check` so sunny and comma Nav2Pilot packages stay identical (only the sunnylink lines may differ).
    Mirror the same code change in the other fork's patch.
-5. Report to Cristian: master SHA, upstream changes reviewed, conflicts and how they were solved, check results.
-6. `push` **only after Cristian's explicit ok**: runs `save-patch`, then publishes upstream master + the saved patch
-   with `openpilot_scripts/scripts/update_fork_branch.sh` (the same script the OP-update skills and the setups use).
+5. `push` right away, without asking: runs `save-patch`, then publishes upstream master + the saved patch with
+   `openpilot_scripts/scripts/update_fork_branch.sh` (the same script the OP-update skills and the setups use).
+   That script makes its own commit, so afterwards align the local clone: `git fetch origin <fork branch>` and
+   `git reset --hard origin/<fork branch>` on `nav-alpha` (otherwise VS Code shows pending sync changes).
+   Never use VS Code "Sync" / GitHub "Sync fork" on these branches.
+6. Report to Cristian at the end: master SHA, upstream changes reviewed, conflicts and how they were solved, check
+   results, what was pushed.
 
 ## Checks (`check`, also run by `commit` and `push`)
 
@@ -54,6 +62,6 @@ Unit tests are not run here (they need the openpilot build env): use the Docker 
 
 ## Safety
 
-- Never pushes without Cristian's ok; never touches upstream remotes; never deploys to the device.
+- Pushes automatically once the checks pass; never touches upstream remotes; never deploys to the device.
 - The old branch stays as local `nav-alpha-prev` until the next `apply`.
 - `nav-alpha` / `sunny-nav-alpha` are the default sources of `OP-setup-psa-torque(-testing)`, never a PSA target.
