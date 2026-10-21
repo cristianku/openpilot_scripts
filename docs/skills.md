@@ -105,6 +105,12 @@ senza pubblicare. I setup PSA chiamano lo stesso script per il loro nav-alpha.
 ./scripts/update_fork_branch.sh sunny-nav-alpha   # oppure: nav-alpha, distilled; NO_PUSH=true per provare
 ```
 
+<!-- [community publication] - START -->
+## Community posts / release notes
+
+When a SunnyPilot-based feature is announced publicly, the announcement must name its **actual maintained source branch** and the **separate installable branch** in `cristianku/openpilot`; verify both are published and correspond. Follow [docs/community-publication.md](community-publication.md) for the template, validation and Distill-specific status notes. This does not change or execute any skill.
+<!-- [community publication] - END -->
+
 ## Common overrides
 
 `GITHUB_USER`, `WORKSPACE_ROOT`, `OPENPILOT_DIR`, `OPENPILOT_REPO`, `OPENPILOT_SOURCE_REPO`, `OPENPILOT_SOURCE_BRANCH`, `OPENDBC_REPO`, `OPENDBC_SOURCE_REPO`, `OPENDBC_SOURCE_BRANCH`, `NEURAL_NETWORK_DATA_REPO`, `NEURAL_NETWORK_DATA_BRANCH`, `COMMIT_MESSAGE`. Merge skills add `MERGE_DIR`, `MERGE_TEST_COMMAND`, and `SKIP_TESTS=true` (explicitly authorized emergency only).
