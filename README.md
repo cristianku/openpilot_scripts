@@ -2,6 +2,12 @@
 
 These scripts prepare Cristian's Peugeot 3008 openpilot workspaces and update only the custom `opendbc_repo` integration.
 
+<!-- [community publication] - START -->
+## Sunnypilot community announcements
+
+When sharing a feature or release with the Sunnypilot community, always provide **both** the verified development source (usually `cristianku/sunnypilot:<branch>`) and the separate installable branch (`cristianku/openpilot:<branch>`), as well as the upstream attribution, availability and limitations. See [community publication rules and template](docs/community-publication.md). Do not claim an uncreated branch is installable.
+<!-- [community publication] - END -->
+
 ## Layout
 
 - `setup-psa-torque/`: creates or refreshes the stable Peugeot branches.
