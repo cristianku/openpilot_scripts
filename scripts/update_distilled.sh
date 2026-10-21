@@ -5,7 +5,6 @@
 # Never merge commaai/openpilot into the Sunnypilot source.
 set -euo pipefail
 
-SCRIPTS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 SOURCE_REPO="${DISTILLED_SOURCE_REPO:-https://github.com/cristianku/sunnypilot.git}"
 UPSTREAM_REPO="${DISTILLED_UPSTREAM_REPO:-https://github.com/sunnypilot/sunnypilot.git}"
 TARGET_REPO="${TARGET_REPO:-https://github.com/cristianku/openpilot.git}"
@@ -37,14 +36,17 @@ if ! git -C "${checkout}" -c user.name="cristianku automation" -c user.email="cr
   echo "ERROR: conflicts merging Sunnypilot master into canonical ${BRANCH}." >&2
   echo "Files to resolve:" >&2
   git -C "${checkout}" diff --name-only --diff-filter=U >&2 || true
-  echo "No branch was published. Resolve the conflict with an AI/code agent or manually, verify and retry." >&2
+  echo "No branch was published. Resolve the conflict with an AI/code agent or manually." >&2
+  echo "Conflict checkout preserved at: ${checkout}" >&2
+  echo "After resolving and testing, commit and push the source branch, then rerun OP-update-distilled to mirror it." >&2
+  trap - EXIT
   exit 2
 fi
 
 git -C "${checkout}" merge-base --is-ancestor upstream/master HEAD || {
   echo "ERROR: upstream master is not an ancestor of candidate Distill branch" >&2; exit 2;
 }
-git -C "${checkout}" diff --check
+git -C "${checkout}" diff --check upstream/master...HEAD
 for file in \
   openpilot/sunnypilot/models/extra_catalog.py \
   openpilot/sunnypilot/models/fetcher.py \
