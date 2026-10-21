@@ -30,12 +30,12 @@ Adattare i nomi delle branch alla funzionalità effettiva; non compilare i segna
 
 ### Caso specifico: Distill
 
-Architettura *richiesta/pianificata*, da non spacciare per già implementata:
+Architettura implementata negli script (la pubblicazione della copia installabile va verificata separatamente):
 
-- Sorgente canonica desiderata: `cristianku/sunnypilot:distilled`, contenente le modifiche al catalogo dei modelli Distill.
-- `OP-update-distilled` dovrà integrare `sunnypilot/sunnypilot:master` nella branch sorgente, preservare le modifiche e, **solo dopo verifica dei conflitti e dei test**, pubblicare lo stesso codice come `cristianku/openpilot:distilled`.
-- Le skill PSA dovranno consumare le modifiche Distill dalla sorgente condivisa, anziché mantenere una seconda copia della patch. **Il workflow corrente potrebbe ancora utilizzare una patch locale in `openpilot_scripts`: verificare l'implementazione prima di annunciare il nuovo flusso come operativo.**
-- Fino a quando le branch `distilled` non esistono e non sono verificate, non pubblicare come funzionante il link `installer.comma.ai/cristianku/distilled`.
+- Sorgente canonica creata: `cristianku/sunnypilot:distilled`, contenente le modifiche al catalogo dei modelli Distill.
+- `OP-update-distilled` integra `sunnypilot/sunnypilot:master` nella sorgente e, solo se il merge e le verifiche riescono, copia **lo stesso SHA** su `cristianku/openpilot:distilled`.
+- Le skill PSA ora prendono il diff del catalogo Distill dalla sorgente condivisa, senza riapplicare copie della patch locale.
+- La branch sorgente è stata creata, ma il link `installer.comma.ai/cristianku/distilled` va comunicato **solo dopo aver pubblicato e verificato la copia** in `cristianku/openpilot`.
 
 Questa è una **regola di documentazione e comunicazione**, non un'autorizzazione a fare merge, push, aggiornare skill, pubblicare annunci o installare software sul dispositivo. Ogni intervento mantiene le regole di autorizzazione del progetto.
 <!-- [community publication] - END -->
