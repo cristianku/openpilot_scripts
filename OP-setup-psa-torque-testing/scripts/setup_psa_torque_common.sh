@@ -57,7 +57,9 @@ NEURAL_NETWORK_DATA_SHA=""
 
 # Read before main() changes directory.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-EXTRA_MODEL_CATALOG_PATCH="${SCRIPT_DIR}/../patches/sunnypilot-extra-model-catalog.patch"
+EXTRA_MODEL_CATALOG_SOURCE_REPO="${EXTRA_MODEL_CATALOG_SOURCE_REPO:-https://github.com/${GITHUB_USER}/sunnypilot.git}"
+EXTRA_MODEL_CATALOG_SOURCE_BRANCH="${EXTRA_MODEL_CATALOG_SOURCE_BRANCH:-distilled}"
+EXTRA_MODEL_CATALOG_UPSTREAM_REPO="${EXTRA_MODEL_CATALOG_UPSTREAM_REPO:-https://github.com/sunnypilot/sunnypilot.git}"
 SKIP_EXTRA_MODEL_CATALOG="${SKIP_EXTRA_MODEL_CATALOG:-false}"   # true: leave the sunnypilot Models menu as upstream
 
 ensure_remote_branch() {
@@ -250,11 +252,10 @@ enable_psa_torqued_learning() {
 }
 
 enable_extra_model_catalog() {
-  # sunnypilot only: the Models menu on the comma, and sunnylink, also list the openpilot.distill
-  # models published on Hugging Face (see the header of patches/sunnypilot-extra-model-catalog.patch).
-  # comma openpilot has no Models menu: nothing to do. The clone is recreated every run, so the patch
-  # is applied every time; when sunnypilot changes those files it no longer applies and the setup
-  # stops here: update the patch, or run with SKIP_EXTRA_MODEL_CATALOG=true.
+  # [distill source] - START
+  # Apply ONLY the three model-catalog file changes from the canonical
+  # cristianku/sunnypilot:distilled branch. Never use a second local patch copy.
+  # Keep Nav2Pilot/PSA changes from this checkout and fail closed on conflicts.
   local dest="$1"
   if [[ "${SKIP_EXTRA_MODEL_CATALOG}" == "true" ]]; then
     echo "SKIP_EXTRA_MODEL_CATALOG set: Models menu left as upstream"
@@ -262,7 +263,6 @@ enable_extra_model_catalog() {
   fi
 
   local fetcher_rel
-  # "|| true": grep finds nothing on comma openpilot, and pipefail would stop the whole setup.
   fetcher_rel="$(git -C "${dest}" ls-files | grep -E '(^|/)sunnypilot/models/fetcher\.py$' | head -n1 || true)"
   if [[ -z "${fetcher_rel}" ]]; then
     echo "No sunnypilot Models menu in this source: extra model catalog not needed"
@@ -272,18 +272,56 @@ enable_extra_model_catalog() {
   local extra_rel
   extra_rel="$(git -C "${dest}" ls-files | grep -E '(^|/)sunnypilot/models/extra_catalog\.py$' | head -n1 || true)"
   if [[ -n "${extra_rel}" ]]; then
-    echo "Extra model catalog already in the source; nothing to do"
+    echo "Extra model catalog already in this checkout; not applying it again"
     return
   fi
 
-  if ! git -C "${dest}" apply --check "${EXTRA_MODEL_CATALOG_PATCH}"; then
-    echo "ERROR: ${EXTRA_MODEL_CATALOG_PATCH} no longer applies to ${fetcher_rel}:" >&2
-    echo "sunnypilot changed its Models code. Update the patch, or rerun with SKIP_EXTRA_MODEL_CATALOG=true" >&2
+  local src_ref=refs/remotes/distill/catalog
+  local upstream_ref=refs/remotes/distill/upstream
+  echo "Fetching canonical Distill source ${EXTRA_MODEL_CATALOG_SOURCE_REPO}:${EXTRA_MODEL_CATALOG_SOURCE_BRANCH}"
+  git -C "${dest}" fetch -q --no-tags "${EXTRA_MODEL_CATALOG_SOURCE_REPO}" \
+    "+refs/heads/${EXTRA_MODEL_CATALOG_SOURCE_BRANCH}:${src_ref}" || {
+      echo "ERROR: canonical Distill source branch missing/unreachable. No local patch fallback." >&2
+      exit 1
+    }
+  git -C "${dest}" fetch -q --no-tags "${EXTRA_MODEL_CATALOG_UPSTREAM_REPO}" \
+    "+refs/heads/master:${upstream_ref}"
+
+  if ! git -C "${dest}" cat-file -e "${src_ref}:openpilot/sunnypilot/models/extra_catalog.py" 2>/dev/null; then
+    echo "ERROR: canonical Distill source does not contain extra_catalog.py" >&2
     exit 1
   fi
 
-  git -C "${dest}" apply --index "${EXTRA_MODEL_CATALOG_PATCH}"
-  echo "Applied the extra model catalog (Models menu + sunnylink list the openpilot.distill models)"
+  local base_commit
+  base_commit="$(git -C "${dest}" merge-base "${upstream_ref}" "${src_ref}")"
+  if [[ -z "${base_commit}" ]]; then
+    echo "ERROR: canonical Distill branch has no common SunnyPilot upstream ancestor" >&2
+    exit 1
+  fi
+
+  local patch_file
+  patch_file="$(mktemp)"
+  # Whitelist: do not copy the entire Distill branch (which may have other
+  # upstream updates). Extract only the catalog feature changes since its
+  # upstream merge-base; apply with 3-way context to PSA/Nav2Pilot checkout.
+  git -C "${dest}" diff --binary "${base_commit}" "${src_ref}" -- \
+    openpilot/sunnypilot/models/extra_catalog.py \
+    openpilot/sunnypilot/models/fetcher.py \
+    openpilot/sunnypilot/models/tests/test_manager_download.py > "${patch_file}"
+  if [[ ! -s "${patch_file}" ]]; then
+    rm -f "${patch_file}"
+    echo "ERROR: canonical Distill branch has no catalog changes to integrate" >&2
+    exit 1
+  fi
+  if ! git -C "${dest}" apply --3way --index "${patch_file}"; then
+    rm -f "${patch_file}"
+    echo "ERROR: canonical Distill changes conflict with the PSA/Nav2Pilot base." >&2
+    echo "Resolve the conflict in source/checkout; do not silently restore a stale local patch." >&2
+    exit 1
+  fi
+  rm -f "${patch_file}"
+  echo "Added Distill models from canonical source ${src_ref} (Model menu + SunnyLink)"
+  # [distill source] - END
 }
 
 commit_and_push() {
