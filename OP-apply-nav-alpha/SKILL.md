@@ -10,6 +10,13 @@ The Nav2Pilot changes (what the Android/iOS apps need on the device) are kept as
 no merges, no old history, nothing else from the old branch. Full description of the change set, file by file,
 and how to resolve conflicts: `openpilot_scripts/docs/nav-alpha-nav2pilot.md` (read it before resolving anything).
 
+**The patches are the only source of the Nav2Pilot code.** Every change to its logic on the device (setNavRoute,
+setMapboxToken, our navd/waypoints/mapbox modules, the destination widget, anything in a patched file, or a new
+RPC/param the apps need) must end up in `patches/`, for both forks: edit it in the local clone on `nav-alpha`,
+`save-patch`, make the same change in the other fork and `save-patch` there, `sync-check`, then `push` both.
+A change made only in a clone or pushed straight to `nav-alpha` / `sunny-nav-alpha` is lost at the next
+realignment (OP-update skills, the setups), which rebuild the branch from master + the saved patch.
+
 ## Variants
 
 | variant | clone | upstream remote | fork branch | patch |

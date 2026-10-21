@@ -15,6 +15,14 @@ Regola: ogni branch e' **master + un solo commit** con le nostre modifiche. Il c
 file upstream si toccano il minimo indispensabile. Le modifiche sono salvate come patch in
 `OP-apply-nav-alpha/patches/` e la skill `OP-apply-nav-alpha` le riapplica su un master fresco.
 
+Le patch sono l'unica fonte del codice Nav2Pilot. Ogni modifica alla sua logica sul comma (setNavRoute,
+setMapboxToken, i nostri moduli navd/waypoints/mapbox, il widget della destinazione, qualsiasi file della patch, una
+nuova RPC o un nuovo param che servono alle app) va riportata nelle patch, per tutti e due i fork: si modifica il
+clone locale su `nav-alpha`, `save-patch`, stessa modifica sull'altro fork e `save-patch` anche li', `sync-check`,
+poi `push` di tutti e due. Una modifica fatta solo nel clone, o pushata direttamente su `nav-alpha` /
+`sunny-nav-alpha`, si perde al primo riallineamento (skill OP-update, setup), che ricostruisce il branch da master +
+patch salvata.
+
 ## Cosa aggiungiamo
 
 ### Le due RPC (athena, e su sunny anche sunnylink: stesso dispatcher)
@@ -115,7 +123,7 @@ Se lo script si ferma per conflitti, o se cambia il codice Nav2Pilot, si passa d
 S=/Users/cristianku/GitHub/COMMA.AI/CRISTIANKU/openpilot_scripts/OP-apply-nav-alpha/scripts/apply_nav_alpha.sh
 $S sunny status      # cosa e' cambiato upstream, la patch si applica?
 $S sunny apply       # backup nav-alpha-prev, nav-alpha = master + patch, controlli, commit locale
-$S sunny push        # solo con l'ok di Cristian: save-patch + update_fork_branch.sh
+$S sunny push        # automatico, senza chiedere: save-patch + update_fork_branch.sh
 ```
 
 Uguale con `comma`. Dopo il push la sorgente e' pronta per `OP-setup-psa-torque(-testing) <variante>`.
