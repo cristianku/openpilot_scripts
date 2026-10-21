@@ -96,10 +96,9 @@ Lavora sulle patch Nav2Pilot nei cloni locali (conflitti, modifiche al codice) e
 
 ## OP-update-nav-alpha, OP-update-sunny-nav-alpha, OP-update-distilled
 
-Un comando per riallineare al master upstream un branch di `cristianku/openpilot` e pubblicarlo (push solo se e' indietro):
-`nav-alpha` (comma + Nav2Pilot), `sunny-nav-alpha` (sunnypilot + Nav2Pilot), `distilled` (sunnypilot + modelli openpilot.distill
-nel menu Models). Si installano con `installer.comma.ai/cristianku/<branch>`. Se la patch non si applica piu' si ferma
-senza pubblicare. I setup PSA chiamano lo stesso script per il loro nav-alpha.
+Il wrapper `scripts/update_fork_branch.sh` aggiorna i branch installabili di `cristianku/openpilot`:
+`nav-alpha` (comma + Nav2Pilot) e `sunny-nav-alpha` (sunnypilot + Nav2Pilot) sono ancora generati da patch;
+`distilled` invece usa **due step**: merge del master ufficiale SunnyPilot nella sorgente `cristianku/sunnypilot:distilled`, poi mirror dello stesso SHA in `cristianku/openpilot:distilled`. La skill si ferma ai conflitti; un agente AI puo' esaminare e risolverli consapevolmente. Le skill PSA Sunny consumano il catalogo direttamente dalla branch sorgente, non da copie della patch. Verificare la branch installabile prima di condividere il link `installer.comma.ai/cristianku/distilled`.
 
 ```bash
 ./scripts/update_fork_branch.sh sunny-nav-alpha   # oppure: nav-alpha, distilled; NO_PUSH=true per provare
