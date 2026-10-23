@@ -4,7 +4,8 @@
 #
 # Uso: update_fork_branch.sh <nav-alpha|sunny-nav-alpha|distilled>
 #   nav-alpha        commaai/openpilot master + Nav2Pilot (OP-apply-nav-alpha/patches/openpilot.patch)
-#   sunny-nav-alpha  sunnypilot/sunnypilot master + Nav2Pilot (OP-apply-nav-alpha/patches/sunnypilot.patch)
+#   sunny-nav-alpha  sunnypilot/sunnypilot master + Nav2Pilot (OP-apply-nav-alpha/patches/sunnypilot.patch),
+#                    lo stesso commit va anche su cristianku/sunnypilot nav-alpha (MIRROR_REPO)
 #   distilled        sync cristianku/sunnypilot:distilled with upstream master, then mirror to cristianku/openpilot:distilled
 #
 # Se il branch su GitHub e' gia' il master attuale piu' la stessa patch non fa niente.
@@ -52,6 +53,9 @@ fi
 # [distill sync] - END
 
 NAV_BASE_FILE=""
+# second branch that gets the very same commit (empty = none)
+MIRROR_REPO=""
+MIRROR_BRANCH=""
 if [[ "${TARGET}" == "nav-alpha" ]]; then
   SOURCE_NAME="commaai"
   SOURCE_REPO="https://github.com/commaai/openpilot.git"
@@ -64,6 +68,9 @@ elif [[ "${TARGET}" == "sunny-nav-alpha" ]]; then
   PATCH_FILE="${OPENPILOT_SCRIPTS}/OP-apply-nav-alpha/patches/sunnypilot.patch"
   NAV_BASE_FILE="${OPENPILOT_SCRIPTS}/OP-apply-nav-alpha/patches/sunnypilot.base"
   TITLE="nav alpha: Nav2Pilot setNavRoute waypoints and setMapboxToken"
+  # cristianku/sunnypilot nav-alpha must never drift from sunny-nav-alpha
+  MIRROR_REPO="https://github.com/cristianku/sunnypilot.git"
+  MIRROR_BRANCH="nav-alpha"
 else
   usage
 fi
@@ -172,6 +179,28 @@ warn_nav_watched() {
   fi
 }
 
+# The published commit also on MIRROR_REPO MIRROR_BRANCH (only sunny-nav-alpha has one).
+push_mirror() {
+  local published="$1"
+  if [[ -z "${MIRROR_REPO}" ]]; then
+    return
+  fi
+  local mirror_current
+  mirror_current="$(git ls-remote "${MIRROR_REPO}" "refs/heads/${MIRROR_BRANCH}" | awk 'NR == 1 { print $1 }')"
+  if [[ "${mirror_current}" == "${published}" ]]; then
+    echo "== ${MIRROR_REPO} ${MIRROR_BRANCH} e' gia' lo stesso commit ${published:0:10}"
+    return
+  fi
+  if [[ "${NO_PUSH}" == "true" ]]; then
+    echo "NO_PUSH: ${MIRROR_REPO} ${MIRROR_BRANCH} non pubblicato"
+    return
+  fi
+  echo "== push di ${MIRROR_BRANCH} su ${MIRROR_REPO} (prima: ${mirror_current:-nessuno})"
+  GIT_LFS_SKIP_PUSH=1 g -c push.negotiate=true push -q \
+    --force-with-lease="refs/heads/${MIRROR_BRANCH}:${mirror_current}" "${MIRROR_REPO}" "${published}:refs/heads/${MIRROR_BRANCH}"
+  echo "== pubblicato: ${MIRROR_REPO} ${MIRROR_BRANCH} = ${published}"
+}
+
 work_dir="$(mktemp -d)"
 trap 'rm -rf "${work_dir}"' EXIT
 
@@ -187,6 +216,7 @@ if [[ -n "${current}" ]]; then
   current_tree="$(g rev-parse "${current}^{tree}")"
   if [[ "${current_tree}" == "${tree}" ]] && g merge-base --is-ancestor "${master}" "${current}"; then
     echo "== ${TARGET} e' gia' aggiornato: ${current:0:10} = ${SOURCE_NAME} master ${master:0:10} + patch"
+    push_mirror "${current}"
     exit 0
   fi
 fi
@@ -203,6 +233,7 @@ echo "== commit ${commit:0:10} (prima su GitHub: ${current:-nessuno})"
 
 if [[ "${NO_PUSH}" == "true" ]]; then
   echo "NO_PUSH: non pubblicato"
+  push_mirror "${commit}"
   exit 0
 fi
 
@@ -213,3 +244,4 @@ GIT_LFS_SKIP_PUSH=1 g -c push.negotiate=true push -q \
   --force-with-lease="refs/heads/${TARGET}:${current}" "${TARGET_REPO}" "${commit}:refs/heads/${TARGET}"
 echo "== pubblicato: ${TARGET} = ${commit}"
 echo "   installazione sul comma: installer.comma.ai/cristianku/${TARGET}"
+push_mirror "${commit}"

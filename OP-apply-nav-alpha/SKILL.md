@@ -26,6 +26,9 @@ realignment (OP-update skills, the setups), which rebuild the branch from master
 
 Both published branches live on cristianku/openpilot: `installer.comma.ai/<user>/<branch>` always clones
 `<user>/openpilot`, so that is where people can install them from. The local branch in both clones is `nav-alpha`.
+Every sunny publish also puts the very same commit on cristianku/sunnypilot `nav-alpha` (`update_fork_branch.sh`
+does it, also when `sunny-nav-alpha` was already up to date), so the two never drift apart. In the sunny clone
+`origin` is cristianku/sunnypilot: its `origin/nav-alpha` is that copy.
 
 Overrides: `NAV_REPO` (clone folder), `NAV_BRANCH` (local branch, default `nav-alpha`).
 
@@ -51,8 +54,9 @@ checks fail or a conflict cannot be resolved with the doc, and then report why.
    Mirror the same code change in the other fork's patch.
 5. `push` right away, without asking: runs `save-patch`, then publishes upstream master + the saved patch with
    `openpilot_scripts/scripts/update_fork_branch.sh` (the same script the OP-update skills and the setups use).
-   That script makes its own commit, so afterwards align the local clone: `git fetch origin <fork branch>` and
-   `git reset --hard origin/<fork branch>` on `nav-alpha` (otherwise VS Code shows pending sync changes).
+   That script makes its own commit, so afterwards align the local clone on `nav-alpha` (otherwise VS Code shows
+   pending sync changes): comma `git fetch origin nav-alpha && git reset --hard origin/nav-alpha`; sunny the same
+   commands (`origin` = cristianku/sunnypilot, whose `nav-alpha` is the copy of `sunny-nav-alpha`).
    Never use VS Code "Sync" / GitHub "Sync fork" on these branches.
 6. Report to Cristian at the end: master SHA, upstream changes reviewed, conflicts and how they were solved, check
    results, what was pushed.
