@@ -663,7 +663,7 @@ index cf390aa1cd7def44945b18207d9a371216be3147..b07d80969de8e1e0060f245b11c38624
  
  ATHENA_HOST = os.getenv('ATHENA_HOST', 'wss://athena.comma.ai')
 diff --git a/openpilot/system/manager/process_config.py b/openpilot/system/manager/process_config.py
-index 00864cece05576ab98ccad2ea08100ceeba0f52e..1b0c7ed7610cd71e6ec93dfe95bc7a8846d2fb09 100644
+index cbe8b6d6720cf9e0fa4b63f9b4eb49bef6f3f5ca..063b29de423cf73c53faecd75779672466364ec1 100644
 --- a/openpilot/system/manager/process_config.py
 +++ b/openpilot/system/manager/process_config.py
 @@ -86,7 +86,7 @@ procs = [
