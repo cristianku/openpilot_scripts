@@ -61,6 +61,23 @@ EXTRA_MODEL_CATALOG_SOURCE_REPO="${EXTRA_MODEL_CATALOG_SOURCE_REPO:-https://gith
 EXTRA_MODEL_CATALOG_SOURCE_BRANCH="${EXTRA_MODEL_CATALOG_SOURCE_BRANCH:-distilled}"
 EXTRA_MODEL_CATALOG_UPSTREAM_REPO="${EXTRA_MODEL_CATALOG_UPSTREAM_REPO:-https://github.com/sunnypilot/sunnypilot.git}"
 SKIP_EXTRA_MODEL_CATALOG="${SKIP_EXTRA_MODEL_CATALOG:-false}"   # true: leave the sunnypilot Models menu as upstream
+# [nav source] - START
+# Nav2Pilot, injected on every base from its canonical patch (OP-apply-nav-alpha/patches/<fork>.patch) by the
+# testing wrapper; empty: built without it. The .base file names the upstream commit the patch was made on.
+NAV2PILOT_PATCH="${NAV2PILOT_PATCH:-}"
+NAV2PILOT_BASE="${NAV2PILOT_BASE:-}"
+# upstream files the Nav2Pilot code copies or subclasses (as scripts/update_fork_branch.sh): a change there can
+# apply cleanly and still be lost
+NAV_WATCHED_FILES="openpilot/selfdrive/navigation/navd.py openpilot/selfdrive/navigation/tiles.py openpilot/system/athena/rpc.py"
+# [nav source] - END
+# [speed limits] - START
+# The speed-limit work (Speed Limit Source "Signs Read By", speedVisionSP, the models submodule) lives on its own
+# branch of cristianku/sunnypilot, as the opendbc work lives on psa-torque-sunny-testing of cristianku/opendbc.
+SPEED_LIMITS_SOURCE_REPO="${SPEED_LIMITS_SOURCE_REPO:-https://github.com/${GITHUB_USER}/sunnypilot.git}"
+SPEED_LIMITS_SOURCE_BRANCH="${SPEED_LIMITS_SOURCE_BRANCH:-speed-limits}"
+SPEED_LIMITS_UPSTREAM_REPO="${SPEED_LIMITS_UPSTREAM_REPO:-https://github.com/sunnypilot/sunnypilot.git}"
+SKIP_SPEED_LIMITS="${SKIP_SPEED_LIMITS:-false}"   # true: leave Speed Limit Assist as upstream
+# [speed limits] - END
 
 ensure_remote_branch() {
   local repo_url="$1"
@@ -324,6 +341,94 @@ enable_extra_model_catalog() {
   # [distill source] - END
 }
 
+enable_nav2pilot() {
+  # [nav source] - START
+  # Apply the Nav2Pilot patch with 3-way context on the chosen base (master, a pinned commit or a release); stop
+  # without publishing on a conflict: resolve it with OP-apply-nav-alpha, which saves the patch again.
+  local dest="$1"
+  if [[ -z "${NAV2PILOT_PATCH}" ]]; then
+    echo "SKIP_NAV set: built without Nav2Pilot"
+    return
+  fi
+  if ! git -C "${dest}" apply --3way --index "${NAV2PILOT_PATCH}"; then
+    echo "ERROR: the Nav2Pilot patch does not apply to this base (${OPENPILOT_SOURCE_BRANCH})." >&2
+    echo "Resolve it with OP-apply-nav-alpha, or SKIP_NAV=true to build without Nav2Pilot." >&2
+    exit 1
+  fi
+  local base=""
+  [[ -n "${NAV2PILOT_BASE}" && -s "${NAV2PILOT_BASE}" ]] && base="$(tr -d '[:space:]' < "${NAV2PILOT_BASE}")"
+  if [[ -n "${base}" ]] && git -C "${dest}" cat-file -e "${base}^{commit}" 2>/dev/null; then
+    local watched
+    # shellcheck disable=SC2086
+    watched="$(git -C "${dest}" diff --name-only "${base}" HEAD -- ${NAV_WATCHED_FILES})"
+    if [[ -n "${watched}" ]]; then
+      echo "WARNING: upstream changed files the Nav2Pilot code copies since its patch was made (${base:0:9}):" >&2
+      echo "${watched}" >&2
+      echo "It applied cleanly, but check them with OP-apply-nav-alpha." >&2
+    fi
+  fi
+  echo "Added Nav2Pilot from $(basename "${NAV2PILOT_PATCH}")"
+  # [nav source] - END
+}
+
+enable_speed_limits() {
+  # [speed limits] - START
+  # Apply the speed-limit branch of cristianku/sunnypilot: every change it carries since its merge-base with
+  # sunnypilot/sunnypilot:master (the branch holds only that work), files and the models submodule pointer, with
+  # 3-way context on the PSA/Nav2Pilot checkout. Fail closed on conflicts, as the Distill catalog does.
+  local dest="$1"
+  if [[ "${SKIP_SPEED_LIMITS}" == "true" ]]; then
+    echo "SKIP_SPEED_LIMITS set: Speed Limit Assist left as upstream"
+    return
+  fi
+
+  local resolver_rel
+  resolver_rel="$(git -C "${dest}" ls-files | grep -E '(^|/)sunnypilot/selfdrive/controls/lib/speed_limit/speed_limit_resolver\.py$' | head -n1 || true)"
+  if [[ -z "${resolver_rel}" ]]; then
+    echo "No sunnypilot Speed Limit Assist in this source: speed limits not needed"
+    return
+  fi
+  if git -C "${dest}" grep -q -e 'SpeedLimitSignReader' -- "${resolver_rel}"; then
+    echo "Speed limits already in this checkout; not applying them again"
+    return
+  fi
+
+  local src_ref=refs/remotes/speedlimits/source
+  local upstream_ref=refs/remotes/speedlimits/upstream
+  echo "Fetching speed limits ${SPEED_LIMITS_SOURCE_REPO}:${SPEED_LIMITS_SOURCE_BRANCH}"
+  git -C "${dest}" fetch -q --no-tags "${SPEED_LIMITS_SOURCE_REPO}" \
+    "+refs/heads/${SPEED_LIMITS_SOURCE_BRANCH}:${src_ref}" || {
+      echo "ERROR: speed limits source branch missing/unreachable (SKIP_SPEED_LIMITS=true to build without it)." >&2
+      exit 1
+    }
+  git -C "${dest}" fetch -q --no-tags "${SPEED_LIMITS_UPSTREAM_REPO}" "+refs/heads/master:${upstream_ref}"
+
+  local base_commit
+  base_commit="$(git -C "${dest}" merge-base "${upstream_ref}" "${src_ref}" || true)"
+  if [[ -z "${base_commit}" ]]; then
+    echo "ERROR: speed limits branch has no common SunnyPilot upstream ancestor" >&2
+    exit 1
+  fi
+
+  local patch_file
+  patch_file="$(mktemp)"
+  git -C "${dest}" diff --binary "${base_commit}" "${src_ref}" > "${patch_file}"
+  if [[ ! -s "${patch_file}" ]]; then
+    rm -f "${patch_file}"
+    echo "Speed limits branch has no changes over SunnyPilot master: nothing to add"
+    return
+  fi
+  if ! git -C "${dest}" apply --3way --index "${patch_file}"; then
+    rm -f "${patch_file}"
+    echo "ERROR: speed limits changes conflict with the PSA/Nav2Pilot base." >&2
+    echo "Merge sunnypilot master into ${SPEED_LIMITS_SOURCE_BRANCH} and resolve there, or SKIP_SPEED_LIMITS=true." >&2
+    exit 1
+  fi
+  rm -f "${patch_file}"
+  echo "Added speed limits from ${SPEED_LIMITS_SOURCE_BRANCH} ($(git -C "${dest}" rev-parse --short "${src_ref}"))"
+  # [speed limits] - END
+}
+
 commit_and_push() {
   local dest="$1"
   local branch="$2"
@@ -364,8 +469,10 @@ main() {
 
   cd "${OPENPILOT_DIR}"
 
+  enable_nav2pilot "."
   enable_psa_torqued_learning "."
   enable_extra_model_catalog "."
+  enable_speed_limits "."
   set_opendbc_pointer "." "${OPENDBC_REPO}" "${BRANCH}" "${OPENDBC_SOURCE_REPO}" "${OPENDBC_SOURCE_BRANCH}"
   set_neural_network_data_pointer "."
   commit_and_push "." "${BRANCH}" "${COMMIT_MESSAGE}" "${expected_remote_sha}"

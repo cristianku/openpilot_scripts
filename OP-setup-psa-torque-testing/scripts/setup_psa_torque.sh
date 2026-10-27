@@ -6,23 +6,24 @@ for arg in "$@"; do
   case "${arg}" in
     -h|--help|help)
       cat <<'HELP'
-Uso: setup_psa_torque.sh [comma|sunny] [nav-alpha|master|master=<commit>|release]
+Uso: setup_psa_torque.sh [comma|sunny] [master|master=<commit>|release]
 
 Primo parametro: comma oppure sunny (predefinito: comma).
-Secondo parametro: nav-alpha (predefinito, con Nav2Pilot) oppure master.
-  sunny nav-alpha  -> cristianku/openpilot:sunny-nav-alpha (sunnypilot master + Nav2Pilot)
-  sunny master     -> sunnypilot/sunnypilot:master
-  comma nav-alpha  -> cristianku/openpilot:nav-alpha (comma master + Nav2Pilot)
-  comma master     -> commaai/openpilot:master
-Con nav-alpha il branch Nav2Pilot viene prima riallineato all'ultimo master upstream
-(scripts/update_fork_branch.sh; SKIP_NAV_UPDATE=true per usarlo com'e').
-Anche feature/nav-alpha e' accettato come secondo parametro per sunny (vecchio nome, usa nav-alpha).
+Secondo parametro: la base upstream (predefinito: master).
+  sunny master          -> sunnypilot/sunnypilot:master
+  comma master          -> commaai/openpilot:master
+  master=<commit>       -> quel commit del master upstream
+  release               -> l'ultima GitHub Release upstream
+Nav2Pilot viene sempre iniettato sulla base, dalla patch canonica
+OP-apply-nav-alpha/patches/sunnypilot.patch (sunny) o openpilot.patch (comma), la stessa di
+cristianku/openpilot:sunny-nav-alpha / nav-alpha; SKIP_NAV=true per costruire senza.
+nav-alpha e feature/nav-alpha (vecchi nomi, solo sunny per il secondo) valgono come master.
+Prima di lanciarlo: docs/external-branches.md (sincronizzare master e branch esterni).
 Destinazione Sunny: cristianku/openpilot:psa-torque-sunny-testing
 Destinazione comma: cristianku/openpilot:psa-torque-testing
 Alias: openpilot = comma; sunnypilot = sunny.
-Altre sorgenti: master=<commit> o release dall'upstream ufficiale.
 
-Esempio: setup_psa_torque.sh sunny nav-alpha
+Esempio: setup_psa_torque.sh sunny
 Aiuto: setup_psa_torque.sh --help (oppure help, -h)
 Il setup ricrea la cartella locale e pubblica il branch; questo aiuto non esegue operazioni.
 HELP
@@ -34,11 +35,11 @@ done
 
 variant="${1:-comma}"
 # [pinned source] - START
-source_arg="${2:-nav-alpha}"
+source_arg="${2:-master}"
 source_mode="${source_arg}"
 pinned_source_commit=""
 # [nav source] - START
-usage="Usage: $0 [comma|openpilot|sunny|sunnypilot] [master|master=<upstream-commit>|release|nav-alpha]"
+usage="Usage: $0 [comma|openpilot|sunny|sunnypilot] [master|master=<upstream-commit>|release]"
 # [nav source] - END
 
 if [[ "${source_arg}" == master=* ]]; then
@@ -74,13 +75,16 @@ case "${source_mode}" in
   master|release)
     ;;
   # [nav source] - START
+  # Old names of the default: Nav2Pilot is now injected on every base, so they mean master.
   nav-alpha)
+    source_mode="master"
     ;;
   feature/nav-alpha)
     if [[ "${variant}" != "sunny" ]]; then
-      echo "ERROR: feature/nav-alpha requires the sunny variant; use comma nav-alpha" >&2
+      echo "ERROR: feature/nav-alpha requires the sunny variant; use comma master" >&2
       exit 2
     fi
+    source_mode="master"
     ;;
   # [nav source] - END
   *)
@@ -129,17 +133,20 @@ if [[ "${variant}" == "sunny" ]]; then
 fi
 
 # [nav source] - START
-# Both Nav2Pilot branches live on cristianku/openpilot, so anyone can install them with
-# installer.comma.ai/cristianku/<branch>.
-nav_branch=""
-if [[ "${source_mode}" == "nav-alpha" || "${source_mode}" == "feature/nav-alpha" ]]; then
-  if [[ "${variant}" == "sunny" ]]; then
-    nav_branch="sunny-nav-alpha"
-  else
-    nav_branch="nav-alpha"
+# Nav2Pilot is injected on whichever base was chosen, from its canonical patch (the one that builds
+# cristianku/openpilot:sunny-nav-alpha / nav-alpha); SKIP_NAV=true builds without it.
+nav_patch=""
+nav_base=""
+if [[ "${SKIP_NAV:-false}" != "true" ]]; then
+  nav_fork="openpilot"
+  [[ "${variant}" == "sunny" ]] && nav_fork="sunnypilot"
+  nav_patches="${NAV2PILOT_PATCHES:-${script_dir}/../../OP-apply-nav-alpha/patches}"
+  nav_patch="${nav_patches}/${nav_fork}.patch"
+  nav_base="${nav_patches}/${nav_fork}.base"
+  if [[ ! -s "${nav_patch}" ]]; then
+    echo "ERROR: missing the Nav2Pilot patch ${nav_patch} (SKIP_NAV=true to build without Nav2Pilot)" >&2
+    exit 1
   fi
-  openpilot_source_repo="https://github.com/cristianku/openpilot.git"
-  openpilot_source_branch="${nav_branch}"
 fi
 # [nav source] - END
 
@@ -151,19 +158,6 @@ else
 fi
 # [source] - END
 
-# The Nav2Pilot branch is first realigned to the latest upstream master; nothing is pushed when it
-# already is. Skipped when the source is overridden from the environment.
-if [[ -n "${nav_branch}" && -z "${OPENPILOT_SOURCE_REPO:-}" && -z "${OPENPILOT_SOURCE_BRANCH:-}" \
-      && "${SKIP_NAV_UPDATE:-false}" != "true" ]]; then
-  update_script="$(cd "${script_dir}" && pwd -P)/../../scripts/update_fork_branch.sh"
-  if ! bash "${update_script}" "${nav_branch}"; then
-    echo "ERROR: ${nav_branch} could not be realigned to upstream master (see above)." >&2
-    echo "Fix it with OP-apply-nav-alpha, or rerun with master (no Nav2Pilot)" >&2
-    echo "or with SKIP_NAV_UPDATE=true (uses ${nav_branch} as it is now)." >&2
-    exit 1
-  fi
-fi
-
 # [pinned source] - START
 BRANCH="${branch}" \
   OPENPILOT_SOURCE_REPO="${openpilot_source_repo}" \
@@ -171,5 +165,7 @@ BRANCH="${branch}" \
   OPENPILOT_SOURCE_COMMIT="${pinned_source_commit}" \
   OPENDBC_SOURCE_BRANCH="${OPENDBC_SOURCE_BRANCH:-${source_branch}}" \
   USE_CUSTOM_NEURAL_NETWORK_DATA="${use_custom_neural_network_data}" \
+  NAV2PILOT_PATCH="${nav_patch}" \
+  NAV2PILOT_BASE="${nav_base}" \
   bash "${common_script}"
 # [pinned source] - END

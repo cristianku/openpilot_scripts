@@ -68,6 +68,7 @@ OPENPILOT_SOURCE_REPO="${source_repo}" \
 OPENDBC_REPO="${opendbc_repo}" \
 OPENDBC_SOURCE_REPO="${opendbc_repo}" \
 NO_PUSH=true \
+SKIP_NAV=true \
   "${wrapper}" comma "master=${pinned_short_sha}" >/dev/null
 
 generated_repo="${test_root}/generated-openpilot"

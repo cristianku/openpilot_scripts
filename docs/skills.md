@@ -13,7 +13,7 @@ Recreates the mapped local openpilot folder from upstream `master` by default, o
 
 ## setup-psa-torque-testing (testing)
 
-Same as above but for the **testing** branches (`psa-torque-testing` / `psa-torque-sunny-testing`).
+Same as above but for the **testing** branches (`psa-torque-testing` / `psa-torque-sunny-testing`, the one the comma runs). Nav2Pilot is always injected on the base from `OP-apply-nav-alpha/patches/<fork>.patch` (`SKIP_NAV=true` to build without); Sunny also gets the Distill catalog and the speed limits of `cristianku/sunnypilot:speed-limits`. Before running it, bring the external branches up to date: [external-branches.md](external-branches.md).
 
 ```bash
 ./setup-psa-torque-testing/scripts/setup_psa_torque.sh comma   # or: sunny

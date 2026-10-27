@@ -1,6 +1,6 @@
 ---
 name: OP-setup-psa-torque-testing
-description: Use when preparing Cristian's Peugeot 3008 testing workspace for Sunnypilot or comma.ai, by default from Cristian's Nav2Pilot branch (nav-alpha / sunny-nav-alpha, realigned to upstream master first), or from upstream master, an exact commit in its history, or the latest GitHub Release.
+description: Use when preparing Cristian's Peugeot 3008 testing workspace for Sunnypilot or comma.ai (psa-torque-sunny-testing is the branch the comma runs) - on upstream master, an exact commit in its history or the latest GitHub Release, always with Nav2Pilot injected from its patch, after syncing the external branches listed in docs/external-branches.md.
 ---
 
 # OP Setup PSA Torque Testing
@@ -11,10 +11,10 @@ Use the bundled Peugeot 3008 testing setup workflow.
 
 - First parameter: `comma` / `openpilot` uses comma.ai and branch `psa-torque-testing`; `sunny` / `sunnypilot` uses Sunnypilot and branch `psa-torque-sunny-testing`. It defaults to `comma`.
 <!-- [pinned source] - START -->
-- Second parameter: `nav-alpha` (default) uses Cristian's Nav2Pilot branch for the variant (upstream master + Nav2Pilot, on cristianku/openpilot); `master` uses official upstream master without Nav2Pilot; `master=<commit>` uses that exact 7-40 character hexadecimal commit after verifying it belongs to the selected source branch history; `release` resolves the latest published GitHub Release tag. It defaults to `nav-alpha`.
+- Second parameter, the upstream base: `master` (default) uses official upstream master; `master=<commit>` uses that exact 7-40 character hexadecimal commit after verifying it belongs to the selected source branch history; `release` resolves the latest published GitHub Release tag. Nav2Pilot is injected on every base (see Source parameter). `nav-alpha` and `feature/nav-alpha` (Sunny only), the old names, are accepted and mean `master`.
 <!-- [pinned source] - END -->
 
-Examples: `scripts/setup_psa_torque.sh sunny`, `scripts/setup_psa_torque.sh sunny master=de197ba6`, `scripts/setup_psa_torque.sh sunny release`, and `scripts/setup_psa_torque.sh openpilot master`. Use the separate `OP-setup-psa-torque` skill for stable branches.
+Examples: `scripts/setup_psa_torque.sh sunny` (master + Nav2Pilot), `scripts/setup_psa_torque.sh sunny master=de197ba6`, `scripts/setup_psa_torque.sh sunny release`, and `scripts/setup_psa_torque.sh openpilot master`. Use the separate `OP-setup-psa-torque` skill for stable branches.
 
 `master=<commit>` identifies a commit from official upstream master, not a generated commit from `cristianku/openpilot`. For example, custom commit `4b34316` was generated from upstream Sunnypilot commit `de197ba6`, so use `master=de197ba6`. Pinning the upstream source does not pin Sunny neural data: every Sunny run still points `sunnypilot/neural_network_data` to the latest commit currently published on `cristianku/neural-network-data:master`.
 
@@ -27,23 +27,18 @@ For a request such as `$OP-setup-psa-torque-testing help`, or a request only ask
 <!-- [nav source] - START -->
 ## Source parameter
 
-The first parameter stays `comma` or `sunny`. The second parameter selects the source:
+The first parameter stays `comma` or `sunny`. The second parameter selects only the upstream base:
 
-- `sunny master`: official `sunnypilot/sunnypilot:master`.
-- `sunny nav-alpha` (or just `sunny`): `cristianku/openpilot:sunny-nav-alpha` (sunnypilot master + Nav2Pilot).
-- `sunny feature/nav-alpha`: old name, same source (`nav-alpha`).
-- `comma master`: official `commaai/openpilot:master`.
-- `comma nav-alpha` (or just `comma`): `cristianku/openpilot:nav-alpha` (comma master + Nav2Pilot).
+- `sunny master` (or just `sunny`): official `sunnypilot/sunnypilot:master`.
+- `comma master` (or just `comma`): official `commaai/openpilot:master`.
+- `master=<commit>`, `release`: as above, on the variant's upstream.
 
-`nav-alpha` works with both `comma` and `sunny`, including aliases `openpilot` and `sunnypilot`. `feature/nav-alpha` is accepted for Sunny only, as the old name of `nav-alpha`. Keep the same target branch, local folder and submodule rules as the selected variant: `psa-torque-testing` for comma, `psa-torque-sunny-testing` for Sunny, with custom neural data only for Sunny. `nav-alpha` is a source branch, never the publication target. Only committed changes published to the selected remote source are included; uncommitted or unpushed local changes are not copied. Do not use `sunny-nav` as the first parameter.
-
-With `nav-alpha` the wrapper first realigns the Nav2Pilot branch to the latest upstream master with `openpilot_scripts/scripts/update_fork_branch.sh` (the `OP-update-nav-alpha` / `OP-update-sunny-nav-alpha` skills): it pushes only when the branch is behind. If the Nav2Pilot patch no longer applies the setup stops: resolve with `OP-apply-nav-alpha`, or rerun with `master` (no Nav2Pilot) or `SKIP_NAV_UPDATE=true` (uses the branch as it is).
-
-Example requests: `$OP-setup-psa-torque-testing comma nav-alpha` or `$OP-setup-psa-torque-testing sunny nav-alpha`. Pass both positional parameters to the wrapper: `bash scripts/setup_psa_torque.sh comma nav-alpha` or `bash scripts/setup_psa_torque.sh sunny nav-alpha`.
+Nav2Pilot (setNavRoute waypoints, setMapboxToken: what the Android/iOS apps need) is **always injected** on that base from its canonical patch, `OP-apply-nav-alpha/patches/sunnypilot.patch` (Sunny) or `openpilot.patch` (comma), the same patch that builds `cristianku/openpilot:sunny-nav-alpha` / `nav-alpha`. It is applied with 3-way context and staged; if it no longer applies the setup stops without publishing (resolve with `OP-apply-nav-alpha`). A warning lists the upstream files the Nav2Pilot code copies (navd.py, tiles.py, rpc.py) when they changed since the patch was made. `SKIP_NAV=true` builds without Nav2Pilot. The setup no longer realigns or pushes the Nav2Pilot branches: keeping them current is part of step 0 below (`OP-update-sunny-nav-alpha`). Do not use `sunny-nav` as the first parameter.
 <!-- [nav source] - END -->
 
 ## Workflow
 
+0. Read `openpilot_scripts/docs/external-branches.md` and bring every external branch up to date first: the fork masters equal upstream (Cristian syncs them on GitHub), then each source's update skill when it is behind (Nav2Pilot, opendbc, neural-network-data, Distill, speed limits). Stop and report on a conflict.
 1. Determine the requested variant: `comma` or `sunny`.
 2. Resolve the directory containing this `SKILL.md`.
 3. Run the bundled wrapper by absolute path: `scripts/setup_psa_torque.sh <variant> [master|master=<commit>|release|nav-alpha]`.
@@ -59,6 +54,10 @@ After cloning the selected upstream source, the wrapper edits `selfdrive/locatio
 
 Sunny variant only: the wrapper fetches the model-catalog changes from the canonical **`cristianku/sunnypilot:distilled`** branch and applies the three-file diff to the selected SunnyPilot/PSA/Nav2Pilot base. It makes Cristian's openpilot.distill models visible in the comma Models menu and in SunnyLink. There is **no separate local Distill patch**. On a conflict the setup stops without publishing; resolve the changes in the source or checkout, or explicitly use `SKIP_EXTRA_MODEL_CATALOG=true` to omit the feature. The source branch should first be synced with upstream using `OP-update-distilled`.
 
+<!-- [speed limits] - START -->
+Sunny variant only: the wrapper then applies the speed-limit work from **`cristianku/sunnypilot:speed-limits`**, the way the opendbc work comes from `cristianku/opendbc:psa-torque-sunny-testing`: every change of that branch since its merge-base with `sunnypilot/sunnypilot:master` (Speed Limit Source "Signs Read By" with the neural network as a reader, the `speedVisionSP` message, the resolver's `vision` source, the sunnylink setting, and the `openpilot/sunnypilot/speed_limits/models` submodule pointing to `cristianku/speed-limits-models`), applied with 3-way context and staged. Work on speed limits is committed and pushed to `speed-limits`; this setup only picks it up. It is skipped on a source without Speed Limit Assist (comma.ai) and when the checkout already has it. On a conflict the setup stops without publishing: merge sunnypilot master into `speed-limits` and resolve there, or use `SKIP_SPEED_LIMITS=true` to build without it. Overrides: `SPEED_LIMITS_SOURCE_REPO`, `SPEED_LIMITS_SOURCE_BRANCH`.
+<!-- [speed limits] - END -->
+
 For all variants, clone the configured upstream source directly, recreate the custom testing branch from its exact commit, update `.gitmodules` to `cristianku/opendbc`, set the `opendbc_repo` gitlink to Cristian's matching testing opendbc branch commit, and push with `--force-with-lease`. Default to the current selected source branch; with `master=<commit>`, verify and check out that commit from the selected source branch history; in release mode query GitHub's latest-release endpoint, verify the returned tag, and clone that tag. Do not copy opendbc files into openpilot.
 
 ## Safety
@@ -72,6 +71,6 @@ For all variants, clone the configured upstream source directly, recreate the cu
 <!-- [pinned source] - START -->
 - Stop and report an error if a `master=<commit>` value is malformed, unavailable from the selected upstream, or outside the selected source branch history. Never treat a generated `cristianku/openpilot` commit as an upstream source commit.
 <!-- [pinned source] - END -->
-- Stage only `.gitmodules`, `opendbc_repo`, `selfdrive/locationd/torqued.py` (the PSA `ALLOWED_CARS` patch), and `sunnypilot/neural_network_data` and the extra model catalog files (`sunnypilot/models/extra_catalog.py`, `fetcher.py`, its test) when applicable.
+- Stage only `.gitmodules`, `opendbc_repo`, `selfdrive/locationd/torqued.py` (the PSA `ALLOWED_CARS` patch), and `sunnypilot/neural_network_data`, the extra model catalog files (`sunnypilot/models/extra_catalog.py`, `fetcher.py`, its test) and the files of `cristianku/sunnypilot:speed-limits` (with its `speed_limits/models` submodule pointer) when applicable.
 - Override the neural data source only with `NEURAL_NETWORK_DATA_REPO` or `NEURAL_NETWORK_DATA_BRANCH` when explicitly required.
 - Stop and report the error if cloning, validation, or a protected push fails.
