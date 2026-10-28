@@ -34,7 +34,7 @@ git_test -C "${upstream}" commit -qm 'sunnypilot master'
 source_repo="${test_root}/sunnypilot-fork"
 git_test clone -q "${upstream}" "${source_repo}"
 git_test -C "${source_repo}" checkout -qb speed-limits
-printf '%s\n' 'POLICIES = ["car", "map"]' 'SIGN_READER = "SpeedLimitSignReader"' 'def resolve(car, map):' '  return car or map' \
+printf '%s\n' 'POLICIES = ["car", "map"]' 'VISION = "speedVisionSP"' 'def resolve(car, map):' '  return car or map' \
   > "${source_repo}/${resolver}"
 printf '%s\n' 'speed vision' > "${source_repo}/openpilot/selfdrive/ui/speed_vision.py"
 printf '%s\n' '[submodule "sunnypilot/speed_limits/models"]' '  path = openpilot/sunnypilot/speed_limits/models' \
@@ -68,7 +68,7 @@ checkout="${test_root}/checkout"
 make_checkout "${checkout}"
 enable_speed_limits "${checkout}" > /dev/null
 git -C "${checkout}" diff --cached --quiet && fail "nothing staged"
-grep -q SpeedLimitSignReader "${checkout}/${resolver}" || fail "resolver change missing"
+grep -q speedVisionSP "${checkout}/${resolver}" || fail "resolver change missing"
 [[ -f "${checkout}/openpilot/selfdrive/ui/speed_vision.py" ]] || fail "new file missing"
 grep -q 'ui = "nav2pilot"' "${checkout}/openpilot/selfdrive/ui/ui.py" || fail "Nav2Pilot change lost"
 grep -q 'cristianku/speed-limits-models' "${checkout}/.gitmodules" || fail ".gitmodules entry missing"

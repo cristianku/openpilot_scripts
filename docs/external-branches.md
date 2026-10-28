@@ -16,7 +16,7 @@ updated, in its own repository, not in the middle of a setup.
 | PSA port, stock ARTIV radar logging | `cristianku/opendbc:psa-torque-sunny-testing` | `opendbc_repo` pointer (the whole branch) | `sunnypilot/opendbc:master` | `op-merge-upstream sunny` |
 | NNLC lateral model of the Peugeot 3008 | `cristianku/neural-network-data:master` | `sunnypilot/neural_network_data` pointer | `sunnypilot/neural-network-data` | **Sync fork** on GitHub; new Peugeot data with `op-nnlc-fetch-peugeot` |
 | Distill driving models in the Models menu and SunnyLink | `cristianku/sunnypilot:distilled` | its 3 catalog files, changes since the merge-base with master | `sunnypilot/sunnypilot:master` | `OP-update-distilled` |
-| Speed limits (Signs Read By, `speedVisionSP`, the `vision` source, the models submodule `cristianku/speed-limits-models`) | `cristianku/sunnypilot:speed-limits` | all its changes since the merge-base with master | `sunnypilot/sunnypilot:master` | merge `sunnypilot/sunnypilot:master` into `speed-limits`, run its resolver tests, push (no skill yet) |
+| Speed limits (Speed Limit Source "Map Data + Vision", `speedVisionSP`, the `vision` source, the models submodule `cristianku/speed-limits-models`) | `cristianku/sunnypilot:speed-limits` | all its changes since the merge-base with master | `sunnypilot/sunnypilot:master` | merge `sunnypilot/sunnypilot:master` into `speed-limits`, run its resolver tests, push (no skill yet) |
 | torqued learning for PSA | the setup script itself | `'psa'` added to `ALLOWED_CARS` in `selfdrive/locationd/torqued.py` | — | — |
 
 ## Before the setup

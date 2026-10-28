@@ -71,7 +71,7 @@ NAV2PILOT_BASE="${NAV2PILOT_BASE:-}"
 NAV_WATCHED_FILES="openpilot/selfdrive/navigation/navd.py openpilot/selfdrive/navigation/tiles.py openpilot/system/athena/rpc.py"
 # [nav source] - END
 # [speed limits] - START
-# The speed-limit work (Speed Limit Source "Signs Read By", speedVisionSP, the models submodule) lives on its own
+# The speed-limit work (Speed Limit Source "Map Data + Vision", speedVisionSP, the models submodule) lives on its own
 # branch of cristianku/sunnypilot, as the opendbc work lives on psa-torque-sunny-testing of cristianku/opendbc.
 SPEED_LIMITS_SOURCE_REPO="${SPEED_LIMITS_SOURCE_REPO:-https://github.com/${GITHUB_USER}/sunnypilot.git}"
 SPEED_LIMITS_SOURCE_BRANCH="${SPEED_LIMITS_SOURCE_BRANCH:-speed-limits}"
@@ -388,7 +388,7 @@ enable_speed_limits() {
     echo "No sunnypilot Speed Limit Assist in this source: speed limits not needed"
     return
   fi
-  if git -C "${dest}" grep -q -e 'SpeedLimitSignReader' -- "${resolver_rel}"; then
+  if git -C "${dest}" grep -q -e 'speedVisionSP' -- "${resolver_rel}"; then
     echo "Speed limits already in this checkout; not applying them again"
     return
   fi
