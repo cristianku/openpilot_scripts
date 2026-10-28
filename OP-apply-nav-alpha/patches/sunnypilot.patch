@@ -20,7 +20,7 @@ index 0199535a6b2cd8d645411e613a5684450a705eb1..49b8e2de819c005a322d566830adbdd1
      return self.service.request(method, endpoint, **params)
  
 diff --git a/openpilot/common/params_keys.h b/openpilot/common/params_keys.h
-index f8543d8bed87d44d807f6d98c099fc35b1818c08..0e6b7c5ca3bc2382c758222e4e1dbc1107975053 100644
+index 9d28f04082f4629efdaca22ffaec677c13dd780f..a96398ee5a1bee0a79708ab6193d26c64565a8a8 100644
 --- a/openpilot/common/params_keys.h
 +++ b/openpilot/common/params_keys.h
 @@ -180,6 +180,7 @@ inline static std::unordered_map<std::string, ParamKeyAttributes> keys = {
@@ -51,20 +51,6 @@ index 3c112195385776558b02257099e5a40c0d1e478b..9abf28825aaecba7864e90a84554ee1e
      ])
  
      # Toggle lists
-diff --git a/openpilot/selfdrive/ui/mici/onroad/torque_bar.py b/openpilot/selfdrive/ui/mici/onroad/torque_bar.py
-index f4a4aa37689cccc3ca078c15078246349a892933..09fee284f5b3bc9f6c796f23d468578a64179d00 100644
---- a/openpilot/selfdrive/ui/mici/onroad/torque_bar.py
-+++ b/openpilot/selfdrive/ui/mici/onroad/torque_bar.py
-@@ -208,7 +208,8 @@ class TorqueBar(Widget):
-     # draw curved line polygon torque bar
-     torque_line_radius = 1200 * self._scale
-     top_angle = -90
--    torque_bg_angle_span = self._torque_line_alpha_filter.x * TORQUE_ANGLE_SPAN * rect.width / 476
-+    # min(): only scale down, sunnypilot's scale=3 bar on the wider tici view keeps its span
-+    torque_bg_angle_span = self._torque_line_alpha_filter.x * TORQUE_ANGLE_SPAN * min(1.0, rect.width / 476)
-     torque_start_angle = top_angle - torque_bg_angle_span / 2
-     torque_end_angle = top_angle + torque_bg_angle_span / 2
-     # centerline radius & center (you already have these values)
 diff --git a/openpilot/selfdrive/ui/sunnypilot/mici/widgets/nav_destination.py b/openpilot/selfdrive/ui/sunnypilot/mici/widgets/nav_destination.py
 new file mode 100644
 index 0000000000000000000000000000000000000000..5e800343f1e02efa13f5a19d3dfbe463d38a5a39

@@ -102,8 +102,6 @@ openpilot/common/params_keys.h              + MapboxToken (solo questa: Navigati
                                               sono gia' nel master)
 openpilot/common/api/__init__.py            + __all__ e property dongle_id: tiles.py di comma usa
                                               api.dongle_id, l'Api di sunnypilot non ce l'ha
-openpilot/selfdrive/ui/mici/onroad/torque_bar.py   min(1.0, rect.width / 476): la TorqueBar mici e' condivisa
-                                              con la UI tici di sunnypilot (scale=3), senza min() si allarga
 openpilot/selfdrive/ui/mici/layouts/settings/developer.py   + NavDestinationButton() dopo il toggle navigation
 ```
 
@@ -137,7 +135,8 @@ Si tiene **sempre** il codice nuovo di upstream e si rimettono sopra solo le nos
   aggiunge argomenti, es. `enabled=`, si tengono)
 - `params_keys.h`: solo `MapboxToken`, in ordine alfabetico; se upstream la aggiunge, la nostra va tolta
 - `api/__init__.py` (sunny): se sunnypilot aggiunge `dongle_id` da solo, la nostra property va tolta
-- `torque_bar.py` (sunny): se upstream cambia la formula dello span, riapplicare il `min(1.0, ...)`
+- `torque_bar.py` (sunny): non piu' nella patch dal 28 ott 2026: sunnypilot ha corretto da se' l'arco dello sterzo
+  sulla UI tici (`90a54128`, `min(1.0, rect.width / (476 * self._scale))`)
 - `developer.py` (sunny): `NavDestinationButton()` subito dopo `self._navigation_toggle`
 
 Poi `git add` dei file e `$S <variante> commit`. Se il codice nostro e' cambiato: `$S <variante> save-patch`,
