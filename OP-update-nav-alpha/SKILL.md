@@ -21,6 +21,6 @@ Run: `bash /Users/cristianku/GitHub/COMMA.AI/CRISTIANKU/openpilot_scripts/script
 - `NO_PUSH=true` builds the commit without publishing.
 
 Works in a bare cache clone (`CRISTIANKU/fork-branch-cache.git`); no working folder is touched.
-The setup skills (`OP-setup-psa-torque(-testing) comma nav-alpha`) run this automatically before cloning.
+`OP-setup-psa-torque comma nav-alpha` runs this automatically before cloning; `OP-setup-psa-torque-testing` does not (it only reads the commit: run this first, see docs/external-branches.md).
 
 Report: the published commit SHA (or "già aggiornato"), the commaai master it is based on, any ATTENZIONE lines.

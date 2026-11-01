@@ -111,7 +111,7 @@ Le due versioni del pacchetto devono restare uguali: `OP-apply-nav-alpha sunny s
 
 Normalmente basta `OP-update-nav-alpha` / `OP-update-sunny-nav-alpha`
 (`scripts/update_fork_branch.sh nav-alpha|sunny-nav-alpha`): sposta il commit Nav2Pilot sul master fresco, push solo
-se il branch e' indietro. I setup PSA lo fanno da soli prima di clonare. Mai "Sync fork" di GitHub su `sunny-nav-alpha`:
+se il branch e' indietro. `OP-setup-psa-torque <variante> nav-alpha` lo fa da solo prima di clonare; il setup testing no (legge solo il commit). Mai "Sync fork" di GitHub su `sunny-nav-alpha`:
 `cristianku/openpilot` e' un fork di commaai, unirebbe il master di comma dentro sunnypilot.
 
 Se lo script si ferma per conflitti, o se cambia il codice Nav2Pilot, si passa da `OP-apply-nav-alpha`:
