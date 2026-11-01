@@ -12,7 +12,7 @@ updated, in its own repository, not in the middle of a setup.
 | What | Source | How it is injected | Upstream | Update with |
 |---|---|---|---|---|
 | The base | `sunnypilot/sunnypilot:master` (or `master=<commit>`, `release`) | cloned | — | the fork `cristianku/sunnypilot` master: **Sync fork** on GitHub (Cristian) |
-| Nav2Pilot (setNavRoute waypoints, setMapboxToken) | `OP-apply-nav-alpha/patches/sunnypilot.patch`, published as `cristianku/openpilot:sunny-nav-alpha` and `cristianku/sunnypilot:nav-alpha` | the patch, 3-way, on the base | `sunnypilot/sunnypilot:master` | `OP-update-sunny-nav-alpha`; on conflicts `OP-apply-nav-alpha` |
+| Nav2Pilot (setNavRoute waypoints, setMapboxToken) | the one Nav2Pilot commit of `cristianku/openpilot:sunny-nav-alpha` (same commit on `cristianku/sunnypilot:nav-alpha`) | its diff (`branch^..branch`), 3-way, on the base | `sunnypilot/sunnypilot:master` | `OP-update-sunny-nav-alpha`; on conflicts `OP-apply-nav-alpha` |
 | PSA port, stock ARTIV radar logging | `cristianku/opendbc:psa-torque-sunny-testing` | `opendbc_repo` pointer (the whole branch) | `sunnypilot/opendbc:master` | `op-merge-upstream sunny` |
 | NNLC lateral model of the Peugeot 3008 | `cristianku/neural-network-data:master` | `sunnypilot/neural_network_data` pointer | `sunnypilot/neural-network-data` | **Sync fork** on GitHub; new Peugeot data with `op-nnlc-fetch-peugeot` |
 | Distill driving models in the Models menu and SunnyLink | `cristianku/sunnypilot:distilled` | its 3 catalog files, changes since the merge-base with master | `sunnypilot/sunnypilot:master` | `OP-update-distilled` |

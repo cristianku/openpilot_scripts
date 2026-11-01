@@ -14,9 +14,8 @@ Secondo parametro: la base upstream (predefinito: master).
   comma master          -> commaai/openpilot:master
   master=<commit>       -> quel commit del master upstream
   release               -> l'ultima GitHub Release upstream
-Nav2Pilot viene sempre iniettato sulla base, dalla patch canonica
-OP-apply-nav-alpha/patches/sunnypilot.patch (sunny) o openpilot.patch (comma), la stessa di
-cristianku/openpilot:sunny-nav-alpha / nav-alpha; SKIP_NAV=true per costruire senza.
+Nav2Pilot viene sempre iniettato sulla base, dal suo unico commit sulla branch
+cristianku/openpilot:sunny-nav-alpha (sunny) o nav-alpha (comma); SKIP_NAV=true per costruire senza.
 nav-alpha e feature/nav-alpha (vecchi nomi, solo sunny per il secondo) valgono come master.
 Prima di lanciarlo: docs/external-branches.md (sincronizzare master e branch esterni).
 Destinazione Sunny: cristianku/openpilot:psa-torque-sunny-testing
@@ -133,20 +132,12 @@ if [[ "${variant}" == "sunny" ]]; then
 fi
 
 # [nav source] - START
-# Nav2Pilot is injected on whichever base was chosen, from its canonical patch (the one that builds
-# cristianku/openpilot:sunny-nav-alpha / nav-alpha); SKIP_NAV=true builds without it.
-nav_patch=""
-nav_base=""
+# Nav2Pilot is injected on whichever base was chosen, from its only commit on
+# cristianku/openpilot:sunny-nav-alpha / nav-alpha (its single source); SKIP_NAV=true builds without it.
+nav_branch=""
 if [[ "${SKIP_NAV:-false}" != "true" ]]; then
-  nav_fork="openpilot"
-  [[ "${variant}" == "sunny" ]] && nav_fork="sunnypilot"
-  nav_patches="${NAV2PILOT_PATCHES:-${script_dir}/../../OP-apply-nav-alpha/patches}"
-  nav_patch="${nav_patches}/${nav_fork}.patch"
-  nav_base="${nav_patches}/${nav_fork}.base"
-  if [[ ! -s "${nav_patch}" ]]; then
-    echo "ERROR: missing the Nav2Pilot patch ${nav_patch} (SKIP_NAV=true to build without Nav2Pilot)" >&2
-    exit 1
-  fi
+  nav_branch="nav-alpha"
+  [[ "${variant}" == "sunny" ]] && nav_branch="sunny-nav-alpha"
 fi
 # [nav source] - END
 
@@ -165,7 +156,6 @@ BRANCH="${branch}" \
   OPENPILOT_SOURCE_COMMIT="${pinned_source_commit}" \
   OPENDBC_SOURCE_BRANCH="${OPENDBC_SOURCE_BRANCH:-${source_branch}}" \
   USE_CUSTOM_NEURAL_NETWORK_DATA="${use_custom_neural_network_data}" \
-  NAV2PILOT_PATCH="${nav_patch}" \
-  NAV2PILOT_BASE="${nav_base}" \
+  NAV2PILOT_BRANCH="${nav_branch}" \
   bash "${common_script}"
 # [pinned source] - END

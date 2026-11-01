@@ -12,16 +12,15 @@ il JWT dell'utente. Per questo teniamo due branch Nav2Pilot, tutti e due su `cri
 | `nav-alpha` | `CRISTIANKU/openpilot-nav-alpha` | `commaai/openpilot:master` (remote `commaai`) | `installer.comma.ai/cristianku/nav-alpha` |
 
 Regola: ogni branch e' **master + un solo commit** con le nostre modifiche. Il codice nuovo vive in file nuovi; i
-file upstream si toccano il minimo indispensabile. Le modifiche sono salvate come patch in
-`OP-apply-nav-alpha/patches/` e la skill `OP-apply-nav-alpha` le riapplica su un master fresco.
+file upstream si toccano il minimo indispensabile.
 
-Le patch sono l'unica fonte del codice Nav2Pilot. Ogni modifica alla sua logica sul comma (setNavRoute,
-setMapboxToken, i nostri moduli navd/waypoints/mapbox, il widget della destinazione, qualsiasi file della patch, una
-nuova RPC o un nuovo param che servono alle app) va riportata nelle patch, per tutti e due i fork: si modifica il
-clone locale su `nav-alpha`, `save-patch`, stessa modifica sull'altro fork e `save-patch` anche li', `sync-check`,
-poi `push` di tutti e due. Una modifica fatta solo nel clone, o pushata direttamente su `nav-alpha` /
-`sunny-nav-alpha`, si perde al primo riallineamento (skill OP-update, setup), che ricostruisce il branch da master +
-patch salvata.
+Le due branch sono l'unica fonte del codice Nav2Pilot: non esiste una patch o una copia altrove. I setup PSA
+prendono il diff del loro commit (`git diff <branch>^ <branch>`, applicato a 3 vie sulla base scelta); le skill
+OP-update spostano il commit sul master nuovo (come un cherry-pick). Ogni modifica alla sua logica sul comma
+(setNavRoute, setMapboxToken, i nostri moduli navd/waypoints/mapbox, il widget della destinazione, una nuova RPC o un
+nuovo param che servono alle app) si fa nel clone locale su `nav-alpha`: `git add` e `apply_nav_alpha.sh <variante>
+commit`, che corregge (amend) il commit Nav2Pilot, stessa modifica sull'altro fork, `sync-check`, poi `push` di tutti
+e due.
 
 ## Cosa aggiungiamo
 
@@ -57,7 +56,7 @@ setMapboxToken(token)
 - `clear_route()`: upstream + azzera i waypoint
 
 Attenzione: se upstream cambia `calculate_route`, `recompute_route` o `clear_route` in
-`openpilot/selfdrive/navigation/navd.py`, la patch puo' applicarsi pulita ma il nostro override resta vecchio.
+`openpilot/selfdrive/navigation/navd.py`, il commit puo' applicarsi pulito ma il nostro override resta vecchio.
 `OP-apply-nav-alpha status` elenca i commit upstream su quel file: vanno letti e riportati nel nostro codice.
 
 ## File, per fork
@@ -111,17 +110,18 @@ Le due versioni del pacchetto devono restare uguali: `OP-apply-nav-alpha sunny s
 ## Riallineare al master
 
 Normalmente basta `OP-update-nav-alpha` / `OP-update-sunny-nav-alpha`
-(`scripts/update_fork_branch.sh nav-alpha|sunny-nav-alpha`): master fresco + patch salvata, push solo se il branch e'
-indietro. I setup PSA lo fanno da soli prima di clonare. Mai "Sync fork" di GitHub su `sunny-nav-alpha`:
+(`scripts/update_fork_branch.sh nav-alpha|sunny-nav-alpha`): sposta il commit Nav2Pilot sul master fresco, push solo
+se il branch e' indietro. I setup PSA lo fanno da soli prima di clonare. Mai "Sync fork" di GitHub su `sunny-nav-alpha`:
 `cristianku/openpilot` e' un fork di commaai, unirebbe il master di comma dentro sunnypilot.
 
 Se lo script si ferma per conflitti, o se cambia il codice Nav2Pilot, si passa da `OP-apply-nav-alpha`:
 
 ```bash
 S=/Users/cristianku/GitHub/COMMA.AI/CRISTIANKU/openpilot_scripts/OP-apply-nav-alpha/scripts/apply_nav_alpha.sh
-$S sunny status      # cosa e' cambiato upstream, la patch si applica?
-$S sunny apply       # backup nav-alpha-prev, nav-alpha = master + patch, controlli, commit locale
-$S sunny push        # automatico, senza chiedere: save-patch + update_fork_branch.sh
+$S sunny status      # cosa e' cambiato upstream, il commit Nav2Pilot si applica?
+$S sunny apply       # backup nav-alpha-prev, nav-alpha = master + commit Nav2Pilot, controlli, commit locale
+$S sunny commit      # dopo git add: corregge (amend) il commit Nav2Pilot, resta un solo commit
+$S sunny push        # automatico, senza chiedere: push del branch + update_fork_branch.sh
 ```
 
 Uguale con `comma`. Dopo il push la sorgente e' pronta per `OP-setup-psa-torque(-testing) <variante>`.
@@ -134,27 +134,27 @@ Si tiene **sempre** il codice nuovo di upstream e si rimettono sopra solo le nos
 - `rpc.py` (comma, dal 31 ott 2026, #39190): `dispatcher.add_method` vuole un validatore per ogni parametro, altrimenti
   athenad crasha all'import. `setNavRoute` e `setMapboxToken` li dichiarano (`number`, `struct`, `regex`...), come
   `setNavDestination`; i casi logici (piu' di 20 waypoint, token `sk.`) rispondono ancora con `success: 0` e il motivo.
-  Sunnypilot non ha ancora quel `rpc.py`: quando lo prende, stessa modifica nella patch sunny (fino ad allora i due
+  Sunnypilot non ha ancora quel `rpc.py`: quando lo prende, stessa modifica nel commit sunny (fino ad allora i due
   `athena.py` e i loro test differiscono solo per questo)
 - `process_config.py`: nella riga `PythonProcess("navd", ...)` di upstream si cambia solo il modulo (se upstream
   aggiunge argomenti, es. `enabled=`, si tengono)
 - `params_keys.h`: solo `MapboxToken`, in ordine alfabetico; se upstream la aggiunge, la nostra va tolta
 - `api/__init__.py` (sunny): se sunnypilot aggiunge `dongle_id` da solo, la nostra property va tolta
-- `torque_bar.py` (sunny): non piu' nella patch dal 28 ott 2026: sunnypilot ha corretto da se' l'arco dello sterzo
+- `torque_bar.py` (sunny): non piu' nel commit Nav2Pilot dal 28 ott 2026: sunnypilot ha corretto da se' l'arco dello sterzo
   sulla UI tici (`90a54128`, `min(1.0, rect.width / (476 * self._scale))`)
 - `developer.py` (sunny): `NavDestinationButton()` subito dopo `self._navigation_toggle`
 
-Poi `git add` dei file e `$S <variante> commit`. Se il codice nostro e' cambiato: `$S <variante> save-patch`,
-stessa modifica sull'altra variante, `sync-check`.
+Poi `git add` dei file e `$S <variante> commit`. Se il codice nostro e' cambiato: stessa modifica sull'altra
+variante, `sync-check`.
 
 ### Se upstream cambia `navd.py`
 
 Leggere i commit indicati da `status` e riportare la modifica in `calculate_route` (e negli altri override) del
-nostro `navd.py`, in entrambi i fork; poi `save-patch` per tutti e due e `sync-check`.
+nostro `navd.py`, in entrambi i fork; poi `commit` per tutti e due e `sync-check`.
 
 ### Se upstream integra waypoint o token
 
-Se comma/sunnypilot aggiungono un loro modo di passare waypoint o token Mapbox, la patch va ridotta (o tolta) e le
+Se comma/sunnypilot aggiungono un loro modo di passare waypoint o token Mapbox, il commit Nav2Pilot va ridotto (o tolto) e le
 app adattate: non tenere due meccanismi.
 
 ## Storia
@@ -164,5 +164,6 @@ app adattate: non tenere due meccanismi.
 - 2026-10-18 sunnypilot master integra Nav Alpha di comma (sync #2059); il 2026-10-20 `nav-alpha` di sunny
   viene allineato con un merge (`837ba52c1a`), il vecchio `feature/nav-alpha` resta indietro.
 - 2026-10-20 patch salvate in `OP-apply-nav-alpha/patches/` (base: sunny `922513f312`, comma `2ab952d5eb`).
+- 2026-11-01 tolte le patch: l'unica fonte del codice Nav2Pilot e' il commit su `nav-alpha` / `sunny-nav-alpha`.
   Tolti due residui dei vecchi branch: in sunny `NavigationEnabled`/`NavDestination` comparivano due volte in
   `params_keys.h` dopo il merge; in comma il commit `2e98c8aed` spostava `msgq_repo` rispetto a master.

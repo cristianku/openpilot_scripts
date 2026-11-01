@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# enable_nav2pilot: the canonical Nav2Pilot patch is applied, staged, on whichever base the setup cloned; a patch that
-# no longer applies stops the setup; without a patch (SKIP_NAV=true) nothing changes.
+# enable_nav2pilot: the Nav2Pilot commit of the branch is applied, staged, on whichever base the setup cloned; a commit
+# that no longer applies, or a merge in its place, stops the setup; without a branch (SKIP_NAV=true) nothing changes.
 set -euo pipefail
 
 skill_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -27,20 +27,24 @@ make_base() {
   git_test -C "${dest}" commit -qm 'upstream master'
 }
 
-# The patch, made as OP-apply-nav-alpha makes it: a diff over the upstream base.
-patch_source="${test_root}/patch-source"
-make_base "${patch_source}"
-printf '%s\n' 'def route():' '  return waypoints()' > "${patch_source}/${navd}"
-printf '%s\n' 'def waypoints():' '  return []' > "${patch_source}/openpilot/selfdrive/navigation/waypoints.py"
-git -C "${patch_source}" add -N -- .
-nav_patch="${test_root}/sunnypilot.patch"
-git -C "${patch_source}" diff --binary --full-index > "${nav_patch}"
+# The fork, as OP-apply-nav-alpha publishes it: sunny-nav-alpha = upstream master + one Nav2Pilot commit.
+fork="${test_root}/fork"
+make_base "${fork}"
+git_test -C "${fork}" checkout -qb sunny-nav-alpha
+printf '%s\n' 'def route():' '  return waypoints()' > "${fork}/${navd}"
+printf '%s\n' 'def waypoints():' '  return []' > "${fork}/openpilot/selfdrive/navigation/waypoints.py"
+git_test -C "${fork}" add -- .
+git_test -C "${fork}" commit -qm 'nav alpha: Nav2Pilot'
+# A "Sync fork" merge in place of the single commit.
+git_test -C "${fork}" checkout -qb merged master
+git_test -C "${fork}" commit -q --allow-empty -m 'upstream moved'
+git_test -C "${fork}" merge -q --no-edit sunny-nav-alpha
 
 BRANCH="psa-torque-sunny-testing"
 OPENPILOT_SOURCE_REPO="${test_root}"
 OPENPILOT_SOURCE_BRANCH=master
-NAV2PILOT_PATCH="${nav_patch}"
-NAV2PILOT_BASE=""
+NAV2PILOT_BRANCH=sunny-nav-alpha
+NAV2PILOT_REPO="file://${fork}"
 # shellcheck disable=SC1090
 source "${common_script}"
 
@@ -57,13 +61,20 @@ make_base "${conflict}"
 printf '%s\n' 'def route():' '  return upstream_route()' > "${conflict}/${navd}"
 git_test -C "${conflict}" commit -qam 'upstream changed navd'
 if (enable_nav2pilot "${conflict}" > /dev/null 2>&1); then
-  fail "a patch that does not apply did not stop the setup"
+  fail "a commit that does not apply did not stop the setup"
 fi
 
-# Without a patch: nothing.
+# A merge on the branch: the setup stops.
+merged="${test_root}/merged"
+make_base "${merged}"
+if (NAV2PILOT_BRANCH=merged enable_nav2pilot "${merged}" > /dev/null 2>&1); then
+  fail "a merge on the Nav2Pilot branch did not stop the setup"
+fi
+
+# Without a branch: nothing.
 skipped="${test_root}/skipped"
 make_base "${skipped}"
-NAV2PILOT_PATCH="" enable_nav2pilot "${skipped}" | grep -q 'built without Nav2Pilot' || fail "skip ignored"
+NAV2PILOT_BRANCH="" enable_nav2pilot "${skipped}" | grep -q 'built without Nav2Pilot' || fail "skip ignored"
 git -C "${skipped}" diff --cached --quiet || fail "skip staged changes"
 
-echo "PASS: Nav2Pilot injected on the base, stopped on a conflict, skipped without a patch"
+echo "PASS: Nav2Pilot injected from its branch commit, stopped on a conflict or a merge, skipped without a branch"

@@ -48,19 +48,12 @@ python3 - <<'PY'
 import json, os
 keys = ('BRANCH', 'OPENPILOT_SOURCE_REPO', 'OPENPILOT_SOURCE_BRANCH',
         'OPENPILOT_SOURCE_COMMIT', 'OPENDBC_SOURCE_BRANCH',
-        'USE_CUSTOM_NEURAL_NETWORK_DATA', 'NAV2PILOT_PATCH')
+        'USE_CUSTOM_NEURAL_NETWORK_DATA', 'NAV2PILOT_BRANCH')
 print(json.dumps({key: os.environ.get(key, '') for key in keys}))
 PY
 """)
       env = {key: value for key, value in os.environ.items()
              if not key.startswith(('OPENPILOT_', 'OPENDBC_', 'NEURAL_NETWORK_DATA_', 'NAV2PILOT_', 'SKIP_NAV'))}
-      # The Nav2Pilot patches the testing wrapper injects (the real ones are next to the skill, not the copy).
-      patches = scripts / 'patches'
-      patches.mkdir()
-      for fork in ('sunnypilot', 'openpilot'):
-        (patches / f'{fork}.patch').write_text(f'{fork} nav2pilot\n')
-        (patches / f'{fork}.base').write_text('0' * 40 + '\n')
-      env['NAV2PILOT_PATCHES'] = str(patches)
       # No realignment of the Nav2Pilot branches from a test (it fetches and pushes).
       env['SKIP_NAV_UPDATE'] = 'true'
       env.update(overrides or {})
@@ -89,28 +82,20 @@ PY
           self.assertEqual(actual['BRANCH'], base + ('-testing' if testing else ''))
           self.assertEqual(actual['OPENDBC_SOURCE_BRANCH'], base + ('' if testing else '-testing'))
           if testing:
-            # Testing always builds on the upstream master and injects Nav2Pilot from its patch, whatever the
-            # old source name given.
+            # Testing always builds on the upstream master and injects Nav2Pilot from its branch commit, whatever
+            # the old source name given.
             repo, source_branch = ('sunnypilot/sunnypilot' if sunny else 'commaai/openpilot'), 'master'
-            self.assertTrue(actual['NAV2PILOT_PATCH'].endswith(('sunnypilot' if sunny else 'openpilot') + '.patch'))
+            self.assertEqual(actual['NAV2PILOT_BRANCH'], 'sunny-nav-alpha' if sunny else 'nav-alpha')
           else:
             repo, source_branch = nav_repo, nav_source_branch
           self.assertEqual(actual['OPENPILOT_SOURCE_REPO'], f'https://github.com/{repo}.git')
           self.assertEqual(actual['OPENPILOT_SOURCE_BRANCH'], source_branch)
           self.assertEqual(actual['USE_CUSTOM_NEURAL_NETWORK_DATA'], str(sunny).lower())
 
-  def test_nav2pilot_skipped_or_missing(self):
+  def test_nav2pilot_skipped(self):
     actual = self.capture(TORQUE_ROOT, 'setup_psa_torque.sh', 'setup_psa_torque_common.sh', ['sunny'],
                           {'SKIP_NAV': 'true'})
-    self.assertEqual(actual['NAV2PILOT_PATCH'], '')
-    with tempfile.TemporaryDirectory() as tmp:
-      script = Path(tmp) / 'setup_psa_torque.sh'
-      shutil.copy2(TORQUE_ROOT / 'scripts' / 'setup_psa_torque.sh', script)
-      (Path(tmp) / 'setup_psa_torque_common.sh').write_text('exit 0\n')
-      env = dict(os.environ, NAV2PILOT_PATCHES=str(Path(tmp) / 'none'))
-      result = subprocess.run(['bash', str(script), 'sunny'], env=env, capture_output=True, text=True)
-      self.assertEqual(result.returncode, 1)
-      self.assertIn('missing the Nav2Pilot patch', result.stderr)
+    self.assertEqual(actual['NAV2PILOT_BRANCH'], '')
 
   def test_invalid_source_stops_before_setup(self):
     for root, wrapper, *_ in wrappers():

@@ -13,7 +13,7 @@ Recreates the mapped local openpilot folder from upstream `master` by default, o
 
 ## setup-psa-torque-testing (testing)
 
-Same as above but for the **testing** branches (`psa-torque-testing` / `psa-torque-sunny-testing`, the one the comma runs). Nav2Pilot is always injected on the base from `OP-apply-nav-alpha/patches/<fork>.patch` (`SKIP_NAV=true` to build without); Sunny also gets the Distill catalog and the speed limits of `cristianku/sunnypilot:speed-limits`. Before running it, bring the external branches up to date: [external-branches.md](external-branches.md).
+Same as above but for the **testing** branches (`psa-torque-testing` / `psa-torque-sunny-testing`, the one the comma runs). Nav2Pilot is always injected on the base from its one commit on `cristianku/openpilot:sunny-nav-alpha` / `nav-alpha` (`SKIP_NAV=true` to build without); Sunny also gets the Distill catalog and the speed limits of `cristianku/sunnypilot:speed-limits`. Before running it, bring the external branches up to date: [external-branches.md](external-branches.md).
 
 ```bash
 ./setup-psa-torque-testing/scripts/setup_psa_torque.sh comma   # or: sunny
@@ -87,7 +87,7 @@ Examples: `$OP-news ultime 24 ore`, `$OP-news solo sunnypilot, modelli e NNLC`. 
 
 ## OP-apply-nav-alpha (Nav2Pilot)
 
-Lavora sulle patch Nav2Pilot nei cloni locali (conflitti, modifiche al codice) e pubblica `cristianku/openpilot` `nav-alpha` (comma) o `sunny-nav-alpha` (sunnypilot) dall'ultimo master upstream, riapplicando solo le modifiche Nav2Pilot (`setNavRoute` con waypoint, `setMapboxToken`), salvate come patch in `OP-apply-nav-alpha/patches/`. Un solo commit sopra master, backup locale `nav-alpha-prev`, push solo con l'ok di Cristian. Dettagli e risoluzione conflitti: [nav-alpha-nav2pilot.md](nav-alpha-nav2pilot.md).
+Lavora sul commit Nav2Pilot nei cloni locali (conflitti, modifiche al codice con `commit` = amend) e pubblica `cristianku/openpilot` `nav-alpha` (comma) o `sunny-nav-alpha` (sunnypilot) sull'ultimo master upstream, con solo le modifiche Nav2Pilot (`setNavRoute` con waypoint, `setMapboxToken`). Quelle due branch sono l'unica fonte del codice: un solo commit sopra master, backup locale `nav-alpha-prev`, push solo con l'ok di Cristian. Dettagli e risoluzione conflitti: [nav-alpha-nav2pilot.md](nav-alpha-nav2pilot.md).
 
 ```bash
 ./OP-apply-nav-alpha/scripts/apply_nav_alpha.sh sunny status   # oppure: comma
@@ -97,7 +97,7 @@ Lavora sulle patch Nav2Pilot nei cloni locali (conflitti, modifiche al codice) e
 ## OP-update-nav-alpha, OP-update-sunny-nav-alpha, OP-update-distilled
 
 Il wrapper `scripts/update_fork_branch.sh` aggiorna i branch installabili di `cristianku/openpilot`:
-`nav-alpha` (comma + Nav2Pilot) e `sunny-nav-alpha` (sunnypilot + Nav2Pilot) sono ancora generati da patch;
+`nav-alpha` (comma + Nav2Pilot) e `sunny-nav-alpha` (sunnypilot + Nav2Pilot) sono la fonte stessa del codice: lo script sposta il loro unico commit sul master nuovo;
 `distilled` invece usa **due step**: merge del master ufficiale SunnyPilot nella sorgente `cristianku/sunnypilot:distilled`, poi mirror dello stesso SHA in `cristianku/openpilot:distilled`. La skill si ferma ai conflitti; un agente AI puo' esaminare e risolverli consapevolmente. Le skill PSA Sunny consumano il catalogo direttamente dalla branch sorgente, non da copie della patch. Verificare la branch installabile prima di condividere il link `installer.comma.ai/cristianku/distilled`.
 
 ```bash

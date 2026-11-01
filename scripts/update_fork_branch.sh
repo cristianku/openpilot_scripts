@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
-# Ricostruisce un branch di cristianku/openpilot dal master upstream piu' una patch, in un solo commit,
-# e lo pubblica. Chiunque lo installa con installer.comma.ai/cristianku/<branch>.
+# Riallinea un branch di cristianku/openpilot al master upstream e lo pubblica. Chiunque lo installa con
+# installer.comma.ai/cristianku/<branch>.
 #
 # Uso: update_fork_branch.sh <nav-alpha|sunny-nav-alpha|distilled>
-#   nav-alpha        commaai/openpilot master + Nav2Pilot (OP-apply-nav-alpha/patches/openpilot.patch)
-#   sunny-nav-alpha  sunnypilot/sunnypilot master + Nav2Pilot (OP-apply-nav-alpha/patches/sunnypilot.patch),
+#   nav-alpha        commaai/openpilot master + il commit Nav2Pilot
+#   sunny-nav-alpha  sunnypilot/sunnypilot master + il commit Nav2Pilot,
 #                    lo stesso commit va anche su cristianku/sunnypilot nav-alpha (MIRROR_REPO)
 #   distilled        sync cristianku/sunnypilot:distilled with upstream master, then mirror to cristianku/openpilot:distilled
 #
-# Se il branch su GitHub e' gia' il master attuale piu' la stessa patch non fa niente.
-# Se la patch non si applica piu' (conflitti) si ferma con exit 2 e non pubblica niente: per nav-alpha e
-# sunny-nav-alpha i conflitti si risolvono con OP-apply-nav-alpha, che poi ripubblica con questo script.
+# nav-alpha e sunny-nav-alpha sono l'unica fonte del codice Nav2Pilot: un commit sopra il master upstream.
+# Lo script sposta quel commit sul master attuale (come un cherry-pick: stesso messaggio, stesso autore).
+# Se il branch e' gia' sul master attuale non fa niente. Se il commit non si applica piu' (conflitti) si ferma
+# con exit 2 e non pubblica niente: i conflitti si risolvono con OP-apply-nav-alpha, che poi ripubblica.
 # Non tocca nessuna cartella di lavoro: usa un clone bare di cache e un index temporaneo.
 #
 # Env: NO_PUSH=true (costruisce il commit ma non lo pubblica)
@@ -52,22 +53,15 @@ if [[ "${TARGET}" == "distilled" ]]; then
 fi
 # [distill sync] - END
 
-NAV_BASE_FILE=""
 # second branch that gets the very same commit (empty = none)
 MIRROR_REPO=""
 MIRROR_BRANCH=""
 if [[ "${TARGET}" == "nav-alpha" ]]; then
   SOURCE_NAME="commaai"
   SOURCE_REPO="https://github.com/commaai/openpilot.git"
-  PATCH_FILE="${OPENPILOT_SCRIPTS}/OP-apply-nav-alpha/patches/openpilot.patch"
-  NAV_BASE_FILE="${OPENPILOT_SCRIPTS}/OP-apply-nav-alpha/patches/openpilot.base"
-  TITLE="nav alpha: Nav2Pilot setNavRoute waypoints and setMapboxToken"
 elif [[ "${TARGET}" == "sunny-nav-alpha" ]]; then
   SOURCE_NAME="sunnypilot"
   SOURCE_REPO="https://github.com/sunnypilot/sunnypilot.git"
-  PATCH_FILE="${OPENPILOT_SCRIPTS}/OP-apply-nav-alpha/patches/sunnypilot.patch"
-  NAV_BASE_FILE="${OPENPILOT_SCRIPTS}/OP-apply-nav-alpha/patches/sunnypilot.base"
-  TITLE="nav alpha: Nav2Pilot setNavRoute waypoints and setMapboxToken"
   # cristianku/sunnypilot nav-alpha must never drift from sunny-nav-alpha
   MIRROR_REPO="https://github.com/cristianku/sunnypilot.git"
   MIRROR_BRANCH="nav-alpha"
@@ -75,11 +69,9 @@ else
   usage
 fi
 
-[[ -f "${PATCH_FILE}" ]] || die "manca la patch ${PATCH_FILE}"
-
-# the files the patch modifies or creates, one per line
+# the files the Nav2Pilot commit modifies or creates, one per line
 patch_files() {
-  grep '^diff --git ' "${PATCH_FILE}" | sed 's#^diff --git a/\(.*\) b/.*#\1#'
+  g diff --name-only --diff-filter=d "${nav_base}" "${current}"
 }
 
 # Upstream master into the cache. The first time it downloads the whole history (some minutes),
@@ -94,28 +86,33 @@ fetch_master() {
   master="$(g rev-parse "refs/sources/${SOURCE_NAME}/master")"
 }
 
-# The branch as it is now on GitHub (empty when it does not exist yet).
+# The branch as it is now on GitHub: one Nav2Pilot commit on an upstream master commit. Sets current and
+# nav_base (the master commit it sits on).
 fetch_current() {
   current="$(git ls-remote "${TARGET_REPO}" "refs/heads/${TARGET}" | awk 'NR == 1 { print $1 }')"
-  if [[ -n "${current}" ]]; then
-    g fetch -q --no-tags "${TARGET_REPO}" "+refs/heads/${TARGET}:refs/targets/${TARGET}"
+  [[ -n "${current}" ]] || die "${TARGET} non esiste su ${TARGET_REPO}: e' la fonte del codice Nav2Pilot, crealo con OP-apply-nav-alpha"
+  g fetch -q --no-tags "${TARGET_REPO}" "+refs/heads/${TARGET}:refs/targets/${TARGET}"
+  local parents
+  parents="$(g rev-list --parents -n 1 "${current}" | wc -w)"
+  if [[ "${parents}" -ne 2 ]]; then
+    die "${TARGET} ${current:0:10} e' un merge (forse un \"Sync fork\" di GitHub): rifallo un solo commit sul master con OP-apply-nav-alpha"
+  fi
+  nav_base="$(g rev-parse "${current}^")"
+  if ! g merge-base --is-ancestor "${nav_base}" "${master}"; then
+    die "${TARGET} non e' un solo commit sul ${SOURCE_NAME} master (sotto c'e' ${nav_base:0:10}): rifallo con OP-apply-nav-alpha"
   fi
 }
 
-# master + patch on a temporary index: sets tree.
+# The Nav2Pilot commit moved onto master on a temporary index (a cherry-pick): sets tree.
 build_tree() {
   local index_file="${work_dir}/index"
   GIT_INDEX_FILE="${index_file}" g read-tree "${master}"
-  echo "== applico $(basename "${PATCH_FILE}") su ${SOURCE_NAME} master ${master:0:10}"
-  if ! GIT_INDEX_FILE="${index_file}" g apply --cached --3way --whitespace=nowarn "${PATCH_FILE}"; then
+  echo "== sposto il commit Nav2Pilot ${current:0:10} (era su ${nav_base:0:10}) su ${SOURCE_NAME} master ${master:0:10}"
+  if ! g diff --binary --full-index "${nav_base}" "${current}" \
+      | GIT_INDEX_FILE="${index_file}" g apply --cached --3way --whitespace=nowarn; then
     echo >&2
-    if [[ -n "${NAV_BASE_FILE}" ]]; then
-      echo "CONFLITTI: la patch non si applica piu' su ${SOURCE_NAME} master. Non ho pubblicato niente." >&2
-      echo "Risolvili con OP-apply-nav-alpha (apply, risoluzione, push): ripubblica anche ${TARGET}." >&2
-    else
-      echo "CONFLITTI: la patch non si applica piu' su ${SOURCE_NAME} master. Non ho pubblicato niente." >&2
-      echo "Aggiorna ${PATCH_FILE} (sunnypilot ha cambiato openpilot/sunnypilot/models)." >&2
-    fi
+    echo "CONFLITTI: il commit Nav2Pilot non si applica piu' su ${SOURCE_NAME} master. Non ho pubblicato niente." >&2
+    echo "Risolvili con OP-apply-nav-alpha (apply, risoluzione, push): ripubblica anche ${TARGET}." >&2
     exit 2
   fi
   tree="$(GIT_INDEX_FILE="${index_file}" g write-tree)"
@@ -139,19 +136,17 @@ check_tree() {
     fi
   done
 
-  if [[ -n "${NAV_BASE_FILE}" ]]; then
-    local params
-    params="$(g show "${tree}:openpilot/common/params_keys.h")"
-    local duplicates
-    duplicates="$(echo "${params}" | grep -o -E '^ *\{"[A-Za-z0-9_]+"' | tr -d ' {"' | sort | uniq -d | tr '\n' ' ')"
-    if [[ -n "${duplicates}" ]]; then
-      echo "   CHIAVI DOPPIE in params_keys.h: ${duplicates}"
-      failed=1
-    fi
-    if ! echo "${params}" | grep -q '{"MapboxToken"'; then
-      echo "   MANCA la chiave MapboxToken in params_keys.h"
-      failed=1
-    fi
+  local params
+  params="$(g show "${tree}:openpilot/common/params_keys.h")"
+  local duplicates
+  duplicates="$(echo "${params}" | grep -o -E '^ *\{"[A-Za-z0-9_]+"' | tr -d ' {"' | sort | uniq -d | tr '\n' ' ')"
+  if [[ -n "${duplicates}" ]]; then
+    echo "   CHIAVI DOPPIE in params_keys.h: ${duplicates}"
+    failed=1
+  fi
+  if ! echo "${params}" | grep -q '{"MapboxToken"'; then
+    echo "   MANCA la chiave MapboxToken in params_keys.h"
+    failed=1
   fi
 
   if [[ "${failed}" -ne 0 ]]; then
@@ -160,19 +155,11 @@ check_tree() {
   echo "   OK"
 }
 
-# Upstream commits since the patch was saved that touch files our Nav2Pilot code copies or subclasses.
+# Upstream commits since the Nav2Pilot commit's base that touch files our Nav2Pilot code copies or subclasses.
 warn_nav_watched() {
-  if [[ -z "${NAV_BASE_FILE}" ]]; then
-    return
-  fi
-  local base
-  base="$(cat "${NAV_BASE_FILE}")"
-  if ! g cat-file -e "${base}^{commit}" 2>/dev/null; then
-    return
-  fi
   local changes
   # shellcheck disable=SC2086
-  changes="$(g log --oneline "${base}..${master}" -- ${NAV_WATCHED_FILES})"
+  changes="$(g log --oneline "${nav_base}..${master}" -- ${NAV_WATCHED_FILES})"
   if [[ -n "${changes}" ]]; then
     echo "ATTENZIONE: upstream ha cambiato file che il codice Nav2Pilot copia o estende (rivedili con OP-apply-nav-alpha):"
     echo "${changes}" | sed 's/^/   /'
@@ -206,29 +193,27 @@ trap 'rm -rf "${work_dir}"' EXIT
 
 fetch_master
 fetch_current
+
+# Up to date: the Nav2Pilot commit already sits on the current master.
+if [[ "${nav_base}" == "${master}" ]]; then
+  tree="$(g rev-parse "${current}^{tree}")"
+  check_tree
+  echo "== ${TARGET} e' gia' aggiornato: ${current:0:10} = ${SOURCE_NAME} master ${master:0:10} + Nav2Pilot"
+  push_mirror "${current}"
+  exit 0
+fi
+
 build_tree
 check_tree
 warn_nav_watched
 
-# Up to date: same content as master + patch, with master in its history (also after a GitHub
-# "Sync fork", which merges master into the branch instead of rebuilding it).
-if [[ -n "${current}" ]]; then
-  current_tree="$(g rev-parse "${current}^{tree}")"
-  if [[ "${current_tree}" == "${tree}" ]] && g merge-base --is-ancestor "${master}" "${current}"; then
-    echo "== ${TARGET} e' gia' aggiornato: ${current:0:10} = ${SOURCE_NAME} master ${master:0:10} + patch"
-    push_mirror "${current}"
-    exit 0
-  fi
-fi
-
+# Same message and author as the Nav2Pilot commit, as a cherry-pick keeps them.
 message_file="${work_dir}/message"
-cat > "${message_file}" <<EOF
-${TITLE}
-
-Rebuilt by openpilot_scripts/scripts/update_fork_branch.sh on ${SOURCE_NAME} master
-${master:0:10} plus $(basename "${PATCH_FILE}").
-EOF
-commit="$(g commit-tree "${tree}" -p "${master}" -F "${message_file}")"
+g log -1 --format=%B "${current}" > "${message_file}"
+commit="$(GIT_AUTHOR_NAME="$(g log -1 --format=%an "${current}")" \
+  GIT_AUTHOR_EMAIL="$(g log -1 --format=%ae "${current}")" \
+  GIT_AUTHOR_DATE="$(g log -1 --format=%aD "${current}")" \
+  g commit-tree "${tree}" -p "${master}" -F "${message_file}")"
 echo "== commit ${commit:0:10} (prima su GitHub: ${current:-nessuno})"
 
 if [[ "${NO_PUSH}" == "true" ]]; then

@@ -62,10 +62,10 @@ EXTRA_MODEL_CATALOG_SOURCE_BRANCH="${EXTRA_MODEL_CATALOG_SOURCE_BRANCH:-distille
 EXTRA_MODEL_CATALOG_UPSTREAM_REPO="${EXTRA_MODEL_CATALOG_UPSTREAM_REPO:-https://github.com/sunnypilot/sunnypilot.git}"
 SKIP_EXTRA_MODEL_CATALOG="${SKIP_EXTRA_MODEL_CATALOG:-false}"   # true: leave the sunnypilot Models menu as upstream
 # [nav source] - START
-# Nav2Pilot, injected on every base from its canonical patch (OP-apply-nav-alpha/patches/<fork>.patch) by the
-# testing wrapper; empty: built without it. The .base file names the upstream commit the patch was made on.
-NAV2PILOT_PATCH="${NAV2PILOT_PATCH:-}"
-NAV2PILOT_BASE="${NAV2PILOT_BASE:-}"
+# Nav2Pilot, injected on every base from its only commit on this branch of NAV2PILOT_REPO (sunny-nav-alpha or
+# nav-alpha, set by the testing wrapper); empty: built without it.
+NAV2PILOT_BRANCH="${NAV2PILOT_BRANCH:-}"
+NAV2PILOT_REPO="${NAV2PILOT_REPO:-https://github.com/${GITHUB_USER}/openpilot.git}"
 # upstream files the Nav2Pilot code copies or subclasses (as scripts/update_fork_branch.sh): a change there can
 # apply cleanly and still be lost
 NAV_WATCHED_FILES="openpilot/selfdrive/navigation/navd.py openpilot/selfdrive/navigation/tiles.py openpilot/system/athena/rpc.py"
@@ -343,31 +343,43 @@ enable_extra_model_catalog() {
 
 enable_nav2pilot() {
   # [nav source] - START
-  # Apply the Nav2Pilot patch with 3-way context on the chosen base (master, a pinned commit or a release); stop
-  # without publishing on a conflict: resolve it with OP-apply-nav-alpha, which saves the patch again.
+  # Apply the diff of the Nav2Pilot commit (branch^..branch) with 3-way context on the chosen base (master, a
+  # pinned commit or a release); stop without publishing on a conflict: resolve it with OP-apply-nav-alpha.
   local dest="$1"
-  if [[ -z "${NAV2PILOT_PATCH}" ]]; then
+  if [[ -z "${NAV2PILOT_BRANCH}" ]]; then
     echo "SKIP_NAV set: built without Nav2Pilot"
     return
   fi
-  if ! git -C "${dest}" apply --3way --index "${NAV2PILOT_PATCH}"; then
-    echo "ERROR: the Nav2Pilot patch does not apply to this base (${OPENPILOT_SOURCE_BRANCH})." >&2
+  local source_ref="refs/nav2pilot/${NAV2PILOT_BRANCH}"
+  # the base clone already holds upstream's history: only the Nav2Pilot commit is downloaded
+  if ! git -C "${dest}" fetch -q --no-tags "${NAV2PILOT_REPO}" \
+      "+refs/heads/${NAV2PILOT_BRANCH}:${source_ref}"; then
+    echo "ERROR: could not fetch ${NAV2PILOT_BRANCH} from ${NAV2PILOT_REPO} (SKIP_NAV=true to build without Nav2Pilot)" >&2
+    exit 1
+  fi
+  local commit
+  commit="$(git -C "${dest}" rev-parse "${source_ref}")"
+  if [[ "$(git -C "${dest}" rev-list --parents -n 1 "${commit}" | wc -w)" -ne 2 ]]; then
+    echo "ERROR: ${NAV2PILOT_BRANCH} ${commit:0:9} is a merge, not one Nav2Pilot commit on master." >&2
+    echo "Redo it as one commit with OP-apply-nav-alpha." >&2
+    exit 1
+  fi
+  local base
+  base="$(git -C "${dest}" rev-parse "${commit}^")"
+  if ! git -C "${dest}" diff --binary --full-index "${base}" "${commit}" | git -C "${dest}" apply --3way --index; then
+    echo "ERROR: the Nav2Pilot commit of ${NAV2PILOT_BRANCH} does not apply to this base (${OPENPILOT_SOURCE_BRANCH})." >&2
     echo "Resolve it with OP-apply-nav-alpha, or SKIP_NAV=true to build without Nav2Pilot." >&2
     exit 1
   fi
-  local base=""
-  [[ -n "${NAV2PILOT_BASE}" && -s "${NAV2PILOT_BASE}" ]] && base="$(tr -d '[:space:]' < "${NAV2PILOT_BASE}")"
-  if [[ -n "${base}" ]] && git -C "${dest}" cat-file -e "${base}^{commit}" 2>/dev/null; then
-    local watched
-    # shellcheck disable=SC2086
-    watched="$(git -C "${dest}" diff --name-only "${base}" HEAD -- ${NAV_WATCHED_FILES})"
-    if [[ -n "${watched}" ]]; then
-      echo "WARNING: upstream changed files the Nav2Pilot code copies since its patch was made (${base:0:9}):" >&2
-      echo "${watched}" >&2
-      echo "It applied cleanly, but check them with OP-apply-nav-alpha." >&2
-    fi
+  local watched
+  # shellcheck disable=SC2086
+  watched="$(git -C "${dest}" diff --name-only "${base}" HEAD -- ${NAV_WATCHED_FILES})"
+  if [[ -n "${watched}" ]]; then
+    echo "WARNING: upstream changed files the Nav2Pilot code copies since its commit's base (${base:0:9}):" >&2
+    echo "${watched}" >&2
+    echo "It applied cleanly, but check them with OP-apply-nav-alpha." >&2
   fi
-  echo "Added Nav2Pilot from $(basename "${NAV2PILOT_PATCH}")"
+  echo "Added Nav2Pilot from ${NAV2PILOT_BRANCH} ${commit:0:9} (on ${base:0:9})"
   # [nav source] - END
 }
 

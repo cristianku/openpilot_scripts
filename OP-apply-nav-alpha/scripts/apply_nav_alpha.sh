@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # Riapplica le modifiche Nav2Pilot (setNavRoute con waypoint + setMapboxToken) su un master fresco.
+# L'unica fonte del codice e' il commit Nav2Pilot sulle branch nav-alpha / sunny-nav-alpha di cristianku/openpilot
+# (master upstream + quel solo commit): qui lo si riapplica, lo si modifica (commit = amend) e lo si ripubblica.
 # Documentazione: openpilot_scripts/docs/nav-alpha-nav2pilot.md
 set -euo pipefail
 
 SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
-PATCH_DIR="${SKILL_DIR}/patches"
-# publishes master + the saved patch on cristianku/openpilot (also used by the setup skills)
+# moves the published Nav2Pilot commit onto the latest master (also used by OP-update-*)
 UPDATE_SCRIPT="${SKILL_DIR}/../scripts/update_fork_branch.sh"
 FORK_URL="https://github.com/cristianku/openpilot.git"
 CRISTIANKU_DIR="/Users/cristianku/GitHub/COMMA.AI/CRISTIANKU"
@@ -15,14 +16,16 @@ usage() {
 Uso: apply_nav_alpha.sh <sunny|comma> <comando>
 
 Comandi:
-  status      fetch del master, dice se il branch e' indietro e se la patch si applica pulita
-  apply       backup del branch, ricrea il branch dal master, applica la patch, controlli, commit locale
+  status      fetch del master, dice se il branch e' indietro e se il commit Nav2Pilot si applica pulito
+  apply       backup del branch, ricrea il branch dal master, applica il commit Nav2Pilot pubblicato,
+              controlli, commit locale
   check       controlli statici sul working tree
-  commit      controlli + commit delle modifiche in index (dopo una risoluzione manuale di conflitti)
-  save-patch  rigenera patches/<variante>.patch dal branch (quando cambi il codice Nav2Pilot)
+  commit      controlli + commit delle modifiche in index; se il branch ha gia' il commit Nav2Pilot lo
+              corregge (amend): resta sempre un solo commit sul master
   sync-check  confronta il pacchetto Nav2Pilot di sunny con quello di comma (devono restare uguali)
-  push        salva la patch e pubblica master + patch su cristianku/openpilot
-              (nav-alpha per comma, sunny-nav-alpha per sunny) con scripts/update_fork_branch.sh
+  push        pubblica il branch (master + il commit Nav2Pilot) su cristianku/openpilot
+              (nav-alpha per comma, sunny-nav-alpha per sunny), poi scripts/update_fork_branch.sh
+              lo porta sull'ultimo master se serve (e sul mirror per sunny)
 
 Variabili: NAV_REPO (cartella del clone), NAV_BRANCH (branch locale, default nav-alpha)
 EOF
@@ -41,18 +44,14 @@ if [[ "${VARIANT}" == "sunny" || "${VARIANT}" == "sunnypilot" ]]; then
   DEFAULT_REPO="${CRISTIANKU_DIR}/sunnypilot-nav-alpha"
   UPSTREAM_REMOTE="upstream"
   UPSTREAM_URL_PATTERN="sunnypilot/sunnypilot"
-  PATCH_FILE="${PATCH_DIR}/sunnypilot.patch"
   FORK_BRANCH="sunny-nav-alpha"
-  BASE_FILE="${PATCH_DIR}/sunnypilot.base"
   NAV_PACKAGE="openpilot/sunnypilot/navd"
 elif [[ "${VARIANT}" == "comma" || "${VARIANT}" == "openpilot" ]]; then
   VARIANT="comma"
   DEFAULT_REPO="${CRISTIANKU_DIR}/openpilot-nav-alpha"
   UPSTREAM_REMOTE="commaai"
   UPSTREAM_URL_PATTERN="commaai/openpilot"
-  PATCH_FILE="${PATCH_DIR}/openpilot.patch"
   FORK_BRANCH="nav-alpha"
-  BASE_FILE="${PATCH_DIR}/openpilot.base"
   NAV_PACKAGE="openpilot/selfdrive/navigation/nav2pilot"
 else
   usage
@@ -61,6 +60,8 @@ fi
 REPO="${NAV_REPO:-${DEFAULT_REPO}}"
 BRANCH="${NAV_BRANCH:-nav-alpha}"
 UPSTREAM_REF="${UPSTREAM_REMOTE}/master"
+# the published Nav2Pilot commit, fetched by fetch_upstream
+FORK_REF="refs/remotes/fork/${FORK_BRANCH}"
 # upstream file that our code subclasses or copies: every upstream change to it must be reviewed
 WATCHED_FILES="openpilot/selfdrive/navigation/navd.py openpilot/selfdrive/navigation/tiles.py openpilot/system/athena/rpc.py"
 
@@ -96,19 +97,31 @@ check_clean() {
 fetch_upstream() {
   echo "== fetch ${UPSTREAM_REF} e cristianku/openpilot ${FORK_BRANCH}"
   g fetch "${UPSTREAM_REMOTE}" master
-  g fetch "${FORK_URL}" "+refs/heads/${FORK_BRANCH}:refs/remotes/fork/${FORK_BRANCH}" \
-    || echo "(cristianku/openpilot non ha ancora ${FORK_BRANCH})"
+  g fetch "${FORK_URL}" "+refs/heads/${FORK_BRANCH}:${FORK_REF}"
+  if [[ "$(g rev-list --parents -n 1 "${FORK_REF}" | wc -w)" -ne 2 ]]; then
+    die "cristianku/openpilot ${FORK_BRANCH} e' un merge, non un solo commit Nav2Pilot sul master: ricostruiscilo a mano"
+  fi
 }
 
-# the files the patch modifies or creates, one per line
-patch_files() {
-  grep '^diff --git ' "${PATCH_FILE}" | sed 's#^diff --git a/\(.*\) b/.*#\1#'
+# the published Nav2Pilot commit as a diff over its own base
+fork_diff() {
+  g diff --binary --full-index "${FORK_REF}^" "${FORK_REF}"
 }
 
-# files that exist upstream and the patch modifies (the "upstream touches")
+# the upstream commit the local branch sits on
+branch_base() {
+  g merge-base "${UPSTREAM_REF}" HEAD
+}
+
+# the files Nav2Pilot modifies or creates in the working tree, one per line
+nav_files() {
+  g diff --name-only --diff-filter=d --ignore-submodules=all "$(branch_base)"
+}
+
+# files that exist upstream and the published Nav2Pilot commit modifies (the "upstream touches")
 patch_upstream_files() {
   local file
-  for file in $(patch_files); do
+  for file in $(g diff --name-only --diff-filter=d "${FORK_REF}^" "${FORK_REF}"); do
     if g cat-file -e "${UPSTREAM_REF}:${file}" 2>/dev/null; then
       echo "${file}"
     fi
@@ -117,12 +130,12 @@ patch_upstream_files() {
 
 show_upstream_changes() {
   local base
-  base="$(cat "${BASE_FILE}")"
+  base="$(g rev-parse "${FORK_REF}^")"
   local new_master
   new_master="$(g rev-parse "${UPSTREAM_REF}")"
-  echo "== patch salvata su ${UPSTREAM_REF} ${base:0:10}, master ora ${new_master:0:10}"
+  echo "== ${FORK_BRANCH} pubblicato su ${UPSTREAM_REF} ${base:0:10}, master ora ${new_master:0:10}"
   if [[ "${base}" == "${new_master}" ]]; then
-    echo "   master non e' cambiato dalla patch"
+    echo "   master non e' cambiato"
     return
   fi
   if ! g cat-file -e "${base}^{commit}" 2>/dev/null; then
@@ -131,7 +144,7 @@ show_upstream_changes() {
   fi
   local files
   files="$(patch_upstream_files) ${WATCHED_FILES}"
-  echo "   commit upstream che toccano i file della patch o quelli sorvegliati:"
+  echo "   commit upstream che toccano i file di Nav2Pilot o quelli sorvegliati:"
   # shellcheck disable=SC2086
   g log --oneline "${base}..${new_master}" -- ${files} | sed 's/^/     /'
   # shellcheck disable=SC2086
@@ -150,13 +163,13 @@ cmd_status() {
     counts="$(g rev-list --left-right --count "${UPSTREAM_REF}...fork/${FORK_BRANCH}")"
     echo "   cristianku/openpilot ${FORK_BRANCH}: indietro/avanti rispetto a ${UPSTREAM_REF} = ${counts}"
   fi
-  echo "== la patch si applica pulita su ${UPSTREAM_REF}?"
+  echo "== il commit Nav2Pilot si applica pulito su ${UPSTREAM_REF}?"
   local index_file
   index_file="$(mktemp)"
   rm -f "${index_file}"
   # applied to a temporary index only: the working tree and the real index are not touched
   GIT_INDEX_FILE="${index_file}" g read-tree "${UPSTREAM_REF}"
-  if GIT_INDEX_FILE="${index_file}" g apply --cached --check "${PATCH_FILE}"; then
+  if fork_diff | GIT_INDEX_FILE="${index_file}" g apply --cached --check; then
     echo "   SI"
   else
     echo "   NO: apply fara' un merge a 3 vie, controlla i conflitti"
@@ -180,8 +193,8 @@ cmd_apply() {
   echo "== ricreo ${BRANCH} da ${UPSTREAM_REF}"
   g checkout -q --no-track -B "${BRANCH}" "${UPSTREAM_REF}"
 
-  echo "== applico $(basename "${PATCH_FILE}")"
-  if ! g apply --3way --index --whitespace=nowarn "${PATCH_FILE}"; then
+  echo "== applico il commit Nav2Pilot di cristianku/openpilot ${FORK_BRANCH} $(g rev-parse --short "${FORK_REF}")"
+  if ! fork_diff | g apply --3way --index --whitespace=nowarn; then
     echo >&2
     echo "CONFLITTI: risolvili seguendo docs/nav-alpha-nav2pilot.md, poi 'git add' e:" >&2
     echo "  $0 ${VARIANT} commit   (rifa i controlli prima di committare)" >&2
@@ -197,7 +210,7 @@ cmd_check() {
   local file
 
   echo "== controlli"
-  for file in $(patch_files); do
+  for file in $(nav_files); do
     if [[ ! -f "${REPO}/${file}" ]]; then
       echo "   MANCA ${file}"
       failed=1
@@ -238,19 +251,21 @@ cmd_check() {
     failed=1
   fi
 
-  # the gitlinks must stay exactly as upstream master: the patch never moves a submodule
+  # the gitlinks must stay exactly as upstream: Nav2Pilot never moves a submodule
+  local base
+  base="$(branch_base)"
   local upstream_links
   local our_links
-  upstream_links="$(g ls-tree -r "${UPSTREAM_REF}" | awk '$2 == "commit" {print $3, $4}')"
+  upstream_links="$(g ls-tree -r "${base}" | awk '$2 == "commit" {print $3, $4}')"
   our_links="$(g ls-files --stage | awk '$1 == "160000" {print $2, $4}')"
   if [[ "${upstream_links}" != "${our_links}" ]]; then
-    echo "   SUBMODULI diversi da ${UPSTREAM_REF}:"
+    echo "   SUBMODULI diversi da ${UPSTREAM_REF} ${base:0:10}:"
     diff <(echo "${upstream_links}") <(echo "${our_links}") | sed 's/^/     /' || true
     failed=1
   fi
 
   local python_files
-  python_files="$(patch_files | grep '\.py$' || true)"
+  python_files="$(nav_files | grep '\.py$' || true)"
   if [[ "${failed}" -ne 0 ]]; then
     die "controlli falliti"
   fi
@@ -264,45 +279,40 @@ cmd_check() {
   echo "   tutti i controlli OK"
 }
 
+# How many commits the local branch has on its upstream base: 0 before the first commit, 1 after; more is wrong.
+commits_on_base() {
+  g rev-list --count "$(branch_base)..HEAD"
+}
+
 cmd_commit() {
   cmd_check
   if ! g diff --quiet --ignore-submodules=all; then
     g diff --stat --ignore-submodules=all >&2
     die "ci sono modifiche non in index: fai 'git add' dei file risolti"
   fi
-  local master
-  master="$(g rev-parse --short "${UPSTREAM_REF}")"
-  local message_file
-  message_file="$(mktemp)"
-  cat > "${message_file}" <<EOF
-nav alpha: Nav2Pilot setNavRoute waypoints and setMapboxToken
-
-Reapplied with OP-apply-nav-alpha on ${UPSTREAM_REF} ${master}.
-New code in ${NAV_PACKAGE}/; upstream touches: one import in athenad,
-the navd module in process_config, the MapboxToken param key.
-EOF
-  g commit -q -F "${message_file}"
-  rm -f "${message_file}"
-  echo "== commit locale: $(g log -1 --oneline)"
-  g diff --stat "${UPSTREAM_REF}" HEAD | tail -1
-  echo "   NON pubblicato: per pubblicarlo '$0 ${VARIANT} push'"
-}
-
-cmd_save_patch() {
-  check_repo
-  check_clean
-  local base
-  base="$(g merge-base "${UPSTREAM_REF}" "${BRANCH}")"
-  local master
-  master="$(g rev-parse "${UPSTREAM_REF}")"
-  if [[ "${base}" != "${master}" ]]; then
-    echo "ATTENZIONE: ${BRANCH} e' basato su ${base:0:10}, non sull'ultimo ${UPSTREAM_REF} ${master:0:10}"
+  if g diff --cached --quiet --ignore-submodules=all; then
+    echo "== niente in index da committare"
+    return
   fi
-  g diff --binary --full-index --ignore-submodules=all "${base}" "${BRANCH}" > "${PATCH_FILE}"
-  echo "${base}" > "${BASE_FILE}"
-  echo "== salvata $(basename "${PATCH_FILE}") (base ${base:0:10}):"
-  git apply --stat "${PATCH_FILE}" | tail -1
-  echo "   ricordati di aggiornare la patch dell'altra variante e docs/nav-alpha-nav2pilot.md se serve"
+  local count
+  count="$(commits_on_base)"
+  if [[ "${count}" -eq 1 ]]; then
+    # the branch stays upstream + one Nav2Pilot commit: a change is folded into it
+    g commit -q --amend --no-edit
+    echo "== commit Nav2Pilot corretto (amend): $(g log -1 --oneline)"
+  elif [[ "${count}" -eq 0 ]]; then
+    local message_file
+    message_file="$(mktemp)"
+    # same message as the published commit
+    g log -1 --format=%B "${FORK_REF}" > "${message_file}"
+    g commit -q -F "${message_file}"
+    rm -f "${message_file}"
+    echo "== commit locale: $(g log -1 --oneline)"
+  else
+    die "${BRANCH} ha ${count} commit sopra ${UPSTREAM_REF}: deve averne uno solo (git rebase -i e squash)"
+  fi
+  g diff --stat "$(branch_base)" HEAD | tail -1
+  echo "   NON pubblicato: per pubblicarlo '$0 ${VARIANT} push'"
 }
 
 # strips what legitimately differs between the two forks: header, module path, class name
@@ -347,9 +357,29 @@ cmd_push() {
     die "sei su ${current}, non su ${BRANCH}"
   fi
   cmd_check
-  # The published branch is always upstream master + the saved patch: the same thing the setup skills
-  # rebuild when master moves.
-  cmd_save_patch
+  # The published branch is always an upstream master commit + the one Nav2Pilot commit: the setups take
+  # exactly that commit.
+  local count
+  count="$(commits_on_base)"
+  if [[ "${count}" -ne 1 ]]; then
+    die "${BRANCH} ha ${count} commit sopra ${UPSTREAM_REF}: deve averne uno solo"
+  fi
+  local head
+  head="$(g rev-parse HEAD)"
+  local published
+  published="$(git ls-remote "${FORK_URL}" "refs/heads/${FORK_BRANCH}" | awk 'NR == 1 { print $1 }')"
+  if [[ "${published}" == "${head}" ]]; then
+    echo "== cristianku/openpilot ${FORK_BRANCH} e' gia' ${head:0:10}"
+  elif [[ "${NO_PUSH:-false}" == "true" ]]; then
+    echo "NO_PUSH: ${FORK_BRANCH} ${head:0:10} non pubblicato (su GitHub: ${published:0:10})"
+    return
+  else
+    echo "== push di ${BRANCH} su cristianku/openpilot ${FORK_BRANCH} (prima: ${published:-nessuno})"
+    # LFS lives on comma's/sunnypilot's own storage (.lfsconfig): nothing to upload
+    GIT_LFS_SKIP_PUSH=1 g -c push.negotiate=true push -q \
+      --force-with-lease="refs/heads/${FORK_BRANCH}:${published}" "${FORK_URL}" "HEAD:refs/heads/${FORK_BRANCH}"
+  fi
+  # onto the latest master if it moved meanwhile, and the sunny mirror
   bash "${UPDATE_SCRIPT}" "${FORK_BRANCH}"
 }
 
@@ -361,8 +391,6 @@ elif [[ "${COMMAND}" == "check" ]]; then
   cmd_check
 elif [[ "${COMMAND}" == "commit" ]]; then
   cmd_commit
-elif [[ "${COMMAND}" == "save-patch" ]]; then
-  cmd_save_patch
 elif [[ "${COMMAND}" == "sync-check" ]]; then
   cmd_sync_check
 elif [[ "${COMMAND}" == "push" ]]; then

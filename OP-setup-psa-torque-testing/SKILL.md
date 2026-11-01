@@ -1,6 +1,6 @@
 ---
 name: OP-setup-psa-torque-testing
-description: Use when preparing Cristian's Peugeot 3008 testing workspace for Sunnypilot or comma.ai (psa-torque-sunny-testing is the branch the comma runs) - on upstream master, an exact commit in its history or the latest GitHub Release, always with Nav2Pilot injected from its patch, after syncing the external branches listed in docs/external-branches.md.
+description: Use when preparing Cristian's Peugeot 3008 testing workspace for Sunnypilot or comma.ai (psa-torque-sunny-testing is the branch the comma runs) - on upstream master, an exact commit in its history or the latest GitHub Release, always with Nav2Pilot injected from its branch commit, after syncing the external branches listed in docs/external-branches.md.
 ---
 
 # OP Setup PSA Torque Testing
@@ -33,7 +33,7 @@ The first parameter stays `comma` or `sunny`. The second parameter selects only 
 - `comma master` (or just `comma`): official `commaai/openpilot:master`.
 - `master=<commit>`, `release`: as above, on the variant's upstream.
 
-Nav2Pilot (setNavRoute waypoints, setMapboxToken: what the Android/iOS apps need) is **always injected** on that base from its canonical patch, `OP-apply-nav-alpha/patches/sunnypilot.patch` (Sunny) or `openpilot.patch` (comma), the same patch that builds `cristianku/openpilot:sunny-nav-alpha` / `nav-alpha`. It is applied with 3-way context and staged; if it no longer applies the setup stops without publishing (resolve with `OP-apply-nav-alpha`). A warning lists the upstream files the Nav2Pilot code copies (navd.py, tiles.py, rpc.py) when they changed since the patch was made. `SKIP_NAV=true` builds without Nav2Pilot. The setup no longer realigns or pushes the Nav2Pilot branches: keeping them current is part of step 0 below (`OP-update-sunny-nav-alpha`). Do not use `sunny-nav` as the first parameter.
+Nav2Pilot (setNavRoute waypoints, setMapboxToken: what the Android/iOS apps need) is **always injected** on that base from its only source, the Nav2Pilot commit of `cristianku/openpilot:sunny-nav-alpha` (Sunny) or `nav-alpha` (comma): the setup fetches the branch and applies `git diff <branch>^ <branch>` with 3-way context, staged. If it no longer applies, or the branch is a merge instead of one commit, the setup stops without publishing (resolve with `OP-apply-nav-alpha`). A warning lists the upstream files the Nav2Pilot code copies (navd.py, tiles.py, rpc.py) when they changed since the commit's base. `NAV2PILOT_REPO` overrides the repository (default `cristianku/openpilot`). `SKIP_NAV=true` builds without Nav2Pilot. The setup no longer realigns or pushes the Nav2Pilot branches: keeping them current is part of step 0 below (`OP-update-sunny-nav-alpha`). Do not use `sunny-nav` as the first parameter.
 <!-- [nav source] - END -->
 
 ## Workflow
