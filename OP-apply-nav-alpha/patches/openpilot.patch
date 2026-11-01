@@ -1,8 +1,8 @@
 diff --git a/openpilot/common/params_keys.h b/openpilot/common/params_keys.h
-index fa105de62c5d76b33b98c56bcfb2fb6aade27861..41415533b7be58b8a1bd4352164d85e9d927ee9f 100644
+index 2fca7079025e92e1bd3d4336c94b65ec5906ed5b..51c85caa17f59cf11f3fc5abc924a8a8fcd2f4f8 100644
 --- a/openpilot/common/params_keys.h
 +++ b/openpilot/common/params_keys.h
-@@ -87,6 +87,7 @@ inline static std::unordered_map<std::string, ParamKeyAttributes> keys = {
+@@ -88,6 +88,7 @@ inline static std::unordered_map<std::string, ParamKeyAttributes> keys = {
      {"LateralManeuverMode", {CLEAR_ON_MANAGER_START | CLEAR_ON_OFFROAD_TRANSITION, BOOL}},
      {"LongitudinalManeuverMode", {CLEAR_ON_MANAGER_START | CLEAR_ON_OFFROAD_TRANSITION, BOOL}},
      {"LongitudinalPersonality", {PERSISTENT, INT, std::to_string(static_cast<int>(cereal::LongitudinalPersonality::STANDARD))}},
@@ -15,22 +15,27 @@ new file mode 100644
 index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
 diff --git a/openpilot/selfdrive/navigation/nav2pilot/athena.py b/openpilot/selfdrive/navigation/nav2pilot/athena.py
 new file mode 100644
-index 0000000000000000000000000000000000000000..9cb57b1ac69c786e138d90db580d4503b4665266
+index 0000000000000000000000000000000000000000..6d31582f3b4224661fc261a5b673e9d7acf9fdcb
 --- /dev/null
 +++ b/openpilot/selfdrive/navigation/nav2pilot/athena.py
-@@ -0,0 +1,41 @@
+@@ -0,0 +1,46 @@
 +"""
 +setNavRoute: comma's setNavDestination with optional waypoints (see waypoints.py).
 +setMapboxToken: the user's Mapbox public token for navd's route requests (see mapbox.py).
 +They are what the Nav2Pilot phone apps send, registered on athena's dispatcher when athenad imports this module.
++Athena refuses a call whose params fail their validators; past them, the checks here answer with a reason.
 +"""
 +from openpilot.common.params import Params
 +from openpilot.selfdrive.navigation.nav2pilot.mapbox import MAPBOX_TOKEN_PARAM, valid_mapbox_token
 +from openpilot.selfdrive.navigation.nav2pilot.waypoints import DESTINATION_PARAM, MAX_WAYPOINTS, parse_waypoints, valid_coordinate
-+from openpilot.system.athena.rpc import dispatcher
++from openpilot.system.athena.rpc import boolean, dispatcher, either, list_of, number, one_of, regex, struct
++
++COORDINATE = {"latitude": number(-90, 90), "longitude": number(-180, 180)}
++# a Mapbox token of any kind (pk., sk., tk.), or "": a secret one passes here to be refused with its reason below
++ANY_TOKEN = regex(r"([a-z]{2}\.[A-Za-z0-9_.=-]{1,509})?")
 +
 +
-+@dispatcher.add_method
++@dispatcher.add_method(**COORDINATE, waypoints=either(one_of(None), list_of(struct(COORDINATE, {"via": boolean}))))
 +def setNavRoute(latitude: float, longitude: float, waypoints: list | None = None) -> dict[str, int | str]:
 +  """Destination plus waypoints in driving order: [{"latitude": .., "longitude": .., "via": false}, ...]."""
 +  if not valid_coordinate(latitude, longitude):
@@ -47,7 +52,7 @@ index 0000000000000000000000000000000000000000..9cb57b1ac69c786e138d90db580d4503
 +  return {"success": 1}
 +
 +
-+@dispatcher.add_method
++@dispatcher.add_method(token=ANY_TOKEN)
 +def setMapboxToken(token: str) -> dict[str, int | str]:
 +  """Stores a Mapbox public token (pk.); an empty string removes it, and navd goes back to comma's proxy.
 +  The phone sends it with every destination, so an unchanged token is not written again."""
@@ -275,10 +280,10 @@ index 0000000000000000000000000000000000000000..1b12239f768dc3c1392e8d029381f770
 +  main()
 diff --git a/openpilot/selfdrive/navigation/nav2pilot/tests/test_navd_mapbox.py b/openpilot/selfdrive/navigation/nav2pilot/tests/test_navd_mapbox.py
 new file mode 100644
-index 0000000000000000000000000000000000000000..0a89a83f1280242f8c10f729ad81c4037c016813
+index 0000000000000000000000000000000000000000..54303618a0616b7a160ef199313e8949586dc361
 --- /dev/null
 +++ b/openpilot/selfdrive/navigation/nav2pilot/tests/test_navd_mapbox.py
-@@ -0,0 +1,94 @@
+@@ -0,0 +1,97 @@
 +"""
 +The Mapbox token sent from the phone: setMapboxToken and where navd sends the route request with and without it.
 +"""
@@ -365,8 +370,11 @@ index 0000000000000000000000000000000000000000..0a89a83f1280242f8c10f729ad81c403
 +  def test_rejects_secret_and_malformed_tokens(self):
 +    from openpilot.system.athena.rpc import dispatcher
 +    Params().put(MAPBOX_TOKEN_PARAM, TOKEN)
-+    for invalid in ("sk.eyJ1Ijoi.abc", "not a token", None, 12):
-+      assert dispatcher["setMapboxToken"](invalid)["success"] == 0, invalid
++    assert dispatcher["setMapboxToken"]("sk.eyJ1Ijoi.abc")["success"] == 0
++    # not a token at all: athena's validator refuses the call
++    for invalid in ("not a token", None, 12):
++      with self.assertRaises(TypeError):
++        dispatcher["setMapboxToken"](invalid)
 +    # a refused token leaves the stored one in place
 +    assert Params().get(MAPBOX_TOKEN_PARAM) == TOKEN
 +
@@ -375,10 +383,10 @@ index 0000000000000000000000000000000000000000..0a89a83f1280242f8c10f729ad81c403
 +  unittest.main()
 diff --git a/openpilot/selfdrive/navigation/nav2pilot/tests/test_navd_waypoints.py b/openpilot/selfdrive/navigation/nav2pilot/tests/test_navd_waypoints.py
 new file mode 100644
-index 0000000000000000000000000000000000000000..5c72650cf5da8f6deeea2f54f09cccfbf0ef6313
+index 0000000000000000000000000000000000000000..df31a99e597efae3e61d6b8431fa1f21d2829fc8
 --- /dev/null
 +++ b/openpilot/selfdrive/navigation/nav2pilot/tests/test_navd_waypoints.py
-@@ -0,0 +1,200 @@
+@@ -0,0 +1,205 @@
 +"""
 +Waypoints on top of comma's navd: setNavRoute, the Mapbox request, multi-leg routes and passed waypoints.
 +"""
@@ -575,9 +583,14 @@ index 0000000000000000000000000000000000000000..5c72650cf5da8f6deeea2f54f09cccfb
 +  def test_rejects_invalid_input(self):
 +    from openpilot.system.athena.rpc import dispatcher
 +    Params().remove("NavDestination")
-+    assert dispatcher["setNavRoute"](95, 9.19)["success"] == 0
-+    assert dispatcher["setNavRoute"](45.47, 9.19, [{"latitude": 45.4}])["success"] == 0
-+    assert dispatcher["setNavRoute"](45.47, 9.19, "not a list")["success"] == 0
++    # athena's validators refuse a call with a bad coordinate or a malformed waypoint
++    for args in ((95, 9.19), (45.47, 9.19, [{"latitude": 45.4}]), (45.47, 9.19, "not a list"),
++                 (45.47, 9.19, [{"latitude": 45.4, "longitude": 9.1, "via": "yes"}])):
++      with self.assertRaises(TypeError):
++        dispatcher["setNavRoute"](*args)
++    # past them, too many waypoints is answered with its reason
++    too_many = [{"latitude": 45.4, "longitude": 9.1}] * 21
++    assert dispatcher["setNavRoute"](45.47, 9.19, too_many)["success"] == 0
 +    assert Params().get("NavDestination") is None
 diff --git a/openpilot/selfdrive/navigation/nav2pilot/waypoints.py b/openpilot/selfdrive/navigation/nav2pilot/waypoints.py
 new file mode 100644
@@ -651,13 +664,13 @@ index 0000000000000000000000000000000000000000..0f04ca6e64a774a6b5608da080718ae9
 +    updated["waypoints"] = [{"latitude": latitude, "longitude": longitude, "via": via} for longitude, latitude, via in waypoints]
 +  return updated
 diff --git a/openpilot/system/athena/athenad.py b/openpilot/system/athena/athenad.py
-index cf390aa1cd7def44945b18207d9a371216be3147..b07d80969de8e1e0060f245b11c38624e8bd7b65 100755
+index 8c93cb9fed2398f9c4b4402d29d680b84dcdcc24..e477aa261ebda2ddcce4ccf84e5459baabd12de3 100755
 --- a/openpilot/system/athena/athenad.py
 +++ b/openpilot/system/athena/athenad.py
-@@ -46,6 +46,7 @@ from openpilot.common.swaglog import cloudlog
- from openpilot.common.version import get_build_metadata
+@@ -47,6 +47,7 @@ from openpilot.common.version import get_build_metadata
  from openpilot.common.hardware.hw import Paths
- from openpilot.system.athena.rpc import dispatcher, dumps_call, handle, is_call, is_response, loads
+ from openpilot.system.athena.rpc import (boolean, dict_of, dispatcher, dumps_call, either, handle, integer, is_call, is_response,
+                                          list_of, loads, number, one_of, regex, struct)
 +import openpilot.selfdrive.navigation.nav2pilot.athena  # noqa: F401  # nav2pilot: registers setNavRoute and setMapboxToken
  
  

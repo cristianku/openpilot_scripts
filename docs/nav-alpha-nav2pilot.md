@@ -67,7 +67,7 @@ Attenzione: se upstream cambia `calculate_route`, `recompute_route` o `clear_rou
 | file | cosa |
 |---|---|
 | `__init__.py` | vuoto |
-| `athena.py` | `setNavRoute`, `setMapboxToken` sul dispatcher di athena |
+| `athena.py` | `setNavRoute`, `setMapboxToken` sul dispatcher di athena; su comma con un validatore per ogni parametro (vedi sotto) |
 | `mapbox.py` | `MAPBOX_TOKEN_PARAM`, `MAPBOX_HOST`, validazione token `pk.` (niente numpy: lo importa athenad) |
 | `waypoints.py` | parse/validazione waypoint, lettura/scrittura nel param (niente numpy) |
 | `navd.py` | `Nav2PilotRouteEngine` + `main()` |
@@ -131,6 +131,11 @@ Uguale con `comma`. Dopo il push la sorgente e' pronta per `OP-setup-psa-torque(
 Si tiene **sempre** il codice nuovo di upstream e si rimettono sopra solo le nostre righe:
 
 - `athenad.py`: la riga `import ...athena  # noqa: F401` dopo gli import di `system.athena.rpc`
+- `rpc.py` (comma, dal 31 ott 2026, #39190): `dispatcher.add_method` vuole un validatore per ogni parametro, altrimenti
+  athenad crasha all'import. `setNavRoute` e `setMapboxToken` li dichiarano (`number`, `struct`, `regex`...), come
+  `setNavDestination`; i casi logici (piu' di 20 waypoint, token `sk.`) rispondono ancora con `success: 0` e il motivo.
+  Sunnypilot non ha ancora quel `rpc.py`: quando lo prende, stessa modifica nella patch sunny (fino ad allora i due
+  `athena.py` e i loro test differiscono solo per questo)
 - `process_config.py`: nella riga `PythonProcess("navd", ...)` di upstream si cambia solo il modulo (se upstream
   aggiunge argomenti, es. `enabled=`, si tengono)
 - `params_keys.h`: solo `MapboxToken`, in ordine alfabetico; se upstream la aggiunge, la nostra va tolta
