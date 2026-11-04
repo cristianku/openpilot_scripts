@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>openpilot cristianku home</title>
+<style>
+:root {
+  --page: #f2f2f7; --card: #fff; --text: #1d1d1f; --soft: #6e6e73; --line: #e5e5ea; --fill: #e9e9ee;
+  --blue: #0071e3; --green: #248a3d; --orange: #b25000; --red: #d70015; --code: #1d1d1f; --code-text: #f5f5f7;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page: #000; --card: #1c1c1e; --text: #f5f5f7; --soft: #98989d; --line: #38383a; --fill: #2c2c2e;
+    --blue: #2997ff; --green: #30d158; --orange: #ff9f0a; --red: #ff453a; --code: #000; --code-text: #f5f5f7;
+  }
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body {
+  margin: 0; background: var(--page); color: var(--text); line-height: 1.4;
+  font: 17px/1.4 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+}
+main { max-width: 720px; margin: 0 auto; padding: 20px 16px 72px; }
+h1 { font-size: 30px; line-height: 1.15; letter-spacing: -.02em; margin: 8px 0 16px; }
+h2 { font-size: 15px; font-weight: 600; color: var(--soft); margin: 28px 16px 8px; }
+button, input { font: inherit; color: inherit; }
+[hidden] { display: none !important; }
+.segments { display: flex; background: var(--fill); border-radius: 10px; padding: 2px; margin-bottom: 20px; }
+.segments button {
+  flex: 1; min-width: 0; border: 0; background: none; padding: 7px 6px; border-radius: 8px; font-size: 15px;
+  font-weight: 500; cursor: pointer;
+}
+.segments button[aria-pressed=true] { background: var(--card); box-shadow: 0 1px 3px rgba(0, 0, 0, .14); }
+.hero { background: var(--card); border-radius: 18px; padding: 22px 20px; }
+.hero .number { font-size: 52px; font-weight: 700; line-height: 1; letter-spacing: -.03em; }
+.hero .label { font-size: 19px; font-weight: 600; margin-top: 6px; }
+.hero p { margin: 6px 0 0; color: var(--soft); }
+.hero .pill { margin-top: 16px; }
+.pill {
+  display: inline-block; border: 0; border-radius: 980px; padding: 10px 20px; background: var(--blue); color: #fff;
+  font-size: 16px; font-weight: 500; cursor: pointer; text-decoration: none; text-align: center;
+}
+.pill.quiet { background: var(--fill); color: var(--text); }
+.pill.danger { background: var(--red); }
+.pill:disabled { opacity: .45; cursor: default; }
+.group { background: var(--card); border-radius: 14px; overflow: hidden; }
+.row {
+  display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 11px 14px 11px 16px;
+  border: 0; background: none; text-align: left; cursor: pointer;
+}
+.row + .row { border-top: 1px solid var(--line); }
+.row:active { background: var(--fill); }
+.row.static { cursor: default; }
+.row.static:active { background: none; }
+.row .body { flex: 1; min-width: 0; }
+.row .title { font-weight: 500; }
+.row .note { display: block; color: var(--soft); font-size: 15px; overflow-wrap: anywhere; }
+.row .where { display: block; color: var(--soft); font: 13px/1.35 ui-monospace, Menlo, Consolas, monospace; overflow-wrap: anywhere; margin-top: 1px; }
+.row .chevron { color: var(--soft); opacity: .6; font-size: 20px; flex: none; }
+.dot { width: 10px; height: 10px; border-radius: 50%; flex: none; background: var(--soft); }
+.dot.ok { background: var(--green); }
+.dot.behind { background: var(--orange); }
+.dot.bad { background: var(--red); }
+.foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 14px 16px 0;
+  color: var(--soft); font-size: 14px; }
+.foot button { border: 0; background: none; color: var(--blue); cursor: pointer; font-size: 15px; padding: 4px 0; }
+.foot button:disabled { color: var(--soft); }
+.banner { background: var(--card); border-radius: 14px; padding: 12px 16px; margin-bottom: 14px; color: var(--red); font-size: 15px; }
+details.group summary {
+  list-style: none; cursor: pointer; padding: 14px 16px; font-weight: 500; display: flex; justify-content: space-between;
+}
+details.group summary::-webkit-details-marker { display: none; }
+details.group summary span { color: var(--soft); font-weight: 400; }
+details.group .row { border-top: 1px solid var(--line); }
+dialog {
+  border: 0; padding: 0; background: var(--page); color: var(--text); width: min(560px, 100vw);
+  max-width: 100vw; max-height: 92dvh; border-radius: 18px; margin: auto;
+}
+dialog::backdrop { background: rgba(0, 0, 0, .4); }
+@media (max-width: 600px) {
+  dialog { margin: auto 0 0; width: 100vw; border-radius: 18px 18px 0 0; }
+}
+.sheet { padding: 18px 16px 24px; }
+.sheet header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.sheet h3 { font-size: 22px; line-height: 1.2; margin: 0; letter-spacing: -.01em; }
+.close { border: 0; background: var(--fill); width: 30px; height: 30px; border-radius: 50%; cursor: pointer; flex: none; color: var(--soft); }
+.sheet p { margin: 10px 0 0; }
+.sheet .soft { color: var(--soft); font-size: 15px; }
+.sheet .effect { color: var(--orange); font-size: 15px; }
+.sheet ul { margin: 10px 0 0; padding-left: 20px; }
+.field { margin-top: 16px; }
+.field label { display: block; font-size: 14px; color: var(--soft); margin: 0 0 6px 4px; }
+.field .segments { margin: 0; }
+.field input {
+  width: 100%; border: 0; background: var(--card); padding: 11px 14px; border-radius: 10px; font-size: 16px;
+}
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.actions .pill { flex: 1 1 140px; }
+.error { color: var(--red); font-size: 15px; margin-top: 12px; }
+pre {
+  background: var(--code); color: var(--code-text); border-radius: 12px; padding: 12px; margin: 14px 0 0; font-size: 12.5px;
+  line-height: 1.45; height: 52dvh; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+}
+.signin { max-width: 360px; margin: 18vh auto 0; text-align: center; }
+.signin input { width: 100%; border: 0; background: var(--card); padding: 12px 14px; border-radius: 10px; font-size: 16px; margin: 16px 0 12px; }
+.signin .pill { width: 100%; }
+</style>
+</head>
+<body>
+<main>
+  <form class="signin" id="signin" hidden>
+    <h1>openpilot cristianku home</h1>
+    <input id="code" type="password" autocomplete="current-password" placeholder="Sign-in code" aria-label="Sign-in code">
+    <button class="pill" type="submit">Sign in</button>
+    <p class="error" id="signin-error" hidden></p>
+  </form>
+  <div id="app" hidden>
+    <h1>openpilot cristianku home</h1>
+    <div class="segments" role="group" aria-label="Sections">
+      <button data-tab="overview" aria-pressed="true">Overview</button>
+      <button data-tab="skills" aria-pressed="false">Skills</button>
+      <button data-tab="jobs" aria-pressed="false">Jobs</button>
+    </div>
+    <section id="overview"></section>
+    <section id="skills" hidden></section>
+    <section id="jobs" hidden></section>
+  </div>
+</main>
+<dialog id="sheet"><div class="sheet" id="sheet-body"></div></dialog>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+let state = null, tab = 'overview', watching = null, logTimer = null;
+
+function el(tag, props = {}, ...children) {
+  const node = document.createElement(tag);
+  for (const [key, value] of Object.entries(props)) {
+    if (key === 'class') node.className = value;
+    else if (key.startsWith('on')) node.addEventListener(key.slice(2), value);
+    else if (key in node) node[key] = value;
+    else node.setAttribute(key, value);
+  }
+  node.append(...children.filter(child => child !== null && child !== undefined));
+  return node;
+}
+
+async function api(path, body) {
+  const response = await fetch(path, {
+    method: body ? 'POST' : 'GET', redirect: 'manual', cache: 'no-store',
+    headers: body ? {'Content-Type': 'application/json', 'X-Requested-With': 'ops-web'} : {},
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  // The proxy's own sign-in expired: only a full page load can go through it.
+  if (response.type === 'opaqueredirect') { location.reload(); throw new Error('Signing in again.'); }
+  const data = await response.json().catch(() => ({}));
+  if (response.status === 401 && path !== '/api/sign-in') { showSignIn(); throw new Error('Sign in first.'); }
+  if (!response.ok) throw new Error(data.error || 'Something went wrong.');
+  return data;
+}
+
+function showSignIn() { $('app').hidden = true; $('signin').hidden = false; $('code').focus(); }
+
+function ago(seconds) {
+  if (!seconds) return 'never';
+  const minutes = Math.round((Date.now() / 1000 - seconds) / 60);
+  if (minutes < 1) return 'just now';
+  if (minutes < 60) return `${minutes} min ago`;
+  const hours = Math.round(minutes / 60);
+  return hours < 24 ? `${hours} h ago` : `${Math.round(hours / 24)} days ago`;
+}
+
+function row({dot, title, where, note, onclick}) {
+  const body = el('span', {class: 'body'}, el('span', {class: 'title'}, title), where ? el('span', {class: 'where'}, where) : null, note ? el('span', {class: 'note'}, note) : null);
+  const parts = [dot ? el('span', {class: `dot ${dot}`}) : null, body];
+  if (!onclick) return el('div', {class: 'row static'}, ...parts);
+  return el('button', {class: 'row', type: 'button', onclick}, ...parts, el('span', {class: 'chevron', 'aria-hidden': 'true'}, '›'));
+}
+
+function skillOf(id) { return state.skills.find(skill => skill.id === id); }
+
+function openFix(fix) {
+  if (fix && fix.action) openSkill(skillOf(fix.action), fix.params || {});
+}
+
+function renderHero(status) {
+  const todo = status.todo || [];
+  const next = todo[0];
+  if (!status.checked_at) return el('div', {class: 'hero'}, el('div', {class: 'label'}, 'Reading GitHub…'), el('p', {}, 'The first check takes about a minute.'));
+  if (!next) return el('div', {class: 'hero'}, el('div', {class: 'number'}, '0'), el('div', {class: 'label'}, 'Everything is up to date'));
+  const hero = el('div', {class: 'hero'},
+    el('div', {class: 'number'}, String(todo.length)),
+    el('div', {class: 'label'}, todo.length === 1 ? 'thing to do' : 'things to do'),
+    el('p', {}, `Next: ${next.title}${next.repo ? ` (${next.repo} ${next.branch})` : ''}. ${next.summary}.`));
+  if (next.fix && next.fix.action) hero.append(el('button', {class: 'pill', type: 'button', onclick: () => openFix(next.fix)}, skillOf(next.fix.action).title));
+  else if (next.fix && next.fix.hint) hero.append(el('p', {}, next.fix.hint), next.url ? el('a', {class: 'pill', href: next.url, target: '_blank', rel: 'noopener'}, 'Open on GitHub') : '');
+  return hero;
+}
+
+function itemRow(item) {
+  return row({dot: item.state === 'ok' ? 'ok' : item.state === 'behind' ? 'behind' : '', title: item.title, where: `${item.repo} ${item.branch}`, note: item.summary,
+    onclick: () => openItem(item)});
+}
+
+function renderOverview() {
+  const {status, jobs} = state;
+  const items = status.items || [];
+  const section = $('overview');
+  const running = jobs.find(job => job.state === 'running');
+  const parts = [];
+  for (const error of status.errors || []) parts.push(el('div', {class: 'banner'}, error));
+  if (state.missing.length) parts.push(el('div', {class: 'banner'}, `Not in the portal yet: ${state.missing.join(', ')}`));
+  if (running) parts.push(el('div', {class: 'group'}, row({dot: 'behind', title: running.title, note: 'Running…', onclick: () => openLog(running.id)})), el('div', {style: 'height:14px'}));
+  parts.push(renderHero(status));
+
+  const car = items.filter(item => item.group === 'car');
+  const comma = status.comma;
+  if (car.length) {
+    const commaRow = !comma ? null : !comma.reachable
+      ? row({dot: 'away', title: 'Your comma', note: 'Not reachable: it is off or away'})
+      : row({dot: comma.latest ? 'ok' : 'behind', title: 'Your comma', note: comma.latest ? 'On the latest build' : `On ${comma.branch}, not the latest build`,
+        onclick: comma.latest ? null : () => openFix({action: 'update-comma'})});
+    parts.push(el('h2', {}, 'The car'), el('div', {class: 'group'}, ...car.map(itemRow), commaRow));
+  }
+  const groups = [['sources', 'What the build takes'], ['forks', 'Your forks']];
+  for (const [id, title] of groups) {
+    const rows = items.filter(item => item.group === id);
+    if (rows.length) parts.push(el('h2', {}, title), el('div', {class: 'group'}, ...rows.map(itemRow)));
+  }
+  const other = items.filter(item => item.group === 'other');
+  if (other.length) {
+    const behind = other.filter(item => item.state === 'behind').length;
+    parts.push(el('div', {style: 'height:20px'}), el('details', {class: 'group', open: section.dataset.other === 'open',
+      ontoggle: event => { section.dataset.other = event.target.open ? 'open' : ''; }},
+      el('summary', {}, 'Other branches', el('span', {}, `${behind} of ${other.length} behind`)), ...other.map(itemRow)));
+  }
+  if ((status.sites || []).length) {
+    parts.push(el('h2', {}, 'Sites on this server'), el('div', {class: 'group'},
+      ...status.sites.map(site => row({dot: site.up ? 'ok' : 'bad', title: site.title, note: site.up ? 'Running' : 'Stopped'}))));
+  }
+  const refresh = el('button', {type: 'button', disabled: status.refreshing, onclick: async () => {
+    refresh.disabled = true; await api('/api/refresh', {}).catch(() => {}); setTimeout(load, 800);
+  }}, status.refreshing ? 'Checking…' : 'Check now');
+  parts.push(el('div', {class: 'foot'}, el('span', {}, `Checked ${ago(status.checked_at)}`), refresh));
+  section.replaceChildren(...parts);
+}
+
+function renderSkills() {
+  const parts = [];
+  for (const group of state.groups) {
+    const skills = state.skills.filter(skill => skill.group === group);
+    parts.push(el('h2', {}, group), el('div', {class: 'group'},
+      ...skills.map(skill => row({title: skill.title, note: skill.what, onclick: () => openSkill(skill, {})}))));
+  }
+  $('skills').replaceChildren(...parts);
+}
+
+const JOB_WORDS = {running: 'Running', done: 'Finished', failed: 'Failed', stopped: 'Stopped'};
+const JOB_DOTS = {running: 'behind', done: 'ok', failed: 'bad', stopped: 'bad'};
+
+function renderJobs() {
+  const jobs = state.jobs;
+  const list = jobs.map(job => row({dot: JOB_DOTS[job.state], title: job.title + (job.dry ? ' (trial)' : ''),
+    note: `${JOB_WORDS[job.state]}, ${ago(job.finished || job.started)}`, onclick: () => openLog(job.id)}));
+  $('jobs').replaceChildren(list.length ? el('div', {class: 'group'}, ...list) : el('div', {class: 'hero'}, el('p', {}, 'Nothing has run yet.')));
+}
+
+function render() {
+  if (!state) return;
+  renderOverview(); renderSkills(); renderJobs();
+}
+
+async function load() {
+  try {
+    state = await api('/api/state');
+    $('signin').hidden = true; $('app').hidden = false;
+    render();
+  } catch (error) { /* the next round tries again */ }
+}
+
+function sheet(...children) {
+  stopWatching();
+  $('sheet-body').replaceChildren(...children);
+  if (!$('sheet').open) $('sheet').showModal();
+}
+
+function sheetHead(title) {
+  return el('header', {}, el('h3', {}, title), el('button', {class: 'close', type: 'button', 'aria-label': 'Close', onclick: () => $('sheet').close()}, '✕'));
+}
+
+function openItem(item) {
+  const fix = item.fix || {};
+  const children = [sheetHead(item.title), el('p', {}, item.what), el('p', {class: 'soft'}, item.summary)];
+  if (item.reasons && item.reasons.length) children.push(el('ul', {}, ...item.reasons.map(reason => el('li', {}, reason))));
+  if (fix.hint) children.push(el('p', {}, fix.hint));
+  const actions = el('div', {class: 'actions'});
+  if (fix.action) actions.append(el('button', {class: 'pill', type: 'button', onclick: () => openFix(fix)}, skillOf(fix.action).title));
+  actions.append(el('a', {class: 'pill quiet', href: item.url, target: '_blank', rel: 'noopener'}, 'Open on GitHub'));
+  children.push(el('p', {class: 'soft'}, `${item.repo} · ${item.branch}${item.head ? ' · ' + item.head.slice(0, 9) : ''}`), actions);
+  sheet(...children);
+}
+
+function field(spec, values) {
+  if (spec.text) {
+    const input = el('input', {type: 'text', spellcheck: false, autocapitalize: 'off', autocomplete: 'off', placeholder: 'None',
+      value: values[spec.name] || '', oninput: () => { values[spec.name] = input.value; }});
+    return el('div', {class: 'field'}, el('label', {}, spec.label), input);
+  }
+  if (!(spec.name in values)) values[spec.name] = spec.choices[0][0];
+  const buttons = spec.choices.map(([value, label]) => el('button', {type: 'button', 'aria-pressed': String(values[spec.name] === value), onclick: () => {
+    values[spec.name] = value;
+    buttons.forEach((button, index) => button.setAttribute('aria-pressed', String(spec.choices[index][0] === value)));
+  }}, label));
+  return el('div', {class: 'field'}, el('label', {}, spec.label), el('div', {class: 'segments'}, ...buttons));
+}
+
+function openSkill(skill, preset) {
+  const children = [sheetHead(skill.title), el('p', {}, skill.what)];
+  if (skill.elsewhere) {
+    children.push(el('p', {class: 'soft'}, skill.elsewhere), el('p', {class: 'soft'}, `Skill: ${skill.skill}`));
+    return sheet(...children);
+  }
+  const values = {...preset};
+  children.push(...skill.params.map(spec => field(spec, values)));
+  children.push(el('p', {class: 'effect'}, skill.effect));
+  const error = el('p', {class: 'error', hidden: true});
+  async function run(dry, button) {
+    button.disabled = true; error.hidden = true;
+    try {
+      const {id} = await api('/api/run', {action: skill.id, params: values, dry});
+      await load();
+      openLog(id);
+    } catch (problem) {
+      error.textContent = problem.message; error.hidden = false; button.disabled = false;
+    }
+  }
+  const go = el('button', {class: 'pill', type: 'button', onclick: () => {
+    if (go.dataset.armed) return run(false, go);
+    go.dataset.armed = '1';
+    go.textContent = skill.device ? 'Yes, change the comma' : 'Yes, run it';
+    go.classList.add('danger');
+  }}, 'Run');
+  const actions = el('div', {class: 'actions'}, go);
+  if (skill.dry) {
+    const trial = el('button', {class: 'pill quiet', type: 'button', onclick: () => run(true, trial)}, 'Trial run');
+    actions.append(trial);
+  }
+  children.push(actions, error, el('p', {class: 'soft'}, `Skill: ${skill.skill}`));
+  sheet(...children);
+}
+
+function stopWatching() { clearTimeout(logTimer); watching = null; }
+
+function openLog(id) {
+  const log = el('pre', {tabIndex: 0});
+  const state_line = el('p', {class: 'soft'}, 'Reading…');
+  const stop = el('button', {class: 'pill quiet', type: 'button', hidden: true, onclick: async () => {
+    stop.disabled = true;
+    await api(`/api/jobs/${id}/stop`, {}).catch(() => {});
+  }}, 'Stop');
+  const title = el('h3', {}, 'Job');
+  sheet(el('header', {}, title, el('button', {class: 'close', type: 'button', 'aria-label': 'Close', onclick: () => $('sheet').close()}, '✕')),
+    state_line, log, el('div', {class: 'actions'}, stop));
+  watching = id;
+  let offset = 0;
+  async function poll() {
+    if (watching !== id) return;
+    try {
+      const data = await api(`/api/jobs/${id}/log?offset=${offset}`);
+      if (watching !== id) return;
+      const follow = log.scrollTop + log.clientHeight >= log.scrollHeight - 40;
+      log.append(data.text);
+      if (follow) log.scrollTop = log.scrollHeight;
+      offset = data.offset;
+      title.textContent = data.job.title;
+      state_line.textContent = JOB_WORDS[data.job.state] + (data.job.dry ? ' · trial run, nothing published' : '');
+      stop.hidden = data.job.state !== 'running';
+      if (data.job.state === 'running' || data.text) logTimer = setTimeout(poll, data.text ? 300 : 2000);
+      else load();
+    } catch (problem) { state_line.textContent = problem.message; }
+  }
+  poll();
+}
+
+$('sheet').addEventListener('close', stopWatching);
+$('sheet').addEventListener('click', event => { if (event.target === $('sheet')) $('sheet').close(); });
+for (const button of document.querySelectorAll('[data-tab]')) {
+  button.addEventListener('click', () => {
+    tab = button.dataset.tab;
+    for (const other of document.querySelectorAll('[data-tab]')) {
+      other.setAttribute('aria-pressed', String(other === button));
+      $(other.dataset.tab).hidden = other !== button;
+    }
+    scrollTo(0, 0);
+  });
+}
+$('signin').addEventListener('submit', async event => {
+  event.preventDefault();
+  $('signin-error').hidden = true;
+  try {
+    await api('/api/sign-in', {code: $('code').value});
+    $('code').value = '';
+    await load();
+  } catch (problem) { $('signin-error').textContent = problem.message; $('signin-error').hidden = false; }
+});
+load();
+setInterval(() => { if (!document.hidden && !$('app').hidden) load(); }, 5000);
+</script>
+</body>
+</html>

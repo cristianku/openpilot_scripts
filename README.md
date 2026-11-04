@@ -14,6 +14,7 @@ When sharing a feature or release with the Sunnypilot community, always provide 
 - `setup-psa-torque-testing/`: creates or refreshes the testing Peugeot branches.
 - `OP-merge-psa-torque-testing/`: promotes `psa-torque-testing` into `psa-torque` in opendbc.
 - `OP-merge-psa-torque-sunny-testing/`: promotes `psa-torque-sunny-testing` into `psa-torque-sunny` in opendbc.
+- `portal/`: the home page at https://ops.farm.14bodhi.com, which shows what is behind and starts these skills.
 
 Each skill stores its wrapper and shared implementation under `scripts/`. Run the wrapper, not the `_common.sh` file directly.
 

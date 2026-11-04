@@ -1,0 +1,21 @@
+[Unit]
+Description=ops-web, openpilot cristianku home
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=@PORTAL@
+EnvironmentFile=/etc/ops-web.env
+Environment=HOME=/root
+Environment=PATH=/root/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/usr/bin/python3 @PORTAL@/server.py --host 0.0.0.0 --port 8768
+Restart=on-failure
+RestartSec=3
+# A running job must survive a restart of the site.
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
