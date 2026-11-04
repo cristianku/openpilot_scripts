@@ -56,6 +56,18 @@ class CatalogTest(unittest.TestCase):
         with self.assertRaises(catalog.ActionError):
             catalog.resolve('reset-learned', {'reboot': 'no'}, True)
 
+    def test_whatever_moves_a_branch_says_what_goes_into_what(self):
+        for skill in catalog.SKILLS:
+            if skill['group'] in ('Keep up to date', 'Build for the car', 'Promote to stable'):
+                self.assertTrue(skill['flow'], skill['id'])
+                self.assertTrue(all(' → ' in line for lines in skill['flow'].values() for line in lines), skill['id'])
+
+    def test_a_flow_per_choice_matches_the_choices(self):
+        for skill in catalog.SKILLS:
+            keys = set(skill.get('flow', {})) - {''}
+            if keys:
+                self.assertEqual(keys, {value for value, _ in skill['params'][0]['choices']}, skill['id'])
+
     def test_the_page_gets_no_command(self):
         self.assertFalse({'argv', 'env', 'dry_env'} & set(catalog.public(catalog.BY_ID['setup-testing'])))
 

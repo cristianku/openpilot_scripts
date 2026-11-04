@@ -67,7 +67,7 @@ a { color: inherit; text-decoration: none; }
 .row.static:active { background: none; }
 .row .body { flex: 1; min-width: 0; }
 .row .title { display: block; font-weight: 500; }
-.row .where { display: block; color: var(--soft); font: 12.5px/1.35 ui-monospace, Menlo, Consolas, monospace; overflow-wrap: anywhere; margin-top: 1px; }
+.row .where { display: block; white-space: pre-line; color: var(--soft); font: 12.5px/1.35 ui-monospace, Menlo, Consolas, monospace; overflow-wrap: anywhere; margin-top: 1px; }
 .row .note { display: block; color: var(--soft); font-size: 14.5px; margin-top: 1px; }
 .row .chevron { color: var(--soft); opacity: .55; font-size: 20px; flex: none; }
 .step { width: 26px; height: 26px; border-radius: 50%; background: var(--orange-soft); color: var(--orange); display: grid; place-items: center;
@@ -300,7 +300,10 @@ function renderOverview() {
   };
   const left = [], right = [];
   const car = items.filter(item => item.group === 'car');
-  if (car.length) left.push(el('h2', {}, 'The car'), el('div', {class: 'group'}, ...car.map(itemRow), commaRow(status.comma)));
+  const build = skillOf('setup-testing');
+  const buildRow = build ? [row({lead: tile(build.group), title: build.title, where: `${build.skill} sunny`,
+    onclick: () => openSkill(build, {variant: 'sunny'})})] : [];
+  if (car.length) left.push(el('h2', {}, 'The car'), el('div', {class: 'group'}, ...buildRow, ...car.map(itemRow), commaRow(status.comma)));
   left.push(...group('forks', 'Your forks'));
   if ((status.sites || []).length) {
     left.push(el('h2', {}, 'Sites on this server'), el('div', {class: 'group'},
@@ -328,7 +331,7 @@ function renderSkills() {
   state.groups.forEach((group, index) => {
     const skills = state.skills.filter(skill => skill.group === group);
     (index < 2 ? left : right).push(el('h2', {}, group), el('div', {class: 'group'},
-      ...skills.map(skill => row({lead: tile(group), title: skill.title, note: skill.what, onclick: () => openSkill(skill, {})}))));
+      ...skills.map(skill => row({lead: tile(group), title: skill.title, where: flowOf(skill, {}).join('\n'), note: skill.what, onclick: () => openSkill(skill, {})}))));
   });
   $('skills').replaceChildren(el('div', {class: 'cols'}, el('div', {}, ...left), el('div', {}, ...right)));
 }
@@ -391,7 +394,13 @@ function openItem(item) {
   openedItem = item.id;
 }
 
-function field(spec, values) {
+// What goes into what, for the choice made in the sheet; the first choice when there is none yet.
+function flowOf(skill, values) {
+  const keys = Object.keys(skill.flow);
+  return skill.flow[keys.find(key => Object.values(values).includes(key)) ?? keys[0]] || [];
+}
+
+function field(spec, values, onchange) {
   if (spec.text) {
     const input = el('input', {type: 'text', spellcheck: false, autocapitalize: 'off', autocomplete: 'off', placeholder: 'None',
       value: values[spec.name] || '', oninput: () => { values[spec.name] = input.value; }});
@@ -401,6 +410,7 @@ function field(spec, values) {
   const buttons = spec.choices.map(([value, label]) => el('button', {type: 'button', 'aria-pressed': String(values[spec.name] === value), onclick: () => {
     values[spec.name] = value;
     buttons.forEach((button, index) => button.setAttribute('aria-pressed', String(spec.choices[index][0] === value)));
+    if (onchange) onchange();
   }}, label));
   return el('div', {class: 'field'}, el('label', {}, spec.label), el('div', {class: 'segments'}, ...buttons));
 }
@@ -412,7 +422,10 @@ function openSkill(skill, preset) {
     return sheet(...children);
   }
   const values = {...preset};
-  children.push(...skill.params.map(spec => field(spec, values)));
+  const flow = el('div', {});
+  const showFlow = () => flow.replaceChildren(...flowOf(skill, values).map(line => el('p', {class: 'mono'}, line)));
+  children.push(...skill.params.map(spec => field(spec, values, showFlow)), flow);
+  showFlow();
   children.push(el('div', {class: 'notice'}, skill.effect));
   const error = el('p', {class: 'error', hidden: true});
   async function run(dry, button) {
