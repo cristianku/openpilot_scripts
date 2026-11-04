@@ -60,8 +60,7 @@ case "${variant}" in
     ;;
   sunny|sunnypilot)
     variant="sunny"
-    # OP-setup-psa-torque-speed publishes the same setup on psa-torque-sunny-speed
-    branch="${SUNNY_TARGET_BRANCH:-psa-torque-sunny-testing}"
+    branch="psa-torque-sunny-testing"
     source_branch="psa-torque-sunny"
     ;;
   *)

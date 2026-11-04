@@ -19,7 +19,7 @@ REPOS = {
     'commaai/openpilot': ['master'],
     'cristianku/sunnypilot': ['master', 'distilled', 'speed-limits', 'nav-alpha'],
     'cristianku/openpilot': ['master', 'sunny-nav-alpha', 'nav-alpha', 'distilled', 'psa-torque-sunny-testing',
-                             'psa-torque-testing', 'psa-torque-sunny', 'psa-torque', 'psa-torque-sunny-speed'],
+                             'psa-torque-testing', 'psa-torque-sunny', 'psa-torque'],
     'sunnypilot/opendbc': ['master'],
     'commaai/opendbc': ['master'],
     'cristianku/opendbc': ['psa-torque-sunny-testing', 'psa-torque-testing', 'psa-torque-sunny', 'psa-torque'],
@@ -255,7 +255,6 @@ def evaluate(cache) -> list[dict]:
         _generated(cache, 'cristianku/openpilot:psa-torque-testing', COMMA, 'comma.ai testing branch'),
         _generated(cache, 'cristianku/openpilot:psa-torque-sunny', SUNNY, 'sunnypilot stable branch'),
         _generated(cache, 'cristianku/openpilot:psa-torque', COMMA, 'comma.ai stable branch'),
-        _generated(cache, 'cristianku/openpilot:psa-torque-sunny-speed', SUNNY, 'Speed-limit work branch'),
     ]
 
 

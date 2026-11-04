@@ -46,7 +46,7 @@ class CatalogTest(unittest.TestCase):
                 catalog.resolve(action, {}, False)
 
     def test_a_trial_publishes_nothing_and_stays_out_of_the_workspace(self):
-        _, env = catalog.resolve('setup-speed', {'base': 'master', 'commit': ''}, True)
+        _, env = catalog.resolve('setup-testing', {'variant': 'sunny', 'base': 'master', 'commit': ''}, True)
         self.assertEqual(env['NO_PUSH'], 'true')
         self.assertNotEqual(env['WORKSPACE_ROOT'], str(catalog.WORKSPACE))
         argv, _ = catalog.resolve('update-comma', {'reboot': 'yes'}, True)

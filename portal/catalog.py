@@ -28,7 +28,7 @@ NO_PUSH = {'NO_PUSH': 'true', 'WORKSPACE_ROOT': str(DRY_WORKSPACE)}
 
 # The scripts that share the setup workspace or the fork cache: none of them may run beside a job of the portal,
 # whoever started it (the speed limits site's Publish runs send_to_car.sh, which runs the setup).
-BUSY_SCRIPTS = frozenset({'setup_psa_torque.sh', 'setup_psa_torque_speed.sh', 'send_to_car.sh', 'update_fork_branch.sh',
+BUSY_SCRIPTS = frozenset({'setup_psa_torque.sh', 'send_to_car.sh', 'update_fork_branch.sh',
                           'update_distilled.sh', 'merge_psa_torque.sh', 'merge_upstream.sh', 'sync_fork.sh'})
 
 VARIANT = {'name': 'variant', 'label': 'For', 'choices': [['sunny', 'sunnypilot'], ['comma', 'comma.ai']]}
@@ -105,13 +105,6 @@ SKILLS = [
      'dry_env': NO_PUSH,
      'argv': lambda p: ['bash', _script('OP-setup-psa-torque', 'scripts', 'setup_psa_torque.sh'),
                         p['variant'], p['base']]},
-    {'id': 'setup-speed', 'skill': 'OP-setup-psa-torque-speed', 'group': 'Build for the car',
-     'title': 'Build the speed-limit work branch',
-     'flow': {'': ['sunnypilot/sunnypilot + cristianku/opendbc psa-torque-sunny-speed → cristianku/openpilot psa-torque-sunny-speed']},
-     'what': 'The same build as testing, published apart so testing stays as it is.',
-     'effect': 'Force-pushes psa-torque-sunny-speed.', 'params': [BASE, PIN], 'dry_env': NO_PUSH,
-     'argv': lambda p: ['bash', _script('OP-setup-psa-torque-speed', 'scripts', 'setup_psa_torque_speed.sh'),
-                        'sunny', _base(p)]},
     # Promote testing to stable.
     {'id': 'merge-sunny-stable', 'skill': 'OP-merge-psa-torque-sunny-testing', 'group': 'Promote to stable',
      'title': 'Promote sunnypilot opendbc',
