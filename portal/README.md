@@ -24,6 +24,9 @@ The generated branch needs a build when master, a submodule pointer or what an i
 are compared, not dates: a realignment moves `sunny-nav-alpha` and changes nothing it adds. A file two injected
 branches change, or that master changed too, has neither one's content, so it is left out of the comparison.
 
+The comma.ai sources (`nav-alpha`, `psa-torque-testing`) have their own group on the page. They never become a step of
+the to-do list, because the comma runs the sunnypilot build.
+
 The comma is read with `git rev-parse` over ssh, and nothing else. When it is off or away the page says so.
 
 ## What it runs

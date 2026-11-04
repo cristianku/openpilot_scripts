@@ -307,6 +307,7 @@ function renderOverview() {
       ...status.sites.map(site => row({title: site.title, end: site.up ? badge('ok', 'Running') : badge('bad', 'Stopped'), href: site.url}))));
   }
   right.push(...group('sources', 'What the build takes'));
+  right.push(...group('comma-sources', 'What a comma.ai build takes'));
   const other = items.filter(item => item.group === 'other');
   if (other.length) {
     const behind = other.filter(item => item.state === 'behind').length;

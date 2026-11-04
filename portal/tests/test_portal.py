@@ -170,6 +170,14 @@ class EvaluateTest(unittest.TestCase):
     def build_of(self, cache):
         return status.evaluate(cache)[0]
 
+    def test_the_comma_ai_sources_are_shown_but_never_a_step(self):
+        cache = clean_cache()
+        cache.counts[('cristianku/openpilot:nav-alpha', status.COMMA)] = 13
+        items = status.evaluate(cache)
+        item = next(item for item in items if item['branch'] == 'nav-alpha' and item['repo'] == 'cristianku/openpilot')
+        self.assertEqual((item['group'], item['state']), ('comma-sources', 'behind'))
+        self.assertEqual(status.to_do(items, None), [])
+
     def test_nothing_changed_means_nothing_to_do(self):
         items = status.evaluate(clean_cache())
         self.assertEqual(self.build_of(clean_cache())['state'], 'ok')

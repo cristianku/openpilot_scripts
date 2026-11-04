@@ -227,7 +227,7 @@ def _promote(cache, stable: str, testing: str, title: str, action: str) -> dict:
 def evaluate(cache) -> list[dict]:
     return [
         _testing(cache),
-        _nav(cache, NAV, SUNNY, 'sources', 'Nav2Pilot', 'update-sunny-nav-alpha'),
+        _nav(cache, NAV, SUNNY, 'sources', 'Nav2Pilot for sunnypilot', 'update-sunny-nav-alpha'),
         _follows(cache, DISTILLED, SUNNY, 'sources', 'Distill models list',
                  'Shows your driving models in the Models menu of the comma and in SunnyLink.',
                  fix={'action': 'update-distilled'}),
@@ -243,9 +243,9 @@ def evaluate(cache) -> list[dict]:
                  'Your copy of sunnypilot master.', fix={'action': 'sync-fork', 'params': {'fork': 'sunnypilot'}}),
         _follows(cache, 'cristianku/openpilot:master', COMMA, 'forks', 'openpilot fork',
                  'Your copy of comma.ai master.', fix={'action': 'sync-fork', 'params': {'fork': 'openpilot'}}),
-        _nav(cache, 'cristianku/openpilot:nav-alpha', COMMA, 'other', 'Nav2Pilot for comma.ai', 'update-nav-alpha',
+        _nav(cache, 'cristianku/openpilot:nav-alpha', COMMA, 'comma-sources', 'Nav2Pilot for comma.ai', 'update-nav-alpha',
              quiet=True),
-        _follows(cache, 'cristianku/opendbc:psa-torque-testing', 'commaai/opendbc:master', 'other',
+        _follows(cache, 'cristianku/opendbc:psa-torque-testing', 'commaai/opendbc:master', 'comma-sources',
                  'PSA port for comma.ai', 'The port on comma.ai opendbc.',
                  fix={'action': 'merge-upstream', 'params': {'variant': 'comma'}}, quiet=True),
         _promote(cache, 'cristianku/opendbc:psa-torque-sunny', OPENDBC_TESTING, 'Stable PSA port, sunnypilot',
