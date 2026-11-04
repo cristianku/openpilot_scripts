@@ -28,7 +28,7 @@ NO_PUSH = {'NO_PUSH': 'true', 'WORKSPACE_ROOT': str(DRY_WORKSPACE)}
 # The scripts that share the setup workspace or the fork cache: none of them may run beside a job of the portal,
 # whoever started it (the speed limits site's Publish runs send_to_car.sh, which runs the setup).
 BUSY_SCRIPTS = frozenset({'setup_psa_torque.sh', 'setup_psa_torque_speed.sh', 'send_to_car.sh', 'update_fork_branch.sh',
-                          'update_distilled.sh', 'merge_psa_torque.sh', 'merge_upstream.sh'})
+                          'update_distilled.sh', 'merge_psa_torque.sh', 'merge_upstream.sh', 'sync_fork.sh'})
 
 VARIANT = {'name': 'variant', 'label': 'For', 'choices': [['sunny', 'sunnypilot'], ['comma', 'comma.ai']]}
 BASE = {'name': 'base', 'label': 'Base', 'choices': [['master', 'Latest master'], ['release', 'Latest release']]}
@@ -45,6 +45,14 @@ def _script(*parts: str) -> str:
 
 SKILLS = [
     # Keep the sources up to date.
+    {'id': 'sync-fork', 'skill': 'scripts/sync_fork.sh', 'group': 'Keep up to date',
+     'title': 'Sync a fork',
+     'what': 'Moves the master of your fork to the official master, like Sync fork on GitHub.',
+     'effect': 'Publishes master on your fork. It only moves forward, and refuses if the fork has commits of its own.',
+     'params': [{'name': 'fork', 'label': 'Fork', 'choices': [['sunnypilot', 'cristianku/sunnypilot'],
+                                                              ['openpilot', 'cristianku/openpilot']]}],
+     'dry_env': NO_PUSH,
+     'argv': lambda p: ['bash', _script('scripts', 'sync_fork.sh'), p['fork']]},
     {'id': 'update-sunny-nav-alpha', 'skill': 'OP-update-sunny-nav-alpha', 'group': 'Keep up to date',
      'title': 'Update Nav2Pilot for sunnypilot',
      'what': 'Moves the Nav2Pilot commit onto the latest sunnypilot master, so the apps keep sending routes to the comma.',

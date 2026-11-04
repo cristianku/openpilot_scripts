@@ -1,5 +1,7 @@
 import http.client
 import json
+import os
+import subprocess
 import sys
 import tempfile
 import threading
@@ -52,6 +54,66 @@ class CatalogTest(unittest.TestCase):
 
     def test_the_page_gets_no_command(self):
         self.assertFalse({'argv', 'env', 'dry_env'} & set(catalog.public(catalog.BY_ID['setup-testing'])))
+
+
+class SyncForkTest(unittest.TestCase):
+    """scripts/sync_fork.sh against two local bare repositories in place of GitHub."""
+
+    def setUp(self):
+        self.dir = tempfile.TemporaryDirectory()
+        self.addCleanup(self.dir.cleanup)
+        self.root = Path(self.dir.name)
+        self.work = self.root / 'work'
+        self.git('init', '-q', '-b', 'master', str(self.work), cwd=self.root)
+        self.commit('first')
+        for repo in ('sunnypilot/sunnypilot', 'cristianku/sunnypilot'):
+            self.bare(repo).parent.mkdir(parents=True, exist_ok=True)
+            self.git('clone', '-q', '--bare', str(self.work), str(self.bare(repo)), cwd=self.root)
+
+    def bare(self, repo):
+        return self.root / 'hub' / f'{repo}.git'
+
+    def git(self, *args, cwd=None):
+        return subprocess.run(['git', *args], cwd=cwd or self.work, check=True, capture_output=True, text=True).stdout.strip()
+
+    def commit(self, message):
+        self.git('-c', 'user.name=t', '-c', 'user.email=t@t', 'commit', '-q', '--allow-empty', '-m', message)
+        return self.git('rev-parse', 'HEAD')
+
+    def sync(self, **env):
+        script = catalog.REPO / 'scripts' / 'sync_fork.sh'
+        return subprocess.run(['bash', str(script), 'sunnypilot'], capture_output=True, text=True,
+                              env={**os.environ, 'GITHUB': str(self.root / 'hub'),
+                                   'FORK_CACHE': str(self.root / 'cache.git'), **env})
+
+    def master(self, repo):
+        return self.git('rev-parse', 'master', cwd=self.bare(repo))
+
+    def publish(self, repo):
+        self.git('push', '-q', str(self.bare(repo)), 'master')
+
+    def test_the_fork_moves_to_upstream(self):
+        head = self.commit('new')
+        self.publish('sunnypilot/sunnypilot')
+        self.assertEqual(self.sync().returncode, 0)
+        self.assertEqual(self.master('cristianku/sunnypilot'), head)
+
+    def test_a_trial_moves_nothing(self):
+        before = self.master('cristianku/sunnypilot')
+        self.commit('new')
+        self.publish('sunnypilot/sunnypilot')
+        self.assertEqual(self.sync(NO_PUSH='true').returncode, 0)
+        self.assertEqual(self.master('cristianku/sunnypilot'), before)
+
+    def test_a_fork_with_its_own_commits_is_not_touched(self):
+        self.commit('mine')
+        self.publish('cristianku/sunnypilot')
+        mine = self.master('cristianku/sunnypilot')
+        self.git('reset', '-q', '--hard', 'HEAD~1')
+        self.commit('theirs')
+        self.publish('sunnypilot/sunnypilot')
+        self.assertEqual(self.sync().returncode, 1)
+        self.assertEqual(self.master('cristianku/sunnypilot'), mine)
 
 
 class FakeCache:

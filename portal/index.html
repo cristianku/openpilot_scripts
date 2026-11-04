@@ -131,7 +131,7 @@ pre {
 <script>
 'use strict';
 const $ = id => document.getElementById(id);
-let state = null, tab = 'overview', watching = null, logTimer = null;
+let state = null, tab = 'overview', watching = null, logTimer = null, openedItem = null;
 
 function el(tag, props = {}, ...children) {
   const node = document.createElement(tag);
@@ -275,11 +275,14 @@ async function load() {
     state = await api('/api/state');
     $('signin').hidden = true; $('app').hidden = false;
     render();
+    const shown = openedItem && (state.status.items || []).find(item => item.id === openedItem);
+    if (shown) openItem(shown);
   } catch (error) { /* the next round tries again */ }
 }
 
 function sheet(...children) {
   stopWatching();
+  openedItem = null;
   $('sheet-body').replaceChildren(...children);
   if (!$('sheet').open) $('sheet').showModal();
 }
@@ -298,6 +301,7 @@ function openItem(item) {
   actions.append(el('a', {class: 'pill quiet', href: item.url, target: '_blank', rel: 'noopener'}, 'Open on GitHub'));
   children.push(el('p', {class: 'soft'}, `${item.repo} · ${item.branch}${item.head ? ' · ' + item.head.slice(0, 9) : ''}`), actions);
   sheet(...children);
+  openedItem = item.id;
 }
 
 function field(spec, values) {
@@ -382,7 +386,7 @@ function openLog(id) {
   poll();
 }
 
-$('sheet').addEventListener('close', stopWatching);
+$('sheet').addEventListener('close', () => { stopWatching(); openedItem = null; });
 $('sheet').addEventListener('click', event => { if (event.target === $('sheet')) $('sheet').close(); });
 for (const button of document.querySelectorAll('[data-tab]')) {
   button.addEventListener('click', () => {

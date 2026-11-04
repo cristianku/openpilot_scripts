@@ -223,7 +223,6 @@ def _promote(cache, stable: str, testing: str, title: str, action: str) -> dict:
 
 
 def evaluate(cache) -> list[dict]:
-    fork_hint = {'hint': 'Sync fork on GitHub: only you can do this one.'}
     return [
         _testing(cache),
         _nav(cache, NAV, SUNNY, 'sources', 'Nav2Pilot', 'update-sunny-nav-alpha'),
@@ -237,11 +236,11 @@ def evaluate(cache) -> list[dict]:
                  'The Peugeot 3008 port and the radar logging.',
                  fix={'action': 'merge-upstream', 'params': {'variant': 'sunny'}}),
         _follows(cache, NEURAL, 'sunnypilot/neural-network-data:master', 'sources', 'Steering model',
-                 'The NNLC lateral model of the 3008.', fix=fork_hint),
+                 'The NNLC lateral model of the 3008.', fix={'hint': 'It has commits of its own: ask Claude to merge it.'}),
         _follows(cache, 'cristianku/sunnypilot:master', SUNNY, 'forks', 'sunnypilot fork',
-                 'Your copy of sunnypilot master.', fix=fork_hint),
+                 'Your copy of sunnypilot master.', fix={'action': 'sync-fork', 'params': {'fork': 'sunnypilot'}}),
         _follows(cache, 'cristianku/openpilot:master', COMMA, 'forks', 'openpilot fork',
-                 'Your copy of comma.ai master.', fix=fork_hint),
+                 'Your copy of comma.ai master.', fix={'action': 'sync-fork', 'params': {'fork': 'openpilot'}}),
         _nav(cache, 'cristianku/openpilot:nav-alpha', COMMA, 'other', 'Nav2Pilot for comma.ai', 'update-nav-alpha',
              quiet=True),
         _follows(cache, 'cristianku/opendbc:psa-torque-testing', 'commaai/opendbc:master', 'other',

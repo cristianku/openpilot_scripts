@@ -11,7 +11,7 @@ updated, in its own repository, not in the middle of a setup.
 
 | What | Source | How it is injected | Upstream | Update with |
 |---|---|---|---|---|
-| The base | `sunnypilot/sunnypilot:master` (or `master=<commit>`, `release`) | cloned | — | the fork `cristianku/sunnypilot` master: **Sync fork** on GitHub (Cristian) |
+| The base | `sunnypilot/sunnypilot:master` (or `master=<commit>`, `release`) | cloned | — | the fork `cristianku/sunnypilot` master: **Sync fork** on GitHub, or `scripts/sync_fork.sh` (Sync a fork in the portal) |
 | Nav2Pilot (setNavRoute waypoints, setMapboxToken) | the one Nav2Pilot commit of `cristianku/openpilot:sunny-nav-alpha` (same commit on `cristianku/sunnypilot:nav-alpha`) | its diff (`branch^..branch`), 3-way, on the base | `sunnypilot/sunnypilot:master` | `OP-update-sunny-nav-alpha`; on conflicts `OP-apply-nav-alpha` |
 | PSA port, stock ARTIV radar logging | `cristianku/opendbc:psa-torque-sunny-testing` | `opendbc_repo` pointer (the whole branch) | `sunnypilot/opendbc:master` | `op-merge-upstream sunny` |
 | NNLC lateral model of the Peugeot 3008 | `cristianku/neural-network-data:master` | `sunnypilot/neural_network_data` pointer | `sunnypilot/neural-network-data` | **Sync fork** on GitHub; new Peugeot data with `op-nnlc-fetch-peugeot` |
@@ -22,8 +22,8 @@ updated, in its own repository, not in the middle of a setup.
 ## Before the setup
 
 1. The fork masters equal upstream: `cristianku/sunnypilot` master = `sunnypilot/sunnypilot` master (and
-   `cristianku/openpilot` master = `commaai/openpilot` master for the comma variant). If not, Cristian syncs them on
-   GitHub.
+   `cristianku/openpilot` master = `commaai/openpilot` master for the comma variant). If not, sync them with Sync fork on
+   GitHub or `scripts/sync_fork.sh`.
 2. Each source above is not behind its upstream: run its update skill when it is. They push; stop and report on a
    conflict instead of forcing.
 3. Then the setup (`OP-setup-psa-torque-testing sunny`), and on the comma `psa-torque-sunny-testing`.
