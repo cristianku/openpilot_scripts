@@ -22,7 +22,7 @@ only (about 26 MB), with no token. `portal/status.py` lists every branch and wha
 
 The generated branch needs a build when master, a submodule pointer or what an injected branch adds has changed. Files
 are compared, not dates: a realignment moves `sunny-nav-alpha` and changes nothing it adds. A file two injected
-branches change has neither one's content, so it is left out of the comparison.
+branches change, or that master changed too, has neither one's content, so it is left out of the comparison.
 
 The comma is read with `git rev-parse` over ssh, and nothing else. When it is off or away the page says so.
 

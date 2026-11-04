@@ -154,15 +154,20 @@ def _nav(cache, key: str, upstream: str, group: str, title: str, action: str, *,
 
 def _injected_changes(cache) -> list[str]:
     """Which injected branches the build does not hold. A realignment moves a branch without changing what it adds,
-    so files are compared, not dates; a file two branches change has neither one's content, and is left out."""
-    sources = {'Nav2Pilot': cache.changes(cache.parent(NAV), NAV),
-               'speed-limits': cache.changes(cache.base(SUNNY, SPEED), SPEED),
-               'distilled': cache.changes(cache.base(SUNNY, DISTILLED), DISTILLED)}
+    so files are compared, not dates. A file that two branches change, or that master changed too, ends up merged in
+    the build, with neither one's content, and is left out."""
+    bases = {'Nav2Pilot': (cache.parent(NAV), NAV), 'speed-limits': (cache.base(SUNNY, SPEED), SPEED),
+             'distilled': (cache.base(SUNNY, DISTILLED), DISTILLED)}
+    sources = {label: cache.changes(base, key) for label, (base, key) in bases.items()}
     seen = Counter(path for changed in sources.values() for path in changed)
     built = cache.files(TESTING)
-    return [f'{label} changed' for label, changed in sources.items()
-            if any(built.get(path, NO_BLOB) != blob for path, blob in changed.items()
-                   if seen[path] == 1 and path not in BUILD_PATHS)]
+    reasons = []
+    for label, changed in sources.items():
+        merged = cache.changes(bases[label][0], SUNNY)
+        if any(built.get(path, NO_BLOB) != blob for path, blob in changed.items()
+               if seen[path] == 1 and path not in BUILD_PATHS and path not in merged):
+            reasons.append(f'{label} changed')
+    return reasons
 
 
 def _testing(cache) -> dict:

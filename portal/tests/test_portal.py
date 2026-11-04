@@ -63,6 +63,7 @@ class FakeCache:
         self.tree = {'nav.py': 'n1', 'speed.py': 's1', 'list.py': 'd1', 'both.py': 'merged'}
         self.nav = {'nav.py': 'n1', 'both.py': 'n2'}
         self.speed = {'speed.py': 's1', 'both.py': 's2', '.gitmodules': 'g'}
+        self.master = {}
 
     def head(self, key):
         return 'h-' + key
@@ -87,7 +88,8 @@ class FakeCache:
         return self.tree
 
     def changes(self, since, key):
-        return {status.NAV: self.nav, status.SPEED: self.speed, status.DISTILLED: {'list.py': 'd1'}}[key]
+        return {status.NAV: self.nav, status.SPEED: self.speed, status.DISTILLED: {'list.py': 'd1'},
+                status.SUNNY: self.master}[key]
 
 
 def clean_cache():
@@ -119,6 +121,12 @@ class EvaluateTest(unittest.TestCase):
         cache = clean_cache()
         cache.nav = {'nav.py': 'n2', 'both.py': 'n2'}
         self.assertEqual(self.build_of(cache)['reasons'], ['Nav2Pilot changed'])
+
+    def test_a_file_master_changed_too_is_merged_in_the_build(self):
+        cache = clean_cache()
+        cache.tree['list.py'] = 'merged'
+        cache.master = {'list.py': 'm1'}
+        self.assertEqual(self.build_of(cache)['reasons'], [])
 
     def test_a_new_master_asks_for_a_build(self):
         cache = clean_cache()
