@@ -34,8 +34,8 @@ entry there, or the tests fail and the page lists it. Skills that need a person 
 - One job at a time. A job does not start while a script of `BUSY_SCRIPTS` runs on this machine, for example a Publish
   of the speed limits site. The other way round is not checked: a Publish started during a portal job is not blocked.
 - A trial run sets `NO_PUSH=true` and uses its own workspace, or `--dry-run` on the comma.
-- `op-merge-upstream` leaves the merge pending in `/root/work/opendbc`. It refuses `comma` while that clone is on the
-  sunnypilot branch.
+- `op-merge-upstream` never switches branch, so each variant has its clone: `/root/work/opendbc` for sunnypilot and
+  `/root/work/opendbc-comma` for comma.ai, made by `install_service.sh`. The merge stays pending there.
 
 ## Who can reach it
 

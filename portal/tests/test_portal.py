@@ -29,6 +29,10 @@ class CatalogTest(unittest.TestCase):
         argv, _ = catalog.resolve('setup-testing', {'variant': 'sunny', 'base': 'master', 'commit': 'abc1234'}, False)
         self.assertEqual(argv[-2:], ['sunny', 'master=abc1234'])
 
+    def test_each_opendbc_variant_merges_in_its_own_clone(self):
+        dirs = {catalog.resolve('merge-upstream', {'variant': variant}, False)[1]['OPENDBC_DIR'] for variant in ('sunny', 'comma')}
+        self.assertEqual(len(dirs), 2)
+
     def test_a_parameter_outside_its_list_is_refused(self):
         for params in ({'variant': '-x', 'base': 'master'}, {'variant': 'sunny', 'base': 'master; id'},
                        {'variant': 'sunny', 'base': 'master', 'commit': '--upload-pack=x'},

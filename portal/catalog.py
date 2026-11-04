@@ -12,7 +12,8 @@ REPO = Path(__file__).resolve().parents[1]
 WORK = Path('/root/work')
 WORKSPACE = WORK / 'op-setup-ws'
 DRY_WORKSPACE = WORK / 'ops-web' / 'dry-run'
-OPENDBC = WORK / 'opendbc'
+# op-merge-upstream never switches branch, so each variant has its own clone (portal/install_service.sh makes the second).
+OPENDBC = {'sunny': WORK / 'opendbc', 'comma': WORK / 'opendbc-comma'}
 COMMIT = re.compile(r'[0-9a-fA-F]{7,40}')
 
 # https has no credentials here: pushes go over ssh, reads stay on https.
@@ -71,8 +72,8 @@ SKILLS = [
     {'id': 'merge-upstream', 'skill': 'op-merge-upstream', 'group': 'Keep up to date',
      'title': 'Merge official opendbc',
      'what': 'Merges official opendbc into the testing branch in the server clone, ready to be checked.',
-     'effect': 'Publishes nothing: the merge stays pending in /root/work/opendbc. Then ask Claude to test and push it.',
-     'params': [VARIANT], 'env': {'OPENDBC_DIR': str(OPENDBC)},
+     'effect': 'Publishes nothing: the merge stays pending in the server clone. Then ask Claude to test and push it.',
+     'params': [VARIANT], 'env': lambda p: {'OPENDBC_DIR': str(OPENDBC[p['variant']])},
      'argv': lambda p: ['bash', _script('op-merge-upstream', 'scripts', 'merge_upstream.sh'), p['variant']]},
     # Build the branches of the car.
     {'id': 'setup-testing', 'skill': 'OP-setup-psa-torque-testing', 'group': 'Build for the car',
@@ -186,7 +187,7 @@ def resolve(action: str, params: dict, dry: bool) -> tuple[list[str], dict]:
     if clean.get('commit') and clean.get('base') == 'release':
         raise ActionError('An exact commit goes with the latest master, not the release.')
     argv = skill['argv'](clean)
-    env = {**BASE_ENV, **skill.get('env', {})}
+    env = {**BASE_ENV, **(skill['env'](clean) if 'env' in skill else {})}
     if dry:
         if not (skill.get('dry_env') or skill.get('dry_arg')):
             raise ActionError('This skill has no trial run.')

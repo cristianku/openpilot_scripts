@@ -7,6 +7,7 @@ set -euo pipefail
 PORTAL="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV_FILE=/etc/ops-web.env
 UNIT=/etc/systemd/system/ops-web.service
+COMMA_CLONE=/root/work/opendbc-comma
 PROXY_IPS="${OPS_WEB_PROXY_IPS:-192.168.200.161}"
 
 unit="$(sed "s|@PORTAL@|${PORTAL}|g" "${PORTAL}/ops-web.service.in")"
@@ -26,6 +27,11 @@ if ! grep -q '^OPS_WEB_PROXY_SECRET=' "${ENV_FILE}"; then
   printf 'OPS_WEB_PROXY_SECRET=%s\n' "$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')" >> "${ENV_FILE}"
 fi
 chmod 600 "${ENV_FILE}"
+
+# op-merge-upstream needs a clone on the branch of each variant: /root/work/opendbc is on the sunnypilot one.
+if [[ ! -d "${COMMA_CLONE}/.git" ]]; then
+  git clone -q --no-tags --branch psa-torque-testing git@github.com:cristianku/opendbc.git "${COMMA_CLONE}"
+fi
 
 printf '%s\n' "${unit}" > "${UNIT}"
 systemctl daemon-reload

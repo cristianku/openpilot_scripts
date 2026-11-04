@@ -368,7 +368,7 @@ async function load() {
 function sheet(...children) {
   stopWatching();
   openedItem = null;
-  $('sheet-body').replaceChildren(...children);
+  $('sheet-body').replaceChildren(...children.filter(Boolean));
   if (!$('sheet').open) $('sheet').showModal();
 }
 
