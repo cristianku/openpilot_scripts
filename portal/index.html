@@ -6,95 +6,122 @@
 <title>openpilot cristianku home</title>
 <style>
 :root {
-  --page: #f2f2f7; --card: #fff; --text: #1d1d1f; --soft: #6e6e73; --line: #e5e5ea; --fill: #e9e9ee;
-  --blue: #0071e3; --green: #248a3d; --orange: #b25000; --red: #d70015; --code: #1d1d1f; --code-text: #f5f5f7;
+  --page: #f5f5f7; --card: #fff; --text: #1d1d1f; --soft: #6e6e73; --line: #e8e8ed; --fill: #e8e8ed; --bar: rgba(245, 245, 247, .82);
+  --blue: #0071e3; --green: #1f8a3b; --orange: #b25000; --red: #d70015; --purple: #8944ab; --grey: #8e8e93;
+  --green-soft: #e3f5e8; --orange-soft: #fff1e0; --red-soft: #ffe7e9; --grey-soft: #eeeef1; --code: #1d1d1f; --code-text: #f5f5f7;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .04), 0 6px 20px rgba(0, 0, 0, .05);
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --page: #000; --card: #1c1c1e; --text: #f5f5f7; --soft: #98989d; --line: #38383a; --fill: #2c2c2e;
-    --blue: #2997ff; --green: #30d158; --orange: #ff9f0a; --red: #ff453a; --code: #000; --code-text: #f5f5f7;
+    --page: #000; --card: #1c1c1e; --text: #f5f5f7; --soft: #98989d; --line: #2f2f32; --fill: #2c2c2e; --bar: rgba(0, 0, 0, .78);
+    --blue: #2997ff; --green: #30d158; --orange: #ff9f0a; --red: #ff453a; --purple: #bf5af2; --grey: #8e8e93;
+    --green-soft: #12351d; --orange-soft: #3d2708; --red-soft: #3f1518; --grey-soft: #2c2c2e; --code: #0b0b0c; --code-text: #f5f5f7;
+    --shadow: none;
   }
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body {
-  margin: 0; background: var(--page); color: var(--text); line-height: 1.4;
+  margin: 0; background: var(--page); color: var(--text);
   font: 17px/1.4 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
-main { max-width: 720px; margin: 0 auto; padding: 20px 16px 72px; }
-h1 { font-size: 30px; line-height: 1.15; letter-spacing: -.02em; margin: 8px 0 16px; }
-h2 { font-size: 15px; font-weight: 600; color: var(--soft); margin: 28px 16px 8px; }
+main { max-width: 680px; margin: 0 auto; padding: 18px 16px 96px; }
+@media (min-width: 1000px) { main { max-width: 1040px; } }
+h1 { font-size: 28px; line-height: 1.15; letter-spacing: -.022em; margin: 6px 4px 14px; }
+h2 { font-size: 14px; font-weight: 600; color: var(--soft); margin: 26px 16px 8px; }
 button, input { font: inherit; color: inherit; }
+a { color: inherit; text-decoration: none; }
 [hidden] { display: none !important; }
-.segments { display: flex; background: var(--fill); border-radius: 10px; padding: 2px; margin-bottom: 20px; }
+.tabs { position: sticky; top: 0; z-index: 5; margin: 0 -16px 16px; padding: 8px 16px; background: var(--bar);
+  -webkit-backdrop-filter: saturate(180%) blur(18px); backdrop-filter: saturate(180%) blur(18px); }
+.segments { display: flex; background: var(--fill); border-radius: 10px; padding: 2px; }
 .segments button {
   flex: 1; min-width: 0; border: 0; background: none; padding: 7px 6px; border-radius: 8px; font-size: 15px;
   font-weight: 500; cursor: pointer;
 }
 .segments button[aria-pressed=true] { background: var(--card); box-shadow: 0 1px 3px rgba(0, 0, 0, .14); }
-.hero { background: var(--card); border-radius: 18px; padding: 22px 20px; }
-.hero .number { font-size: 52px; font-weight: 700; line-height: 1; letter-spacing: -.03em; }
-.hero .label { font-size: 19px; font-weight: 600; margin-top: 6px; }
-.hero p { margin: 6px 0 0; color: var(--soft); }
-.hero .pill { margin-top: 16px; }
+.cols { display: grid; gap: 0 20px; }
+@media (min-width: 1000px) { .cols { grid-template-columns: 1fr 1fr; align-items: start; } }
+.cols > div { min-width: 0; }
+.hero, .group { background: var(--card); border-radius: 18px; overflow: hidden; box-shadow: var(--shadow); }
+.hero .top { display: flex; align-items: center; gap: 16px; padding: 20px; }
+.hero .number { font-size: 56px; font-weight: 700; line-height: 1; letter-spacing: -.03em; color: var(--orange); }
+.hero .label { font-size: 21px; font-weight: 600; letter-spacing: -.01em; line-height: 1.2; }
+.hero .sub { color: var(--soft); font-size: 15px; margin-top: 2px; }
+.hero .check { width: 52px; height: 52px; border-radius: 50%; background: var(--green); color: #fff; display: grid; place-items: center; flex: none; }
 .pill {
-  display: inline-block; border: 0; border-radius: 980px; padding: 10px 20px; background: var(--blue); color: #fff;
-  font-size: 16px; font-weight: 500; cursor: pointer; text-decoration: none; text-align: center;
+  display: inline-block; border: 0; border-radius: 980px; padding: 11px 20px; background: var(--blue); color: #fff;
+  font-size: 16px; font-weight: 500; cursor: pointer; text-align: center;
 }
 .pill.quiet { background: var(--fill); color: var(--text); }
 .pill.danger { background: var(--red); }
 .pill:disabled { opacity: .45; cursor: default; }
-.group { background: var(--card); border-radius: 14px; overflow: hidden; }
 .row {
-  display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 11px 14px 11px 16px;
+  display: flex; align-items: center; gap: 12px; width: 100%; min-height: 54px; padding: 10px 12px 10px 16px;
   border: 0; background: none; text-align: left; cursor: pointer;
 }
-.row + .row { border-top: 1px solid var(--line); }
+.row + .row, .hero .row { border-top: 1px solid var(--line); }
+@media (hover: hover) { .row:hover { background: var(--grey-soft); } .row.static:hover { background: none; } }
 .row:active { background: var(--fill); }
 .row.static { cursor: default; }
 .row.static:active { background: none; }
 .row .body { flex: 1; min-width: 0; }
-.row .title { font-weight: 500; }
-.row .note { display: block; color: var(--soft); font-size: 15px; overflow-wrap: anywhere; }
-.row .where { display: block; color: var(--soft); font: 13px/1.35 ui-monospace, Menlo, Consolas, monospace; overflow-wrap: anywhere; margin-top: 1px; }
-.row .chevron { color: var(--soft); opacity: .6; font-size: 20px; flex: none; }
-.dot { width: 10px; height: 10px; border-radius: 50%; flex: none; background: var(--soft); }
-.dot.ok { background: var(--green); }
-.dot.behind { background: var(--orange); }
-.dot.bad { background: var(--red); }
-.foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 14px 16px 0;
-  color: var(--soft); font-size: 14px; }
+.row .title { display: block; font-weight: 500; }
+.row .where { display: block; color: var(--soft); font: 12.5px/1.35 ui-monospace, Menlo, Consolas, monospace; overflow-wrap: anywhere; margin-top: 1px; }
+.row .note { display: block; color: var(--soft); font-size: 14.5px; margin-top: 1px; }
+.row .chevron { color: var(--soft); opacity: .55; font-size: 20px; flex: none; }
+.step { width: 26px; height: 26px; border-radius: 50%; background: var(--orange-soft); color: var(--orange); display: grid; place-items: center;
+  font-size: 14px; font-weight: 600; flex: none; }
+.go { flex: none; border-radius: 980px; padding: 6px 13px; background: var(--blue); color: #fff; font-size: 14px; font-weight: 500; }
+.go.quiet { background: var(--fill); color: var(--text); }
+.badge { flex: none; border-radius: 980px; padding: 3px 9px; font-size: 13px; font-weight: 500; white-space: nowrap; background: var(--grey-soft); color: var(--soft); }
+.badge.ok { background: var(--green-soft); color: var(--green); }
+.badge.behind { background: var(--orange-soft); color: var(--orange); }
+.badge.bad { background: var(--red-soft); color: var(--red); }
+.tile { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; color: #fff; flex: none; }
+.tile svg, .check svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.check svg { width: 28px; height: 28px; stroke-width: 2.6; }
+.foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 16px 16px 0; color: var(--soft); font-size: 14px; }
 .foot button { border: 0; background: none; color: var(--blue); cursor: pointer; font-size: 15px; padding: 4px 0; }
 .foot button:disabled { color: var(--soft); }
-.banner { background: var(--card); border-radius: 14px; padding: 12px 16px; margin-bottom: 14px; color: var(--red); font-size: 15px; }
-details.group summary {
-  list-style: none; cursor: pointer; padding: 14px 16px; font-weight: 500; display: flex; justify-content: space-between;
-}
+.banner { background: var(--red-soft); border-radius: 14px; padding: 12px 16px; margin-bottom: 12px; color: var(--red); font-size: 15px; }
+details.group { margin-top: 26px; }
+details.group summary { list-style: none; cursor: pointer; padding: 15px 16px; font-weight: 500; display: flex; justify-content: space-between; gap: 12px; }
 details.group summary::-webkit-details-marker { display: none; }
-details.group summary span { color: var(--soft); font-weight: 400; }
+details.group summary span { color: var(--soft); font-weight: 400; font-size: 15px; }
 details.group .row { border-top: 1px solid var(--line); }
+.jobbar {
+  position: fixed; left: 50%; bottom: max(14px, env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 6;
+  width: min(calc(100vw - 32px), 460px); display: flex; align-items: center; gap: 12px; border: 0; cursor: pointer; text-align: left;
+  padding: 12px 16px; border-radius: 16px; background: var(--code); color: var(--code-text); box-shadow: 0 8px 28px rgba(0, 0, 0, .28);
+}
+.jobbar .body { flex: 1; min-width: 0; font-size: 15px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.spinner { width: 18px; height: 18px; border-radius: 50%; border: 2.5px solid rgba(255, 255, 255, .28); border-top-color: #fff; flex: none; animation: spin .9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 dialog {
   border: 0; padding: 0; background: var(--page); color: var(--text); width: min(560px, 100vw);
-  max-width: 100vw; max-height: 92dvh; border-radius: 18px; margin: auto;
+  max-width: 100vw; max-height: 92dvh; border-radius: 20px; margin: auto;
 }
+dialog[open] { animation: rise .22s ease-out; }
+@keyframes rise { from { transform: translateY(14px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { dialog[open], .spinner { animation: none; } }
 dialog::backdrop { background: rgba(0, 0, 0, .4); }
 @media (max-width: 600px) {
-  dialog { margin: auto 0 0; width: 100vw; border-radius: 18px 18px 0 0; }
+  dialog { margin: auto 0 0; width: 100vw; border-radius: 20px 20px 0 0; }
 }
 .sheet { padding: 18px 16px 24px; }
-.sheet header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.sheet h3 { font-size: 22px; line-height: 1.2; margin: 0; letter-spacing: -.01em; }
+.sheet header { display: flex; align-items: center; gap: 12px; }
+.sheet h3 { flex: 1; min-width: 0; font-size: 21px; line-height: 1.2; margin: 0; letter-spacing: -.01em; }
 .close { border: 0; background: var(--fill); width: 30px; height: 30px; border-radius: 50%; cursor: pointer; flex: none; color: var(--soft); }
-.sheet p { margin: 10px 0 0; }
+.sheet p { margin: 12px 0 0; }
 .sheet .soft { color: var(--soft); font-size: 15px; }
-.sheet .effect { color: var(--orange); font-size: 15px; }
+.sheet .mono { color: var(--soft); font: 13px/1.4 ui-monospace, Menlo, Consolas, monospace; overflow-wrap: anywhere; }
 .sheet ul { margin: 10px 0 0; padding-left: 20px; }
+.notice { background: var(--orange-soft); color: var(--orange); border-radius: 12px; padding: 10px 14px; font-size: 15px; margin-top: 16px; }
 .field { margin-top: 16px; }
 .field label { display: block; font-size: 14px; color: var(--soft); margin: 0 0 6px 4px; }
-.field .segments { margin: 0; }
-.field input {
-  width: 100%; border: 0; background: var(--card); padding: 11px 14px; border-radius: 10px; font-size: 16px;
-}
-.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.field input { width: 100%; border: 0; background: var(--card); padding: 11px 14px; border-radius: 10px; font-size: 16px; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
 .actions .pill { flex: 1 1 140px; }
 .error { color: var(--red); font-size: 15px; margin-top: 12px; }
 pre {
@@ -102,14 +129,17 @@ pre {
   line-height: 1.45; height: 52dvh; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere;
   font-family: ui-monospace, Menlo, Consolas, monospace;
 }
-.signin { max-width: 360px; margin: 18vh auto 0; text-align: center; }
-.signin input { width: 100%; border: 0; background: var(--card); padding: 12px 14px; border-radius: 10px; font-size: 16px; margin: 16px 0 12px; }
+.signin { max-width: 340px; margin: 16vh auto 0; text-align: center; }
+.signin .tile { width: 60px; height: 60px; border-radius: 15px; margin: 0 auto 14px; background: var(--blue); }
+.signin .tile svg { width: 34px; height: 34px; }
+.signin input { width: 100%; border: 0; background: var(--card); padding: 12px 14px; border-radius: 12px; font-size: 16px; margin: 6px 0 12px; box-shadow: var(--shadow); }
 .signin .pill { width: 100%; }
 </style>
 </head>
 <body>
 <main>
   <form class="signin" id="signin" hidden>
+    <span class="tile" id="signin-tile"></span>
     <h1>openpilot cristianku home</h1>
     <input id="code" type="password" autocomplete="current-password" placeholder="Sign-in code" aria-label="Sign-in code">
     <button class="pill" type="submit">Sign in</button>
@@ -117,14 +147,15 @@ pre {
   </form>
   <div id="app" hidden>
     <h1>openpilot cristianku home</h1>
-    <div class="segments" role="group" aria-label="Sections">
+    <div class="tabs"><div class="segments" role="group" aria-label="Sections">
       <button data-tab="overview" aria-pressed="true">Overview</button>
       <button data-tab="skills" aria-pressed="false">Skills</button>
       <button data-tab="jobs" aria-pressed="false">Jobs</button>
-    </div>
+    </div></div>
     <section id="overview"></section>
     <section id="skills" hidden></section>
     <section id="jobs" hidden></section>
+    <button class="jobbar" id="jobbar" type="button" hidden></button>
   </div>
 </main>
 <dialog id="sheet"><div class="sheet" id="sheet-body"></div></dialog>
@@ -170,12 +201,38 @@ function ago(seconds) {
   return hours < 24 ? `${hours} h ago` : `${Math.round(hours / 24)} days ago`;
 }
 
-function row({dot, title, where, note, onclick}) {
-  const body = el('span', {class: 'body'}, el('span', {class: 'title'}, title), where ? el('span', {class: 'where'}, where) : null, note ? el('span', {class: 'note'}, note) : null);
-  const parts = [dot ? el('span', {class: `dot ${dot}`}) : null, body];
-  if (!onclick) return el('div', {class: 'row static'}, ...parts);
-  return el('button', {class: 'row', type: 'button', onclick}, ...parts, el('span', {class: 'chevron', 'aria-hidden': 'true'}, '›'));
+const ICONS = {
+  sync: '<path d="M4 12a8 8 0 0 1 13.7-5.7L20 8.5M20 4v4.5h-4.5M20 12a8 8 0 0 1-13.7 5.7L4 15.5M4 20v-4.5h4.5"/>',
+  build: '<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9zM4.5 7.5L12 12l7.5-4.5M12 12v9"/>',
+  promote: '<path d="M12 20V5M6 11l6-6 6 6"/>',
+  car: '<path d="M5 17v-5l2-5h10l2 5v5zM5 12h14M7.5 17v2M16.5 17v2"/>',
+  chat: '<path d="M4 5h16v11H9l-5 4z"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+};
+const GROUP_LOOK = {
+  'Keep up to date': ['sync', 'var(--blue)'], 'Build for the car': ['build', '#ff9500'], 'Promote to stable': ['promote', '#34c759'],
+  'On the comma': ['car', 'var(--purple)'], 'Needs Claude or your Mac': ['chat', 'var(--grey)'],
+};
+
+function svg(name) { return `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[name]}</svg>`; }
+
+function tile(group) {
+  const [icon, color] = GROUP_LOOK[group] || ['chat', 'var(--grey)'];
+  const node = el('span', {class: 'tile', style: `background:${color}`});
+  node.innerHTML = svg(icon);
+  return node;
 }
+
+function row({lead, title, where, note, end, onclick, href}) {
+  const body = el('span', {class: 'body'}, el('span', {class: 'title'}, title), where ? el('span', {class: 'where'}, where) : null, note ? el('span', {class: 'note'}, note) : null);
+  const parts = [lead, body, end];
+  const chevron = el('span', {class: 'chevron', 'aria-hidden': 'true'}, '›');
+  if (href) return el('a', {class: 'row', href, target: '_blank', rel: 'noopener'}, ...parts, chevron);
+  if (!onclick) return el('div', {class: 'row static'}, ...parts);
+  return el('button', {class: 'row', type: 'button', onclick}, ...parts, chevron);
+}
+
+function badge(kind, text) { return el('span', {class: `badge ${kind}`}, text); }
 
 function skillOf(id) { return state.skills.find(skill => skill.id === id); }
 
@@ -183,61 +240,81 @@ function openFix(fix) {
   if (fix && fix.action) openSkill(skillOf(fix.action), fix.params || {});
 }
 
+function stepRow(step, index) {
+  const item = (state.status.items || []).find(other => other.id === step.id);
+  const canRun = step.fix && step.fix.action;
+  return row({lead: el('span', {class: 'step'}, String(index + 1)), title: step.title, where: step.repo ? `${step.repo} ${step.branch}` : null,
+    note: step.summary, end: el('span', {class: canRun ? 'go' : 'go quiet'}, canRun ? 'Fix' : 'How'),
+    onclick: () => (canRun ? openFix(step.fix) : item && openItem(item))});
+}
+
 function renderHero(status) {
   const todo = status.todo || [];
-  const next = todo[0];
-  if (!status.checked_at) return el('div', {class: 'hero'}, el('div', {class: 'label'}, 'Reading GitHub…'), el('p', {}, 'The first check takes about a minute.'));
-  if (!next) return el('div', {class: 'hero'}, el('div', {class: 'number'}, '0'), el('div', {class: 'label'}, 'Everything is up to date'));
-  const hero = el('div', {class: 'hero'},
-    el('div', {class: 'number'}, String(todo.length)),
-    el('div', {class: 'label'}, todo.length === 1 ? 'thing to do' : 'things to do'),
-    el('p', {}, `Next: ${next.title}${next.repo ? ` (${next.repo} ${next.branch})` : ''}. ${next.summary}.`));
-  if (next.fix && next.fix.action) hero.append(el('button', {class: 'pill', type: 'button', onclick: () => openFix(next.fix)}, skillOf(next.fix.action).title));
-  else if (next.fix && next.fix.hint) hero.append(el('p', {}, next.fix.hint), next.url ? el('a', {class: 'pill', href: next.url, target: '_blank', rel: 'noopener'}, 'Open on GitHub') : '');
-  return hero;
+  if (!status.checked_at) {
+    return el('div', {class: 'hero'}, el('div', {class: 'top'}, el('div', {},
+      el('div', {class: 'label'}, 'Reading GitHub…'), el('div', {class: 'sub'}, 'The first check takes about a minute.'))));
+  }
+  if (!todo.length) {
+    const check = el('span', {class: 'check'});
+    check.innerHTML = svg('check');
+    return el('div', {class: 'hero'}, el('div', {class: 'top'}, check, el('div', {},
+      el('div', {class: 'label'}, 'Everything is up to date'), el('div', {class: 'sub'}, 'Nothing to do.'))));
+  }
+  return el('div', {class: 'hero'},
+    el('div', {class: 'top'}, el('span', {class: 'number'}, String(todo.length)), el('div', {},
+      el('div', {class: 'label'}, todo.length === 1 ? 'thing to do' : 'things to do'), el('div', {class: 'sub'}, 'In this order'))),
+    ...todo.map(stepRow));
+}
+
+function itemBadge(item) {
+  if (item.state === 'ok') return badge('ok', 'Up to date');
+  if (item.state === 'unknown') return badge('', 'Unknown');
+  if (item.id.endsWith(':psa-torque-sunny-testing') && item.repo === 'cristianku/openpilot') return badge('behind', 'Build needed');
+  return badge('behind', item.behind ? `${item.behind} behind` : 'Check');
 }
 
 function itemRow(item) {
-  return row({dot: item.state === 'ok' ? 'ok' : item.state === 'behind' ? 'behind' : '', title: item.title, where: `${item.repo} ${item.branch}`, note: item.summary,
-    onclick: () => openItem(item)});
+  return row({title: item.title, where: `${item.repo} ${item.branch}`, note: item.state === 'ok' ? null : item.summary,
+    end: itemBadge(item), onclick: () => openItem(item)});
+}
+
+function commaRow(comma) {
+  if (!comma) return null;
+  if (!comma.reachable) return row({title: 'Your comma', note: 'Off or away', end: badge('', 'Not reachable')});
+  if (comma.latest) return row({title: 'Your comma', where: comma.branch, end: badge('ok', 'On the latest build')});
+  return row({title: 'Your comma', where: comma.branch, end: badge('behind', 'Older build'), onclick: () => openFix({action: 'update-comma'})});
 }
 
 function renderOverview() {
-  const {status, jobs} = state;
+  const {status} = state;
   const items = status.items || [];
   const section = $('overview');
-  const running = jobs.find(job => job.state === 'running');
   const parts = [];
   for (const error of status.errors || []) parts.push(el('div', {class: 'banner'}, error));
   if (state.missing.length) parts.push(el('div', {class: 'banner'}, `Not in the portal yet: ${state.missing.join(', ')}`));
-  if (running) parts.push(el('div', {class: 'group'}, row({dot: 'behind', title: running.title, note: 'Running…', onclick: () => openLog(running.id)})), el('div', {style: 'height:14px'}));
   parts.push(renderHero(status));
 
-  const car = items.filter(item => item.group === 'car');
-  const comma = status.comma;
-  if (car.length) {
-    const commaRow = !comma ? null : !comma.reachable
-      ? row({dot: 'away', title: 'Your comma', note: 'Not reachable: it is off or away'})
-      : row({dot: comma.latest ? 'ok' : 'behind', title: 'Your comma', note: comma.latest ? 'On the latest build' : `On ${comma.branch}, not the latest build`,
-        onclick: comma.latest ? null : () => openFix({action: 'update-comma'})});
-    parts.push(el('h2', {}, 'The car'), el('div', {class: 'group'}, ...car.map(itemRow), commaRow));
-  }
-  const groups = [['sources', 'What the build takes'], ['forks', 'Your forks']];
-  for (const [id, title] of groups) {
+  const group = (id, title) => {
     const rows = items.filter(item => item.group === id);
-    if (rows.length) parts.push(el('h2', {}, title), el('div', {class: 'group'}, ...rows.map(itemRow)));
+    return rows.length ? [el('h2', {}, title), el('div', {class: 'group'}, ...rows.map(itemRow))] : [];
+  };
+  const left = [], right = [];
+  const car = items.filter(item => item.group === 'car');
+  if (car.length) left.push(el('h2', {}, 'The car'), el('div', {class: 'group'}, ...car.map(itemRow), commaRow(status.comma)));
+  left.push(...group('forks', 'Your forks'));
+  if ((status.sites || []).length) {
+    left.push(el('h2', {}, 'Sites on this server'), el('div', {class: 'group'},
+      ...status.sites.map(site => row({title: site.title, end: site.up ? badge('ok', 'Running') : badge('bad', 'Stopped'), href: site.url}))));
   }
+  right.push(...group('sources', 'What the build takes'));
   const other = items.filter(item => item.group === 'other');
   if (other.length) {
     const behind = other.filter(item => item.state === 'behind').length;
-    parts.push(el('div', {style: 'height:20px'}), el('details', {class: 'group', open: section.dataset.other === 'open',
+    right.push(el('details', {class: 'group', open: section.dataset.other === 'open',
       ontoggle: event => { section.dataset.other = event.target.open ? 'open' : ''; }},
       el('summary', {}, 'Other branches', el('span', {}, `${behind} of ${other.length} behind`)), ...other.map(itemRow)));
   }
-  if ((status.sites || []).length) {
-    parts.push(el('h2', {}, 'Sites on this server'), el('div', {class: 'group'},
-      ...status.sites.map(site => row({dot: site.up ? 'ok' : 'bad', title: site.title, note: site.up ? 'Running' : 'Stopped'}))));
-  }
+  parts.push(el('div', {class: 'cols'}, el('div', {}, ...left), el('div', {}, ...right)));
   const refresh = el('button', {type: 'button', disabled: status.refreshing, onclick: async () => {
     refresh.disabled = true; await api('/api/refresh', {}).catch(() => {}); setTimeout(load, 800);
   }}, status.refreshing ? 'Checking…' : 'Check now');
@@ -246,23 +323,31 @@ function renderOverview() {
 }
 
 function renderSkills() {
-  const parts = [];
-  for (const group of state.groups) {
+  const left = [], right = [];
+  state.groups.forEach((group, index) => {
     const skills = state.skills.filter(skill => skill.group === group);
-    parts.push(el('h2', {}, group), el('div', {class: 'group'},
-      ...skills.map(skill => row({title: skill.title, note: skill.what, onclick: () => openSkill(skill, {})}))));
-  }
-  $('skills').replaceChildren(...parts);
+    (index < 2 ? left : right).push(el('h2', {}, group), el('div', {class: 'group'},
+      ...skills.map(skill => row({lead: tile(group), title: skill.title, note: skill.what, onclick: () => openSkill(skill, {})}))));
+  });
+  $('skills').replaceChildren(el('div', {class: 'cols'}, el('div', {}, ...left), el('div', {}, ...right)));
 }
 
 const JOB_WORDS = {running: 'Running', done: 'Finished', failed: 'Failed', stopped: 'Stopped'};
-const JOB_DOTS = {running: 'behind', done: 'ok', failed: 'bad', stopped: 'bad'};
+const JOB_KINDS = {running: 'behind', done: 'ok', failed: 'bad', stopped: 'bad'};
 
 function renderJobs() {
   const jobs = state.jobs;
-  const list = jobs.map(job => row({dot: JOB_DOTS[job.state], title: job.title + (job.dry ? ' (trial)' : ''),
-    note: `${JOB_WORDS[job.state]}, ${ago(job.finished || job.started)}`, onclick: () => openLog(job.id)}));
-  $('jobs').replaceChildren(list.length ? el('div', {class: 'group'}, ...list) : el('div', {class: 'hero'}, el('p', {}, 'Nothing has run yet.')));
+  const list = jobs.map(job => row({title: job.title, note: (job.dry ? 'Trial run, ' : '') + ago(job.finished || job.started),
+    end: badge(JOB_KINDS[job.state], JOB_WORDS[job.state]), onclick: () => openLog(job.id)}));
+  $('jobs').replaceChildren(list.length ? el('div', {class: 'group'}, ...list)
+    : el('div', {class: 'hero'}, el('div', {class: 'top'}, el('div', {},
+      el('div', {class: 'label'}, 'Nothing has run yet'), el('div', {class: 'sub'}, 'What you start from Skills shows up here.')))));
+  const running = jobs.find(job => job.state === 'running');
+  $('jobbar').hidden = !running;
+  if (running) {
+    $('jobbar').replaceChildren(el('span', {class: 'spinner'}), el('span', {class: 'body'}, running.title), el('span', {}, 'Show'));
+    $('jobbar').onclick = () => openLog(running.id);
+  }
 }
 
 function render() {
@@ -287,19 +372,20 @@ function sheet(...children) {
   if (!$('sheet').open) $('sheet').showModal();
 }
 
-function sheetHead(title) {
-  return el('header', {}, el('h3', {}, title), el('button', {class: 'close', type: 'button', 'aria-label': 'Close', onclick: () => $('sheet').close()}, '✕'));
+function sheetHead(title, lead) {
+  return el('header', {}, lead, el('h3', {}, title), el('button', {class: 'close', type: 'button', 'aria-label': 'Close', onclick: () => $('sheet').close()}, '✕'));
 }
 
 function openItem(item) {
   const fix = item.fix || {};
-  const children = [sheetHead(item.title), el('p', {}, item.what), el('p', {class: 'soft'}, item.summary)];
+  const children = [sheetHead(item.title), el('p', {class: 'mono'}, `${item.repo} ${item.branch}${item.head ? ' · ' + item.head.slice(0, 9) : ''}`),
+    el('p', {}, item.what), el('p', {class: 'soft'}, item.summary)];
   if (item.reasons && item.reasons.length) children.push(el('ul', {}, ...item.reasons.map(reason => el('li', {}, reason))));
   if (fix.hint) children.push(el('p', {}, fix.hint));
   const actions = el('div', {class: 'actions'});
   if (fix.action) actions.append(el('button', {class: 'pill', type: 'button', onclick: () => openFix(fix)}, skillOf(fix.action).title));
   actions.append(el('a', {class: 'pill quiet', href: item.url, target: '_blank', rel: 'noopener'}, 'Open on GitHub'));
-  children.push(el('p', {class: 'soft'}, `${item.repo} · ${item.branch}${item.head ? ' · ' + item.head.slice(0, 9) : ''}`), actions);
+  children.push(actions);
   sheet(...children);
   openedItem = item.id;
 }
@@ -319,14 +405,14 @@ function field(spec, values) {
 }
 
 function openSkill(skill, preset) {
-  const children = [sheetHead(skill.title), el('p', {}, skill.what)];
+  const children = [sheetHead(skill.title, tile(skill.group)), el('p', {}, skill.what)];
   if (skill.elsewhere) {
-    children.push(el('p', {class: 'soft'}, skill.elsewhere), el('p', {class: 'soft'}, `Skill: ${skill.skill}`));
+    children.push(el('p', {class: 'soft'}, skill.elsewhere), el('p', {class: 'mono'}, skill.skill));
     return sheet(...children);
   }
   const values = {...preset};
   children.push(...skill.params.map(spec => field(spec, values)));
-  children.push(el('p', {class: 'effect'}, skill.effect));
+  children.push(el('div', {class: 'notice'}, skill.effect));
   const error = el('p', {class: 'error', hidden: true});
   async function run(dry, button) {
     button.disabled = true; error.hidden = true;
@@ -349,7 +435,7 @@ function openSkill(skill, preset) {
     const trial = el('button', {class: 'pill quiet', type: 'button', onclick: () => run(true, trial)}, 'Trial run');
     actions.append(trial);
   }
-  children.push(actions, error, el('p', {class: 'soft'}, `Skill: ${skill.skill}`));
+  children.push(actions, error, skill.dry ? el('p', {class: 'soft'}, 'A trial run publishes nothing.') : null, el('p', {class: 'mono'}, skill.skill));
   sheet(...children);
 }
 
@@ -386,6 +472,7 @@ function openLog(id) {
   poll();
 }
 
+$('signin-tile').innerHTML = svg('car');
 $('sheet').addEventListener('close', () => { stopWatching(); openedItem = null; });
 $('sheet').addEventListener('click', event => { if (event.target === $('sheet')) $('sheet').close(); });
 for (const button of document.querySelectorAll('[data-tab]')) {

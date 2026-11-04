@@ -41,7 +41,9 @@ MODELS_PATH = 'openpilot/sunnypilot/speed_limits/models'
 # Set by the setup itself, and compared one by one in _testing.
 BUILD_PATHS = {'.gitmodules', 'opendbc_repo', NEURAL_PATH, MODELS_PATH}
 NO_BLOB = '0' * 40
-SITES = [('speedlimits-web', 'Speed limits site'), ('distill-web', 'Distill site'), ('perception-web', 'Perception site')]
+SITES = [('speedlimits-web', 'Speed limits site', 'https://limits.farm.14bodhi.com'),
+         ('distill-web', 'Distill site', 'https://distill.farm.14bodhi.com'),
+         ('perception-web', 'Perception site', 'https://perception.farm.14bodhi.com')]
 INTERVAL_S = 600
 ASK_CLAUDE = 'Ask Claude to merge sunnypilot master into speed-limits.'
 
@@ -283,9 +285,9 @@ def read_comma(testing_head: str | None) -> dict:
 
 def read_sites() -> list[dict]:
     sites = []
-    for name, title in SITES:
+    for name, title, url in SITES:
         state = subprocess.run(['systemctl', 'is-active', name], capture_output=True, text=True).stdout.strip()
-        sites.append({'name': name, 'title': title, 'up': state == 'active'})
+        sites.append({'name': name, 'title': title, 'url': url, 'up': state == 'active'})
     return sites
 
 
