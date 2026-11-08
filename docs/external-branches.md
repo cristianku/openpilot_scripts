@@ -38,3 +38,14 @@ git ls-remote https://github.com/cristianku/sunnypilot.git master   # = $up when
 
 A new external branch is added here, in the setup script (an `enable_*` step, fail closed on conflicts, a `SKIP_*`
 switch) and in `OP-setup-psa-torque-testing/SKILL.md`.
+
+## sunny-full-res, for other people's cars
+
+`OP-setup-sunny-full-res` rebuilds `cristianku/openpilot:sunny-full-res`, a sunnypilot that records the road camera at
+full resolution (the Developer switch "record road at full resolution"), for the people who send us drives. It takes
+three rows of the table above, the same way: the base (`sunnypilot/sunnypilot:master`, `master=<commit>` or `release`),
+the Nav2Pilot commit of `sunny-nav-alpha` and the changes of `cristianku/sunnypilot:speed-limits` (they carry the
+full-resolution recording). Nothing of the Peugeot: `opendbc_repo` and `neural_network_data` stay upstream's, no torqued
+patch, no Distill catalog (`SKIP_OPENDBC`, `SKIP_PSA_TORQUED`, `SKIP_EXTRA_MODEL_CATALOG` of the same common script).
+Bring the base, `sunny-nav-alpha` and `speed-limits` up to date first, as for the testing setup. Installed with
+`installer.comma.ai/cristianku/sunny-full-res`.

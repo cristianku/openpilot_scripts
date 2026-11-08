@@ -49,6 +49,11 @@ OPENDBC_REPO="${OPENDBC_REPO:-https://github.com/${GITHUB_USER}/opendbc.git}"
 OPENDBC_SOURCE_REPO="${OPENDBC_SOURCE_REPO:-${OPENDBC_REPO}}"
 OPENDBC_SOURCE_BRANCH="${OPENDBC_SOURCE_BRANCH:-}"
 USE_CUSTOM_NEURAL_NETWORK_DATA="${USE_CUSTOM_NEURAL_NETWORK_DATA:-false}"
+# [no psa] - START
+# A build for someone else's car (OP-setup-sunny-full-res): opendbc_repo stays upstream's, torqued stays upstream's.
+SKIP_OPENDBC="${SKIP_OPENDBC:-false}"           # true: no cristianku/opendbc pointer, opendbc_repo left as upstream
+SKIP_PSA_TORQUED="${SKIP_PSA_TORQUED:-false}"   # true: torqued's ALLOWED_CARS left as upstream
+# [no psa] - END
 NEURAL_NETWORK_DATA_REPO="${NEURAL_NETWORK_DATA_REPO:-https://github.com/${GITHUB_USER}/neural-network-data.git}"
 NEURAL_NETWORK_DATA_BRANCH="${NEURAL_NETWORK_DATA_BRANCH:-master}"
 COMMIT_MESSAGE="${COMMIT_MESSAGE:-Update Peugeot 3008${title_suffix} repository pointers (on ${OPENPILOT_SOURCE_BRANCH})}"
@@ -173,6 +178,12 @@ set_opendbc_pointer() {
   local branch="$3"
   local source_repo_url="${4:-}"
   local source_branch="${5:-}"
+  # [no psa] - START
+  if [[ "${SKIP_OPENDBC}" == "true" ]]; then
+    echo "SKIP_OPENDBC set: opendbc_repo left as upstream"
+    return
+  fi
+  # [no psa] - END
 
   ensure_remote_branch "${repo_url}" "${branch}" "${source_repo_url}" "${source_branch}"
 
@@ -236,6 +247,12 @@ enable_psa_torqued_learning() {
   # latAccelFactor/friction learning stays off for the Peugeot 3008. Add 'psa'.
   # Idempotent. Ask git for the real torqued path (layout-robust).
   local dest="$1"
+  # [no psa] - START
+  if [[ "${SKIP_PSA_TORQUED}" == "true" ]]; then
+    echo "SKIP_PSA_TORQUED set: torqued left as upstream"
+    return
+  fi
+  # [no psa] - END
   local torqued_rel
   torqued_rel="$(git -C "${dest}" ls-files \
     | grep -E '(^|/)selfdrive/locationd/torqued\.py$' | head -n1)"
@@ -496,7 +513,9 @@ main() {
   # [pinned source] - END
   # [source] - END
   echo "  ${WORKSPACE_ROOT}/${OPENPILOT_DIR}"
-  echo "  ${WORKSPACE_ROOT}/${OPENPILOT_DIR}/opendbc_repo"
+  if [[ "${SKIP_OPENDBC}" != "true" ]]; then
+    echo "  ${WORKSPACE_ROOT}/${OPENPILOT_DIR}/opendbc_repo"
+  fi
   if [[ "${USE_CUSTOM_NEURAL_NETWORK_DATA}" == "true" ]]; then
     echo "  neural_network_data (${NEURAL_NETWORK_DATA_BRANCH} at ${NEURAL_NETWORK_DATA_SHA})"
   fi
