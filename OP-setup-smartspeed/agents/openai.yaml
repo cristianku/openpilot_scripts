@@ -1,0 +1,4 @@
+interface:
+  display_name: "OP Setup Smartspeed"
+  short_description: "master|master=SHA|release; help"
+  default_prompt: "Usa $OP-setup-smartspeed per costruire cristianku/openpilot:smartspeed (sunnypilot master + solo la registrazione della strada a risoluzione piena)."

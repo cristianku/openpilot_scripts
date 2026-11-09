@@ -49,3 +49,13 @@ full-resolution recording). Nothing of the Peugeot: `opendbc_repo` and `neural_n
 patch, no Distill catalog (`SKIP_OPENDBC`, `SKIP_PSA_TORQUED`, `SKIP_EXTRA_MODEL_CATALOG` of the same common script).
 Bring the base, `sunny-nav-alpha` and `speed-limits` up to date first, as for the testing setup. Installed with
 `installer.comma.ai/cristianku/sunny-full-res`.
+
+## smartspeed, the branch handed out today
+
+`OP-setup-smartspeed` rebuilds `cristianku/openpilot:smartspeed`: sunnypilot master and only the road recording at full
+resolution, for the people who install it today (Smartspeed itself is not handed out yet). The recording is one commit on
+its own branch, `cristianku/sunnypilot:full-res-record` (the Developer switch `RecordRoadFullResolution`, off by default,
+camerad's full road stream, encoderd and loggerd), taken from `speed-limits` without the sign reader. The setup applies it
+with the common script's speed-limits step pointed at that branch (`SPEED_LIMITS_SOURCE_BRANCH=full-res-record`), with no
+Nav2Pilot and nothing of the Peugeot. When it stops applying on a new master, move the commit there (cherry-pick, resolve,
+`--force-with-lease`) and run the setup again. Installed with `installer.comma.ai/cristianku/smartspeed`.
