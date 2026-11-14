@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SKIP_OPENDBC and SKIP_PSA_TORQUED (OP-setup-sunny-full-res): opendbc_repo and torqued stay upstream's, nothing staged;
+# SKIP_OPENDBC and SKIP_PSA_TORQUED (OP-setup-smartspeed): opendbc_repo and torqued stay upstream's, nothing staged;
 # without them the PSA pointer and the torqued patch are still made.
 set -euo pipefail
 

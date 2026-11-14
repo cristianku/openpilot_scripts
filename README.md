@@ -14,8 +14,6 @@ When sharing a feature or release with the Sunnypilot community, always provide 
 - `setup-psa-torque-testing/`: creates or refreshes the testing Peugeot branches.
 - `OP-merge-psa-torque-testing/`: promotes `psa-torque-testing` into `psa-torque` in opendbc.
 - `OP-merge-psa-torque-sunny-testing/`: promotes `psa-torque-sunny-testing` into `psa-torque-sunny` in opendbc.
-- `OP-setup-sunny-full-res/`: builds `sunny-full-res`, sunnypilot master + Nav2Pilot + the speed-limit work, nothing of the
-  Peugeot, for other people's cars that record the road at full resolution.
 - `OP-setup-smartspeed/`: builds `smartspeed`, sunnypilot master + only the full-resolution recording (the one commit of
   `cristianku/sunnypilot:full-res-record`), the branch handed out today.
 - The home page at https://ops.farm.14bodhi.com, which shows what is behind and starts these skills, lives in its own
@@ -118,7 +116,6 @@ The merge skills operate only on `cristianku/opendbc`. They validate the Peugeot
 | Stable | `sunny` | `sunnypilot/sunnypilot:master` | `psa-torque-sunny` | `psa-torque-sunny` |
 | Testing | `comma` | `commaai/openpilot:master` | `psa-torque-testing` | `psa-torque-testing` |
 | Testing | `sunny` | `sunnypilot/sunnypilot:master` | `psa-torque-sunny-testing` | `psa-torque-sunny-testing` |
-| Full resolution | sunny only | `sunnypilot/sunnypilot:master` | `sunny-full-res` | upstream's (no pointer) |
 | Smartspeed | sunny only | `sunnypilot/sunnypilot:master` | `smartspeed` | upstream's (no pointer) |
 
 ## Master source handling

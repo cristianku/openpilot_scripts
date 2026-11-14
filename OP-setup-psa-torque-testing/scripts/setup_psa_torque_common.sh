@@ -50,7 +50,7 @@ OPENDBC_SOURCE_REPO="${OPENDBC_SOURCE_REPO:-${OPENDBC_REPO}}"
 OPENDBC_SOURCE_BRANCH="${OPENDBC_SOURCE_BRANCH:-}"
 USE_CUSTOM_NEURAL_NETWORK_DATA="${USE_CUSTOM_NEURAL_NETWORK_DATA:-false}"
 # [no psa] - START
-# A build for someone else's car (OP-setup-sunny-full-res): opendbc_repo stays upstream's, torqued stays upstream's.
+# A build for someone else's car (OP-setup-smartspeed): opendbc_repo stays upstream's, torqued stays upstream's.
 SKIP_OPENDBC="${SKIP_OPENDBC:-false}"           # true: no cristianku/opendbc pointer, opendbc_repo left as upstream
 SKIP_PSA_TORQUED="${SKIP_PSA_TORQUED:-false}"   # true: torqued's ALLOWED_CARS left as upstream
 # [no psa] - END

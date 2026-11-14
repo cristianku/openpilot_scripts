@@ -1,4 +1,0 @@
-interface:
-  display_name: "OP Setup Sunny Full Res"
-  short_description: "master|master=SHA|release; help"
-  default_prompt: "Usa $OP-setup-sunny-full-res per costruire cristianku/openpilot:sunny-full-res (sunnypilot master + Nav2Pilot + speed limits, registrazione a risoluzione piena)."
